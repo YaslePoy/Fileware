@@ -10,6 +10,8 @@ public class FileManagerService : IFileManagerService
     private const string FileInfoPath = "FilesInfo.json";
     private const string FileStoragePath = "storage/";
 
+    public static DateTime NowWithoutTimezone => new(DateTime.Now.Ticks);
+    
     public FileManagerService()
     {
         _files = JsonSerializer.Deserialize<List<FileData>>(File.ReadAllText(FileInfoPath)) ?? [];
@@ -17,7 +19,7 @@ public class FileManagerService : IFileManagerService
 
     public Guid RegisterNewFile(IFormFile file)
     {
-        var data = new FileData { Id = Guid.NewGuid(), Name = file.FileName, Version = 1, LastChange = DateTime.Now, LoadTime = DateTime.Now, Size = file.Length};
+        var data = new FileData { Id = Guid.NewGuid(), Name = file.FileName, Version = 1, LastChange = NowWithoutTimezone, LoadTime = NowWithoutTimezone, Size = file.Length};
 
         _files.Add(data);
         Directory.CreateDirectory("storage");
@@ -44,7 +46,7 @@ public class FileManagerService : IFileManagerService
             throw new Exception("Invalid file id");
 
         file.Version++;
-        file.LastChange = DateTime.Now;
+        file.LastChange = NowWithoutTimezone;
         file.Size = form.Length;
         using var fileStream = File.OpenWrite(FileStoragePath + id);
         form.CopyTo(fileStream);
