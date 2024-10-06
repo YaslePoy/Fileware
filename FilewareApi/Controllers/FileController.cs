@@ -19,7 +19,6 @@ public class FileController : Controller
     {
         var id = new { id = _fileService.RegisterNewFile(file) };
         _fileService.Save();
-        
         return Ok(id);
     }
 
@@ -39,5 +38,61 @@ public class FileController : Controller
         if (file is null)
             return NotFound();
         return Ok(file);
+    }
+    
+    [HttpGet("{id}/load")]
+    public ActionResult GetFileData(Guid id)
+    {
+        var file = _fileService.GetFileById(id);
+        var stream = _fileService.GetFile(id);
+        
+        if (stream is null)
+            return NotFound();
+        
+        return File(stream, "application/octet-stream", file.Name);
+    }
+    
+    [HttpDelete("{id}")]
+    public ActionResult DeleteFile(Guid id)
+    {
+        var file = _fileService.GetFileById(id);
+        if (file is null)
+            return NotFound();
+        
+        _fileService.DeleteFile(id);
+        _fileService.Save();
+        
+        return Ok();
+    }
+    
+    [HttpPatch("{id}")]
+    public ActionResult UpdateFile(Guid id, IFormFile form)
+    {
+        var file = _fileService.GetFileById(id);
+        if (file is null)
+            return NotFound();
+        
+        _fileService.UpdateFile(id, form);
+        _fileService.Save();
+        
+        return Ok();
+    }
+
+    [HttpGet("all")]
+    public ActionResult GetAllFilesData()
+    {
+        return Ok(_fileService.GetAllFiles());
+    }
+
+    [HttpPatch("{id}/rename")]
+    public IActionResult RenameFile(Guid id, [FromBody]string name)
+    {
+        var file = _fileService.GetFileById(id);
+        if (file is null)
+            return NotFound();
+        
+        _fileService.RenameFile(id, name);
+        _fileService.Save();
+        return Ok();
     }
 }

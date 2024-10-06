@@ -1,26 +1,30 @@
 ﻿using System.Reflection;
 using System.Text.Json;
 using FilewareApi.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace FilewareApi.Services.FileManagerService;
-
 
 public class FileManagerService : IFileManagerService
 {
     private const string FileInfoPath = "FilesInfo.json";
     private const string FileStoragePath = "storage/";
+
     public FileManagerService()
     {
-        _files = JsonSerializer.Deserialize<List<FileData>>(File.ReadAllText(FileInfoPath))  ?? [];
+        _files = JsonSerializer.Deserialize<List<FileData>>(File.ReadAllText(FileInfoPath)) ?? [];
     }
+
     public Guid RegisterNewFile(IFormFile file)
     {
-        var data = new FileData { Id = Guid.NewGuid(), Name = file.FileName, Version = 1, LastChange = DateTime.Now };
-        
+        var data = new FileData { Id = Guid.NewGuid(), Name = file.FileName, Version = 1, LastChange = DateTime.Now, LoadTime = DateTime.Now, Size = file.Length};
+
         _files.Add(data);
         Directory.CreateDirectory("storage");
-        var fileStream = File.OpenWrite(FileStoragePath + data.Id);
+        
+        using var fileStream = File.OpenWrite(FileStoragePath + data.Id);
         file.CopyTo(fileStream);
+        
         return data.Id;
     }
 
@@ -29,26 +33,27 @@ public class FileManagerService : IFileManagerService
         var file = FileById(id);
         if (file is null)
             return -1;
-        return new FileInfo(FileStoragePath + file.Id).Length;
+        return file.Size;
     }
 
-    public void UpdateFile(Guid id, Stream newDataStream)
+    public void UpdateFile(Guid id, IFormFile form)
     {
         var file = FileById(id);
-        
+
         if (file is null)
             throw new Exception("Invalid file id");
-        
+
         file.Version++;
         file.LastChange = DateTime.Now;
-        var fileStream = File.OpenWrite(FileStoragePath + id);
-        newDataStream.CopyTo(fileStream);
+        file.Size = form.Length;
+        using var fileStream = File.OpenWrite(FileStoragePath + id);
+        form.CopyTo(fileStream);
     }
 
     public void DeleteFile(Guid id)
     {
         var file = FileById(id);
-        
+
         if (file is null)
             throw new Exception("Invalid file id");
 
@@ -58,17 +63,32 @@ public class FileManagerService : IFileManagerService
 
     public FileData? GetFileById(Guid id)
     {
-        return  FileById(id);
+        return FileById(id);
     }
 
-    public IReadOnlyList<FileData> GetAllFiles(Guid id)
+    public Stream? GetFile(Guid id)
+    {
+        return !File.Exists(FileStoragePath + id) ? null : File.OpenRead(FileStoragePath + id);
+    }
+
+    public IReadOnlyList<FileData> GetAllFiles()
     {
         return _files;
     }
 
+    public void RenameFile(Guid id, string name)
+    {
+        var file = FileById(id);
+
+        if (file is null)
+            throw new Exception("Invalid file id");
+
+        file.Name = name;
+    }
+
     public void Save()
     {
-        File.WriteAllText(FileInfoPath, JsonSerializer.Serialize(_files));
+        File.WriteAllText(FileInfoPath, JsonSerializer.Serialize(_files, new JsonSerializerOptions { WriteIndented = true }));
     }
 
     private List<FileData> _files;
