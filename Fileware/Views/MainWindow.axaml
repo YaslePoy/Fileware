@@ -7,7 +7,8 @@
         x:Class="Fileware.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="Fileware">
+        Title="Fileware"
+        DragDrop.AllowDrop="True">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -19,8 +20,18 @@
             <RowDefinition></RowDefinition>
             <RowDefinition Height="60"></RowDefinition>
         </Grid.RowDefinitions>
-        <ScrollViewer Margin="100, 10">
-        </ScrollViewer>
+        <Panel Margin="50, 10">
+            <ScrollViewer x:Name="Viewer" CornerRadius="15">
+                <Rectangle Height="50" Width="50" Fill="Yellow"></Rectangle>
+            </ScrollViewer>
+            <Panel IsVisible="False" x:Name="LoadPanel">
+                <Rectangle Effect="blur(20)" Fill="Gray" RadiusX="30" RadiusY="30" Opacity="0.2"></Rectangle>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image Source="../Res/upload_200dp_E8EAED_FILL0_wght400_GRAD0_opsz48.png" Height="150"></Image>
+                    <TextBlock>Загрузить новый файл</TextBlock>
+                </StackPanel>
+            </Panel>
+        </Panel>
         <DockPanel Grid.Row="1" Margin="10, 0, 10, 10" LastChildFill="True" HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch">
             <Button VerticalAlignment="Stretch" Margin="10, 0, 0, 0" HorizontalAlignment="Stretch"

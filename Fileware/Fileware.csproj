@@ -6,11 +6,13 @@
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-        <PublishAot>true</PublishAot>
     </PropertyGroup>
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**"/>
+        <None Remove="Res\upload_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24.svg"/>
+        <None Remove="Res\upload_200dp_E8EAED_FILL0_wght400_GRAD0_opsz48.png"/>
+        <AvaloniaResource Include="Res\upload_200dp_E8EAED_FILL0_wght400_GRAD0_opsz48.png"/>
     </ItemGroup>
 
     

@@ -3,12 +3,14 @@
              x:Class="Fileware.App"
              xmlns:local="using:Fileware"
              RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
-        <local:ViewLocator/>
+        <local:ViewLocator />
     </Application.DataTemplates>
-  
+    <Application.Resources>
+        <SolidColorBrush x:Key="RadialGradientBrush" Color="#0000000f"></SolidColorBrush>
+    </Application.Resources>
     <Application.Styles>
         <Styles>
             <Style Selector="TextBox">
