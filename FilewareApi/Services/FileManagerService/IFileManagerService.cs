@@ -4,13 +4,12 @@ namespace FilewareApi.Services.FileManagerService;
 
 public interface IFileManagerService
 {
-    Guid RegisterNewFile(IFormFile file);
-    long GetFileSize(Guid id);
-    void UpdateFile(Guid id, IFormFile form);
-    void DeleteFile(Guid id);
-    FileData? GetFileById(Guid id);
-    public Stream? GetFile(Guid id);
+    int RegisterNewFile(IFormFile file);
+    long GetFileSize(int id);
+    void UpdateFile(int id, IFormFile form);
+    void DeleteFile(int id);
+    FileData? GetFileById(int id);
+    public Stream? GetFile(int id);
     IReadOnlyList<FileData> GetAllFiles();
-    public void RenameFile(Guid id, string name);
-    void Save();
+    public void RenameFile(int id, string name);
 }

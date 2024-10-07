@@ -5,94 +5,83 @@ namespace FilewareApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class FileController : Controller
+public class FileController(IFileManagerService fileService) : Controller
 {
-    private readonly IFileManagerService _fileService;
-
-    public FileController(IFileManagerService fileService)
-    {
-        _fileService = fileService;
-    }
-
     [HttpPost]
     public ActionResult RegisterNewFile(IFormFile file)
     {
-        var id = new { id = _fileService.RegisterNewFile(file) };
-        _fileService.Save();
+        var id = new { id = fileService.RegisterNewFile(file) };
         return Ok(id);
     }
 
     [HttpGet("{id}/size")]
-    public ActionResult FileSize(Guid id)
+    public ActionResult FileSize(int id)
     {
-        var size = _fileService.GetFileSize(id);
+        var size = fileService.GetFileSize(id);
         if (size == -1)
             return NotFound();
         return Ok(new { size });
     }
 
     [HttpGet("{id}")]
-    public ActionResult GetFileInfo(Guid id)
+    public ActionResult GetFileInfo(int id)
     {
-        var file = _fileService.GetFileById(id);
+        var file = fileService.GetFileById(id);
         if (file is null)
             return NotFound();
         return Ok(file);
     }
-    
+
     [HttpGet("{id}/load")]
-    public ActionResult GetFileData(Guid id)
+    public ActionResult GetFileData(int id)
     {
-        var file = _fileService.GetFileById(id);
-        var stream = _fileService.GetFile(id);
-        
+        var file = fileService.GetFileById(id);
+        var stream = fileService.GetFile(id);
+
         if (stream is null)
             return NotFound();
-        
-        return File(stream, "application/octet-stream", file.Name);
+
+        return File(stream, file?.FileType!, file?.Name);
     }
-    
+
     [HttpDelete("{id}")]
-    public ActionResult DeleteFile(Guid id)
+    public ActionResult DeleteFile(int id)
     {
-        var file = _fileService.GetFileById(id);
+        var file = fileService.GetFileById(id);
         if (file is null)
             return NotFound();
-        
-        _fileService.DeleteFile(id);
-        _fileService.Save();
-        
+
+        fileService.DeleteFile(id);
+
         return Ok();
     }
-    
+
     [HttpPatch("{id}")]
-    public ActionResult UpdateFile(Guid id, IFormFile form)
+    public ActionResult UpdateFile(int id, IFormFile form)
     {
-        var file = _fileService.GetFileById(id);
+        var file = fileService.GetFileById(id);
         if (file is null)
             return NotFound();
-        
-        _fileService.UpdateFile(id, form);
-        _fileService.Save();
-        
+
+        fileService.UpdateFile(id, form);
+
         return Ok();
     }
 
     [HttpGet("all")]
     public ActionResult GetAllFilesData()
     {
-        return Ok(_fileService.GetAllFiles());
+        return Ok(fileService.GetAllFiles());
     }
 
     [HttpPatch("{id}/rename")]
-    public IActionResult RenameFile(Guid id, [FromBody]string name)
+    public IActionResult RenameFile(int id, [FromBody] string name)
     {
-        var file = _fileService.GetFileById(id);
+        var file = fileService.GetFileById(id);
         if (file is null)
             return NotFound();
-        
-        _fileService.RenameFile(id, name);
-        _fileService.Save();
+
+        fileService.RenameFile(id, name);
         return Ok();
     }
 }

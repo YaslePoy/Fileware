@@ -1,36 +1,37 @@
-﻿using System.Reflection;
-using System.Text.Json;
-using FilewareApi.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using FilewareApi.Models;
 
 namespace FilewareApi.Services.FileManagerService;
 
-public class FileManagerService : IFileManagerService
+public class FileManagerService(FilewareDbContext dbContext) : IFileManagerService
 {
-    private const string FileInfoPath = "FilesInfo.json";
     private const string FileStoragePath = "storage/";
 
     public static DateTime NowWithoutTimezone => new(DateTime.Now.Ticks);
-    
-    public FileManagerService()
-    {
-        _files = JsonSerializer.Deserialize<List<FileData>>(File.ReadAllText(FileInfoPath)) ?? [];
-    }
 
-    public Guid RegisterNewFile(IFormFile file)
+    public int RegisterNewFile(IFormFile file)
     {
-        var data = new FileData { Id = Guid.NewGuid(), Name = file.FileName, Version = 1, LastChange = NowWithoutTimezone, LoadTime = NowWithoutTimezone, Size = file.Length};
+        var data = new FileData
+        {
+            Name = file.FileName, Version = 1, LastChange = NowWithoutTimezone, LoadTime = NowWithoutTimezone,
+            Size = file.Length, FileType = file.ContentType
+        };
 
-        _files.Add(data);
+        dbContext.FileData.Add(data);
+        dbContext.SaveChanges();
+
         Directory.CreateDirectory("storage");
-        
+
         using var fileStream = File.OpenWrite(FileStoragePath + data.Id);
         file.CopyTo(fileStream);
-        
+
+        dbContext.HistoryPoints.Add(new HistoryPoint
+            { LinkedId = data.Id, Type = (int)HistoryPointType.File, Time = NowWithoutTimezone });
+        dbContext.SaveChanges();
+
         return data.Id;
     }
 
-    public long GetFileSize(Guid id)
+    public long GetFileSize(int id)
     {
         var file = FileById(id);
         if (file is null)
@@ -38,7 +39,7 @@ public class FileManagerService : IFileManagerService
         return file.Size;
     }
 
-    public void UpdateFile(Guid id, IFormFile form)
+    public void UpdateFile(int id, IFormFile form)
     {
         var file = FileById(id);
 
@@ -50,35 +51,37 @@ public class FileManagerService : IFileManagerService
         file.Size = form.Length;
         using var fileStream = File.OpenWrite(FileStoragePath + id);
         form.CopyTo(fileStream);
+        dbContext.SaveChanges();
     }
 
-    public void DeleteFile(Guid id)
+    public void DeleteFile(int id)
     {
         var file = FileById(id);
 
         if (file is null)
             throw new Exception("Invalid file id");
 
-        _files.Remove(file);
+        dbContext.FileData.Remove(file);
         File.Delete(FileStoragePath + id);
+        dbContext.SaveChanges();
     }
 
-    public FileData? GetFileById(Guid id)
+    public FileData? GetFileById(int id)
     {
         return FileById(id);
     }
 
-    public Stream? GetFile(Guid id)
+    public Stream? GetFile(int id)
     {
         return !File.Exists(FileStoragePath + id) ? null : File.OpenRead(FileStoragePath + id);
     }
 
     public IReadOnlyList<FileData> GetAllFiles()
     {
-        return _files;
+        return dbContext.FileData.ToList();
     }
 
-    public void RenameFile(Guid id, string name)
+    public void RenameFile(int id, string name)
     {
         var file = FileById(id);
 
@@ -86,14 +89,8 @@ public class FileManagerService : IFileManagerService
             throw new Exception("Invalid file id");
 
         file.Name = name;
+        dbContext.SaveChanges();
     }
 
-    public void Save()
-    {
-        File.WriteAllText(FileInfoPath, JsonSerializer.Serialize(_files, new JsonSerializerOptions { WriteIndented = true }));
-    }
-
-    private List<FileData> _files;
-
-    private FileData? FileById(Guid id) => _files.Find(i => i.Id == id);
+    private FileData? FileById(int id) => dbContext.FileData.FirstOrDefault(i => i.Id == id);
 }

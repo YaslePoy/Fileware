@@ -1,8 +1,11 @@
 using System.Text.Json;
 using FilewareApi.Models;
 using FilewareApi.Services.FileManagerService;
+using FilewareApi.Services.MessagingService;
+using Microsoft.EntityFrameworkCore;
 
 namespace FilewareApi;
+
 public class Program
 {
     public static void Main(string[] args)
@@ -16,6 +19,7 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddTransient<IFileManagerService, FileManagerService>();
+        builder.Services.AddTransient<IMessagingService, MessagingService>();
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("CorsPolicy",
@@ -25,8 +29,10 @@ public class Program
                     .SetIsOriginAllowed((host) => true)
                     .AllowAnyHeader());
         });
+        builder.Services.AddDbContext<FilewareDbContext>(options =>
+            options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
         var app = builder.Build();
-        
+
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
