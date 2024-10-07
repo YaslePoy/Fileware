@@ -19,6 +19,8 @@
             <RowDefinition></RowDefinition>
             <RowDefinition Height="60"></RowDefinition>
         </Grid.RowDefinitions>
+        <ScrollViewer Margin="100, 10">
+        </ScrollViewer>
         <DockPanel Grid.Row="1" Margin="10, 0, 10, 10" LastChildFill="True" HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch">
             <Button VerticalAlignment="Stretch" Margin="10, 0, 0, 0" HorizontalAlignment="Stretch"
