@@ -1,0 +1,34 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="clr-namespace:Fileware.Models"
+             xmlns:fileware="clr-namespace:Fileware"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Fileware.Controls.MessageBlock"
+             x:DataType="fileware:Message">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <fileware:Message
+            Text="weqrsarsdtfdyfgdfccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccgjidfhfgushufbsauirhosahr">
+            <fileware:Message.Time>
+
+            </fileware:Message.Time>
+        </fileware:Message>
+
+    </Design.DataContext>
+    <Border VerticalAlignment="Center" HorizontalAlignment="Center" Background="Orange" CornerRadius="10">
+        <Border.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Изменить"></MenuItem>
+            </ContextMenu>
+        </Border.ContextMenu>
+        <DockPanel Margin="10">
+            <TextBlock Foreground="White" Margin="10, 0, 0, 0" DockPanel.Dock="Right" VerticalAlignment="Bottom"
+                       Text="{Binding Time, StringFormat=t}" ToolTip.Tip="{Binding Time, StringFormat=U}">
+            </TextBlock>
+            <TextBlock Foreground="White" Text="{Binding Text}" TextWrapping="Wrap"></TextBlock>
+        </DockPanel>
+    </Border>
+</UserControl>

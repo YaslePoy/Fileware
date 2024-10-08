@@ -1,0 +1,54 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="clr-namespace:Fileware.Models"
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="80"
+             x:Class="Fileware.Controls.FileBlock"
+             x:DataType="models:FileData">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <models:FileData Name="FileData file name.json" Size="410552" Version="1" />
+
+    </Design.DataContext>
+    <Border Background="Orange" CornerRadius="15">
+        <Border.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Test">
+                    <MenuItem.Icon>
+                        <Image Source="../Res/file.png"></Image>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Best"></MenuItem>
+                <MenuItem Header="Gast"></MenuItem>
+            </ContextMenu>
+        </Border.ContextMenu>
+        <DockPanel LastChildFill="False">
+
+            <Image Margin="10" Source="../Res/file.png" VerticalAlignment="Center" HorizontalAlignment="Center"
+                   Height="35">
+            </Image>
+            <DockPanel DockPanel.Dock="Right" VerticalAlignment="Stretch" HorizontalAlignment="Right" Margin="10"
+                       LastChildFill="False">
+                <Border DockPanel.Dock="Top" BorderBrush="White" BorderThickness="2" CornerRadius="100"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                    <TextBlock Text="{Binding Version}" Foreground="White" Margin="3"></TextBlock>
+                </Border>
+                <TextBlock DockPanel.Dock="Bottom" Foreground="White" Text="{Binding LastChange, StringFormat=t}"
+                           ToolTip.Tip="{Binding LastChange, StringFormat=U}">
+                </TextBlock>
+            </DockPanel>
+            <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Right"
+                        Orientation="Vertical">
+                <TextBlock VerticalAlignment="Bottom" Foreground="White" FontSize="12" Margin="4, 2"
+                           Text="{Binding Name}" ToolTip.Tip="{Binding Name}">
+                </TextBlock>
+                <TextBlock VerticalAlignment="Top" Foreground="White" FontSize="12" Margin="4, 2"
+                           Text="{Binding SizeFormatted}">
+                </TextBlock>
+            </StackPanel>
+
+        </DockPanel>
+    </Border>
+</UserControl>

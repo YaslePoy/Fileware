@@ -4,6 +4,8 @@
     <option name="projectPerEditor">
       <map>
         <entry key="Fileware/App.axaml" value="Fileware/Fileware.csproj" />
+        <entry key="Fileware/Controls/FileBlock.axaml" value="Fileware/Fileware.csproj" />
+        <entry key="Fileware/Controls/MessageBlock.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Views/MainWindow.axaml" value="Fileware/Fileware.csproj" />
       </map>
     </option>

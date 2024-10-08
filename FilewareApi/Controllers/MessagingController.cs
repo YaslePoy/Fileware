@@ -14,7 +14,7 @@ public class MessagingController(IMessagingService messagingService) : Controlle
         return messagingService.GetMessage(id);
     }
 
-    [HttpPost()]
+    [HttpPost]
     public ActionResult<int> PostMessage([FromBody] string text)
     {
         return messagingService.PostMessage(text);
