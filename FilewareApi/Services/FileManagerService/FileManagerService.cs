@@ -1,4 +1,5 @@
-﻿using FilewareApi.Models;
+﻿using System.Security.Cryptography;
+using FilewareApi.Models;
 
 namespace FilewareApi.Services.FileManagerService;
 
@@ -15,20 +16,62 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
             Name = file.FileName, Version = 1, LastChange = NowWithoutTimezone, LoadTime = NowWithoutTimezone,
             Size = file.Length, FileType = file.ContentType
         };
+        using var hashStream = new MemoryStream();
+        file.CopyTo(hashStream);
+
+        var readBuffer = hashStream.ToArray();
+
+        data.Data = readBuffer;
 
         dbContext.FileData.Add(data);
         dbContext.SaveChanges();
 
+        dbContext.HistoryPoints.Add(new HistoryPoint
+            { LinkedId = data.Id, Type = (int)HistoryPointType.File, Time = NowWithoutTimezone });
+
         Directory.CreateDirectory("storage");
 
         using var fileStream = File.OpenWrite(FileStoragePath + data.Id);
-        file.CopyTo(fileStream);
+        fileStream.Write(readBuffer, 0, readBuffer.Length);
 
-        dbContext.HistoryPoints.Add(new HistoryPoint
-            { LinkedId = data.Id, Type = (int)HistoryPointType.File, Time = NowWithoutTimezone });
+
         dbContext.SaveChanges();
 
         return data.Id;
+    }
+
+    public int RegisterBigFile(byte[] data, string name, string type)
+    {
+        var file = new FileData
+        {
+            Name = name, Version = 1, LastChange = NowWithoutTimezone, LoadTime = NowWithoutTimezone,
+            Size = data.Length, FileType = type
+        };
+
+
+        if (data.Length > 500_000_000)
+        {
+            dbContext.FileData.Add(file);
+            dbContext.SaveChanges();
+
+            Directory.CreateDirectory("storage");
+
+            using var fileStream = File.OpenWrite(FileStoragePath + file.Id);
+            fileStream.Write(data, 0, data.Length);
+        }
+        else
+        {
+            file.Data = data;
+
+            dbContext.FileData.Add(file);
+            dbContext.SaveChanges();
+        }
+
+        dbContext.HistoryPoints.Add(new HistoryPoint
+            { LinkedId = file.Id, Type = (int)HistoryPointType.File, Time = NowWithoutTimezone });
+        dbContext.SaveChanges();
+
+        return file.Id;
     }
 
     public long GetFileSize(int id)

@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace FilewareApi.Models;
 
@@ -13,5 +15,7 @@ public class FileData
     public long Size { get; set; }
     public DateTime LoadTime { get; set; }
     public string FileType { get; set; }
-    public string Hash { get; set; }
+
+    [JsonIgnore]
+    public byte[]? Data { get; set; }
 }

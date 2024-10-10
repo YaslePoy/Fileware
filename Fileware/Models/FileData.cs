@@ -15,6 +15,7 @@ public class FileData : INotifyPropertyChanged
     public long Size { get; set; }
     public DateTime LoadTime { get; set; }
     public string FileType { get; set; }
+    public string Hash { get; set; }
 
     public string SizeFormatted
     {

@@ -105,6 +105,7 @@ public partial class MainWindow : Window
         {
             foreach (var file in fileNames)
             {
+                var info = new FileInfo(file.Path.LocalPath);
                 var name = file.Name;
                 using var multipartFormContent = new MultipartFormDataContent();
                 var fileStream = new FileStream(file.Path.LocalPath, FileMode.Open, FileAccess.Read,
@@ -113,26 +114,35 @@ public partial class MainWindow : Window
                 var mimeType = MimeTypes.GetMimeType(name);
                 fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
                 multipartFormContent.Add(fileStreamContent, "file", name);
-                using var response = await Api.Http.PostAsync(Api.ApiUrl + "api/File", multipartFormContent);
-                var id = int.Parse(await response.Content.ReadAsStringAsync());
 
-                History.Add(new HistoryPoint
-                    { LinkedId = id, Time = DateTime.Now, Type = (int)HistoryPointType.File });
-
+                FileBlock addedBlock = null;
 
                 Dispatcher.UIThread.Invoke(() =>
                 {
-                    PointsPanel.Children.Add(new FileBlock
+                    var data = new FileData
                     {
-                        DataContext = new FileData
-                        {
-                            FileType = mimeType, Version = 1, LoadTime = DateTime.Now,
-                            Size = new FileInfo(file.Path.LocalPath).Length, LastChange = DateTime.Now, Id = id,
-                            Name = name
-                        }
-                    });
+                        FileType = mimeType, Version = 1, LoadTime = DateTime.Now,
+                        Size = info.Length, LastChange = DateTime.Now, Id = 0,
+                        Name = name
+                    };
+                    addedBlock = new FileBlock(fileStream, data)
+                    {
+                        DataContext = data
+                    };
+
+                    PointsPanel.Children.Add(addedBlock);
                     Viewer.ScrollToEnd();
                 });
+
+                using var response = await Api.Http.PostAsync(
+                    Api.ApiUrl + (info.Length > 30 * 1024 * 1024 ? "api/File/large" : "api/File"),
+                    multipartFormContent);
+                var id = int.Parse(await response.Content.ReadAsStringAsync());
+
+                (addedBlock.DataContext as FileData).Id = id;
+
+                History.Add(new HistoryPoint
+                    { LinkedId = id, Time = DateTime.Now, Type = (int)HistoryPointType.File });
             }
         }
     }

@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:models="clr-namespace:Fileware.Models"
-             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="80"
+             mc:Ignorable="d"
              x:Class="Fileware.Controls.FileBlock"
              x:DataType="models:FileData" MaxWidth="400" Height="80" HorizontalAlignment="Left">
     <Design.DataContext>
@@ -22,7 +22,6 @@
             </ContextMenu>
         </Border.ContextMenu>
         <DockPanel LastChildFill="False">
-
             <Image Margin="10" Source="../Res/file.png" VerticalAlignment="Center" HorizontalAlignment="Center"
                    Height="35">
             </Image>
@@ -42,8 +41,8 @@
                                      Text="{Binding Name}" ToolTip.Tip="{Binding Name}">
                 </SelectableTextBlock>
                 <TextBlock VerticalAlignment="Top" Foreground="White" FontSize="12" Margin="4, 2"
-                           Text="{Binding SizeFormatted}">
-                </TextBlock>
+                           Text="{Binding SizeFormatted}" />
+                <ProgressBar Name="UploadBar" IsVisible="False" Margin="0, 5"></ProgressBar>
             </StackPanel>
 
         </DockPanel>

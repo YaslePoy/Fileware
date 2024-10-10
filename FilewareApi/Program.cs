@@ -31,6 +31,7 @@ public class Program
         });
         builder.Services.AddDbContext<FilewareDbContext>(options =>
             options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+        builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = TenGigabytes);
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -50,4 +51,6 @@ public class Program
 
         app.Run();
     }
+
+    public const long TenGigabytes = 10737418240;
 }

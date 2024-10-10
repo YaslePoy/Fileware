@@ -1,5 +1,13 @@
-﻿using FilewareApi.Services.FileManagerService;
+﻿using System.Globalization;
+using System.Net;
+using System.Text;
+using FilewareApi.Models;
+using FilewareApi.Services.FileManagerService;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Net.Http.Headers;
 
 namespace FilewareApi.Controllers;
 
@@ -7,8 +15,113 @@ namespace FilewareApi.Controllers;
 [Route("api/[controller]")]
 public class FileController(IFileManagerService fileService) : Controller
 {
+    private FormOptions _defaultFormOptions = new();
+
+    [HttpPost("large")]
+    public async Task<IActionResult> UploadDatabase()
+    {
+        if (!MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
+        {
+            ModelState.AddModelError("File",
+                $"The request couldn't be processed (Error 1).");
+            // Log error
+
+            return BadRequest(ModelState);
+        }
+
+        // Accumulate the form data key-value pairs in the request (formAccumulator).
+        var formAccumulator = new KeyValueAccumulator();
+        var trustedFileNameForDisplay = string.Empty;
+        var untrustedFileNameForStorage = string.Empty;
+        var streamedFileContent = Array.Empty<byte>();
+
+        var boundary = MultipartRequestHelper.GetBoundary(
+            MediaTypeHeaderValue.Parse(Request.ContentType),
+            _defaultFormOptions.MultipartBoundaryLengthLimit);
+        var reader = new MultipartReader(boundary, HttpContext.Request.Body);
+
+        var section = await reader.ReadNextSectionAsync();
+
+        while (section != null)
+        {
+            var hasContentDispositionHeader =
+                ContentDispositionHeaderValue.TryParse(
+                    section.ContentDisposition, out var contentDisposition);
+
+            if (hasContentDispositionHeader)
+            {
+                if (MultipartRequestHelper
+                    .HasFileContentDisposition(contentDisposition))
+                {
+                    untrustedFileNameForStorage = contentDisposition.FileName.Value;
+                    // Don't trust the file name sent by the client. To display
+                    // the file name, HTML-encode the value.
+                    trustedFileNameForDisplay = WebUtility.HtmlEncode(
+                        contentDisposition.FileName.Value);
+
+                    using var ms = new MemoryStream();
+                    await section.Body.CopyToAsync(ms);
+                    streamedFileContent = ms.ToArray();
+
+                    if (!ModelState.IsValid)
+                    {
+                        return BadRequest(ModelState);
+                    }
+                }
+                else if (MultipartRequestHelper
+                         .HasFormDataContentDisposition(contentDisposition))
+                {
+                    // Don't limit the key name length because the 
+                    // multipart headers length limit is already in effect.
+                    var key = HeaderUtilities
+                        .RemoveQuotes(contentDisposition.Name).Value;
+                    var encoding = Encoding.UTF8;
+
+                    using (var streamReader = new StreamReader(
+                               section.Body,
+                               encoding,
+                               detectEncodingFromByteOrderMarks: true,
+                               bufferSize: 1024,
+                               leaveOpen: true))
+                    {
+                        // The value length limit is enforced by 
+                        // MultipartBodyLengthLimit
+                        var value = await streamReader.ReadToEndAsync();
+
+                        if (string.Equals(value, "undefined",
+                                StringComparison.OrdinalIgnoreCase))
+                        {
+                            value = string.Empty;
+                        }
+
+                        formAccumulator.Append(key, value);
+                        if (formAccumulator.ValueCount >
+                            _defaultFormOptions.ValueCountLimit)
+                        {
+                            // Form key count limit of 
+                            // _defaultFormOptions.ValueCountLimit 
+                            // is exceeded.
+                            ModelState.AddModelError("File",
+                                $"The request couldn't be processed (Error 3).");
+                            // Log error
+
+                            return BadRequest(ModelState);
+                        }
+                    }
+                }
+            }
+
+            // Drain any remaining section body that hasn't been consumed and
+            // read the headers for the next section.
+            section = await reader.ReadNextSectionAsync();
+        }
+
+
+        return Ok(fileService.RegisterBigFile(streamedFileContent, untrustedFileNameForStorage, Request.ContentType));
+    }
+
     [HttpPost]
-    public ActionResult RegisterNewFile(IFormFile file)
+    public async Task<ActionResult> RegisterNewFile(IFormFile file)
     {
         var id = fileService.RegisterNewFile(file);
         return Ok(id);
@@ -36,12 +149,17 @@ public class FileController(IFileManagerService fileService) : Controller
     public ActionResult GetFileData(int id)
     {
         var file = fileService.GetFileById(id);
+        if (file is null)
+            return NotFound();
+        if (file.Data != null)
+            return File(file.Data, file.FileType, file.Name);
+
         var stream = fileService.GetFile(id);
 
         if (stream is null)
             return NotFound();
 
-        return File(stream, file?.FileType!, file?.Name);
+        return File(stream, file.FileType, file.Name);
     }
 
     [HttpDelete("{id}")]
@@ -83,5 +201,52 @@ public class FileController(IFileManagerService fileService) : Controller
 
         fileService.RenameFile(id, name);
         return Ok();
+    }
+}
+
+public static class MultipartRequestHelper
+{
+    // Content-Type: multipart/form-data; boundary="----WebKitFormBoundarymx2fSWqWSd0OxQqq"
+    // The spec at https://tools.ietf.org/html/rfc2046#section-5.1 states that 70 characters is a reasonable limit.
+    public static string GetBoundary(MediaTypeHeaderValue contentType, int lengthLimit)
+    {
+        var boundary = HeaderUtilities.RemoveQuotes(contentType.Boundary).Value;
+
+        if (string.IsNullOrWhiteSpace(boundary))
+        {
+            throw new InvalidDataException("Missing content-type boundary.");
+        }
+
+        if (boundary.Length > lengthLimit)
+        {
+            throw new InvalidDataException(
+                $"Multipart boundary length limit {lengthLimit} exceeded.");
+        }
+
+        return boundary;
+    }
+
+    public static bool IsMultipartContentType(string contentType)
+    {
+        return !string.IsNullOrEmpty(contentType)
+               && contentType.IndexOf("multipart/", StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    public static bool HasFormDataContentDisposition(ContentDispositionHeaderValue contentDisposition)
+    {
+        // Content-Disposition: form-data; name="key";
+        return contentDisposition != null
+               && contentDisposition.DispositionType.Equals("form-data")
+               && string.IsNullOrEmpty(contentDisposition.FileName.Value)
+               && string.IsNullOrEmpty(contentDisposition.FileNameStar.Value);
+    }
+
+    public static bool HasFileContentDisposition(ContentDispositionHeaderValue contentDisposition)
+    {
+        // Content-Disposition: form-data; name="myfile1"; filename="Misc 002.jpg"
+        return contentDisposition != null
+               && contentDisposition.DispositionType.Equals("form-data")
+               && (!string.IsNullOrEmpty(contentDisposition.FileName.Value)
+                   || !string.IsNullOrEmpty(contentDisposition.FileNameStar.Value));
     }
 }
