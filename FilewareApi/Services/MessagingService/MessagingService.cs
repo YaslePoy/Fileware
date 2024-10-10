@@ -20,13 +20,15 @@ public class MessagingService(FilewareDbContext dbContext) : IMessagingService
         return msg.Id;
     }
 
-    public void DeleteMassage(int id)
+    public void DeleteMessage(int id)
     {
         var msg = FindMessage(id);
         if (msg is null)
             return;
 
         dbContext.Messages.Remove(msg);
+        dbContext.HistoryPoints.Remove(dbContext.HistoryPoints.FirstOrDefault(i => i.LinkedId == msg.Id));
+
         dbContext.SaveChanges();
     }
 

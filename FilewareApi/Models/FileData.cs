@@ -13,4 +13,5 @@ public class FileData
     public long Size { get; set; }
     public DateTime LoadTime { get; set; }
     public string FileType { get; set; }
+    public string Hash { get; set; }
 }

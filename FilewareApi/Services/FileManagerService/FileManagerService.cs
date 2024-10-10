@@ -63,6 +63,7 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
 
         dbContext.FileData.Remove(file);
         File.Delete(FileStoragePath + id);
+        dbContext.HistoryPoints.Remove(dbContext.HistoryPoints.FirstOrDefault(i => i.LinkedId == file.Id));
         dbContext.SaveChanges();
     }
 

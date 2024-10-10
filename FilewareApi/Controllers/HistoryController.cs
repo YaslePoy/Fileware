@@ -8,15 +8,27 @@ namespace FilewareApi.Controllers;
 public class HistoryController(FilewareDbContext db) : Controller
 {
     [HttpGet]
-    public ActionResult<IReadOnlyList<HistoryPoint>> GetHistory()
+    public ActionResult<IReadOnlyList<HistoryPoint>> GetHistoryAfterId(int id, int count)
     {
-        return Ok(db.HistoryPoints.ToList());
-    }
+        List<HistoryPoint> mapLinked(List<HistoryPoint> list)
+        {
+            foreach (var point in list)
+            {
+                if (point.Type == (int)HistoryPointType.Message)
+                {
+                    point.Linked = db.Messages.FirstOrDefault(i => i.Id == point.LinkedId);
+                }
+                else
+                {
+                    point.Linked = db.FileData.FirstOrDefault(i => i.Id == point.LinkedId);
+                }
+            }
 
-    [HttpGet("{day}")]
-    public ActionResult<IReadOnlyList<HistoryPoint>> GetByDate(DateTime day)
-    {
-        var nextDay = day.AddDays(1);
-        return Ok(db.HistoryPoints.Where(i => i.Time >= day && i.Time < nextDay));
+            return list;
+        }
+
+        if (id == -1)
+            return Ok(mapLinked(db.HistoryPoints.OrderByDescending(i => i.Id).Take(count).ToList()));
+        return Ok(mapLinked(db.HistoryPoints.Where(i => i.Id < id).OrderByDescending(i => i.Id).Take(count).ToList()));
     }
 }

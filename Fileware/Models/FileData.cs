@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 
 namespace Fileware.Models;
 
-public class FileData
+public class FileData : INotifyPropertyChanged
 {
     public int Id { get; set; }
     public string Name { get; set; }
@@ -26,5 +29,20 @@ public class FileData
 
             return Math.Round(Size / 1024d / 1024d / 1024d, 1) + " GB";
         }
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public virtual void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        field = value;
+        OnPropertyChanged(propertyName);
+        return true;
     }
 }

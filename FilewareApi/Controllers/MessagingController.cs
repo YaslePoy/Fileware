@@ -21,7 +21,7 @@ public class MessagingController(IMessagingService messagingService) : Controlle
     }
 
     [HttpPatch("{id}")]
-    public ActionResult UpdateMessageById(int id, string text)
+    public ActionResult UpdateMessageById(int id, [FromBody] string text)
     {
         messagingService.UpdateMessage(id, text);
         return Ok();
@@ -30,7 +30,8 @@ public class MessagingController(IMessagingService messagingService) : Controlle
     [HttpDelete("{id}")]
     public ActionResult DeleteMessageById(int id)
     {
-        messagingService.DeleteMassage(id);
+        messagingService.DeleteMessage(id);
+
         return Ok();
     }
 }

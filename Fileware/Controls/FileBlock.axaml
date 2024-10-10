@@ -5,23 +5,20 @@
              xmlns:models="clr-namespace:Fileware.Models"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="80"
              x:Class="Fileware.Controls.FileBlock"
-             x:DataType="models:FileData">
+             x:DataType="models:FileData" MaxWidth="400" Height="80" HorizontalAlignment="Left">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <models:FileData Name="FileData file name.json" Size="410552" Version="1" />
 
     </Design.DataContext>
-    <Border Background="Orange" CornerRadius="15">
+    <Border HorizontalAlignment="Left" Background="{StaticResource MainColor}" CornerRadius="15">
         <Border.ContextMenu>
             <ContextMenu>
-                <MenuItem Header="Test">
-                    <MenuItem.Icon>
-                        <Image Source="../Res/file.png"></Image>
-                    </MenuItem.Icon>
+                <MenuItem Header="Переименовать" Click="OnRename"></MenuItem>
+                <MenuItem Header="Удалить">
+                    <MenuItem Background="OrangeRed" Header="Точно?" Click="OnDelete"></MenuItem>
                 </MenuItem>
-                <MenuItem Header="Best"></MenuItem>
-                <MenuItem Header="Gast"></MenuItem>
             </ContextMenu>
         </Border.ContextMenu>
         <DockPanel LastChildFill="False">
@@ -41,9 +38,9 @@
             </DockPanel>
             <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Right"
                         Orientation="Vertical">
-                <TextBlock VerticalAlignment="Bottom" Foreground="White" FontSize="12" Margin="4, 2"
-                           Text="{Binding Name}" ToolTip.Tip="{Binding Name}">
-                </TextBlock>
+                <SelectableTextBlock VerticalAlignment="Bottom" Foreground="White" FontSize="12" Margin="4, 2"
+                                     Text="{Binding Name}" ToolTip.Tip="{Binding Name}">
+                </SelectableTextBlock>
                 <TextBlock VerticalAlignment="Top" Foreground="White" FontSize="12" Margin="4, 2"
                            Text="{Binding SizeFormatted}">
                 </TextBlock>

@@ -1,0 +1,32 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:models="clr-namespace:Fileware.Models"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        MaxHeight="300"
+        MaxWidth="1000"
+        x:Class="Fileware.Windows.FileRenameWindow"
+        Title="FileRenameWindow"
+        x:DataType="models:FileData"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterOwner"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top">
+    <DockPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Click="OnCancel" HorizontalAlignment="Right" Margin="10, 0,0, 10" Background="OrangeRed"
+                    Foreground="White">
+                Отменить
+            </Button>
+            <Button Click="OnApply" HorizontalAlignment="Right" Margin="10, 0, 10, 10" Foreground="White">Переименовать</Button>
+        </StackPanel>
+        <TextBox Name="Redactor" DockPanel.Dock="Top" Text="{Binding Name}" TextWrapping="Wrap" BorderThickness="0"
+                 Margin="10" Background="Transparent">
+        </TextBox>
+    </DockPanel>
+</Window>

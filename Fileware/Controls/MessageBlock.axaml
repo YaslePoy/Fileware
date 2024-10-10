@@ -6,7 +6,7 @@
              xmlns:fileware="clr-namespace:Fileware"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Fileware.Controls.MessageBlock"
-             x:DataType="fileware:Message">
+             x:DataType="fileware:Message" HorizontalAlignment="Left" MaxWidth="700">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
@@ -18,17 +18,22 @@
         </fileware:Message>
 
     </Design.DataContext>
-    <Border VerticalAlignment="Center" HorizontalAlignment="Center" Background="Orange" CornerRadius="10">
+    <Border VerticalAlignment="Center" HorizontalAlignment="Center" Background="{StaticResource MainColor}"
+            CornerRadius="10">
+
         <Border.ContextMenu>
             <ContextMenu>
-                <MenuItem Header="Изменить"></MenuItem>
+                <MenuItem Header="Изменить" Click="ChangeText"></MenuItem>
+                <MenuItem Header="Удалить">
+                    <MenuItem Background="OrangeRed" Header="Точно?" Click="OnDelete"></MenuItem>
+                </MenuItem>
             </ContextMenu>
         </Border.ContextMenu>
         <DockPanel Margin="10">
             <TextBlock Foreground="White" Margin="10, 0, 0, 0" DockPanel.Dock="Right" VerticalAlignment="Bottom"
                        Text="{Binding Time, StringFormat=t}" ToolTip.Tip="{Binding Time, StringFormat=U}">
             </TextBlock>
-            <TextBlock Foreground="White" Text="{Binding Text}" TextWrapping="Wrap"></TextBlock>
+            <SelectableTextBlock Foreground="White" Text="{Binding Text}" TextWrapping="Wrap"></SelectableTextBlock>
         </DockPanel>
     </Border>
 </UserControl>

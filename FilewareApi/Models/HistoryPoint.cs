@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace FilewareApi.Models;
@@ -17,4 +18,7 @@ public class HistoryPoint
     public int Type { get; set; }
     public int LinkedId { get; set; }
     public DateTime Time { get; set; }
+
+    [NotMapped]
+    public object Linked { get; set; }
 }

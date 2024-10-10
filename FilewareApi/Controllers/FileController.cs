@@ -10,7 +10,7 @@ public class FileController(IFileManagerService fileService) : Controller
     [HttpPost]
     public ActionResult RegisterNewFile(IFormFile file)
     {
-        var id = new { id = fileService.RegisterNewFile(file) };
+        var id = fileService.RegisterNewFile(file);
         return Ok(id);
     }
 
@@ -20,7 +20,7 @@ public class FileController(IFileManagerService fileService) : Controller
         var size = fileService.GetFileSize(id);
         if (size == -1)
             return NotFound();
-        return Ok(new { size });
+        return Ok(size);
     }
 
     [HttpGet("{id}")]
