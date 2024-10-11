@@ -17,13 +17,12 @@ namespace Fileware.Views;
 
 public partial class MainWindow : Window
 {
-    public static MainWindow Singleton;
     public static List<HistoryPoint> History;
 
     public MainWindow()
     {
         InitializeComponent();
-        Singleton = this;
+        AppContext.MainWindow = this;
         AddHandler(DragDrop.DragEnterEvent, DragOver);
         AddHandler(DragDrop.DragLeaveEvent, DragLeave);
         AddHandler(DragDrop.DropEvent, DragDropEvent);
@@ -135,10 +134,12 @@ public partial class MainWindow : Window
                 });
 
                 using var response = await Api.Http.PostAsync(
+                    // Api.ApiUrl + "api/File/large",
                     Api.ApiUrl + (info.Length > 30 * 1024 * 1024 ? "api/File/large" : "api/File"),
                     multipartFormContent);
                 var id = int.Parse(await response.Content.ReadAsStringAsync());
-
+                AppContext.LocalStoredFiles.Add(id, file.Path.LocalPath);
+                AppContext.SaveFileList();
                 (addedBlock.DataContext as FileData).Id = id;
 
                 History.Add(new HistoryPoint

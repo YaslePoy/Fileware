@@ -8,6 +8,7 @@ public interface IFileManagerService
     int RegisterBigFile(byte[] data, string name, string type);
     long GetFileSize(int id);
     void UpdateFile(int id, IFormFile form);
+    void UpdateBigFile(int id, byte[] data);
     void DeleteFile(int id);
     FileData? GetFileById(int id);
     public Stream? GetFile(int id);

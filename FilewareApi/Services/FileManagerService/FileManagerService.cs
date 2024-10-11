@@ -92,8 +92,34 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         file.Version++;
         file.LastChange = NowWithoutTimezone;
         file.Size = form.Length;
-        using var fileStream = File.OpenWrite(FileStoragePath + id);
+        using var fileStream = new MemoryStream();
         form.CopyTo(fileStream);
+        file.Data = fileStream.ToArray();
+        dbContext.SaveChanges();
+    }
+
+    public void UpdateBigFile(int id, byte[] data)
+    {
+        var file = FileById(id);
+
+        if (file is null)
+            throw new Exception("Invalid file id");
+        file.Version++;
+        file.LastChange = NowWithoutTimezone;
+        file.Size = data.Length;
+
+        if (data.Length > 500_000_000)
+        {
+            Directory.CreateDirectory("storage");
+
+            using var fileStream = File.OpenWrite(FileStoragePath + file.Id);
+            fileStream.Write(data, 0, data.Length);
+        }
+        else
+        {
+            file.Data = data;
+        }
+
         dbContext.SaveChanges();
     }
 
