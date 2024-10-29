@@ -1,5 +1,6 @@
 ﻿using FilewareApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FilewareApi.Controllers;
 
@@ -20,7 +21,12 @@ public class HistoryController(FilewareDbContext db) : Controller
                 }
                 else
                 {
-                    point.Linked = db.FileData.FirstOrDefault(i => i.Id == point.LinkedId);
+                    point.Linked = db.FileData.FromSql($"""
+                                                        SELECT f.Id, null as Data, f.FileType, f.LastChange, f.LoadTime, f.Name, f.Size, f.Version
+                                                        FROM FileData AS f
+                                                        WHERE f.Id = {point.LinkedId}
+                                                        """).ToList()
+                        .First() /*.FileData.FirstOrDefault(i => i.Id == point.LinkedId)*/;
                 }
             }
 

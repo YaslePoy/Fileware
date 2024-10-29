@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using Fileware.Views;
@@ -8,23 +9,38 @@ namespace Fileware;
 public static class AppContext
 {
     public static MainWindow MainWindow;
-    public static Dictionary<int, string> LocalStoredFiles;
+    public static Dictionary<int, StoredFileMeta> LocalStoredFiles;
     public const string StorageDir = "storage/";
 
-    public static void SaveFileList()
+    public static void Save()
     {
         File.WriteAllText("storedFiles.json", JsonSerializer.Serialize(LocalStoredFiles));
     }
 
     static AppContext()
     {
-        if (File.Exists("storedFiles.json"))
-            LocalStoredFiles =
-                JsonSerializer.Deserialize<Dictionary<int, string>>(File.ReadAllText("storedFiles.json"));
-        else
+        try
         {
-            using var file = File.Create("storedFiles.json");
-            LocalStoredFiles = new Dictionary<int, string>();
+            if (File.Exists("storedFiles.json"))
+                LocalStoredFiles =
+                    JsonSerializer.Deserialize<Dictionary<int, StoredFileMeta>>(File.ReadAllText("storedFiles.json"));
+            else
+            {
+                using var file = File.Create("storedFiles.json");
+                file.Write("[]"u8.ToArray(), 0, 2);
+                LocalStoredFiles = new Dictionary<int, StoredFileMeta>();
+            }
+        }
+        catch (Exception e)
+        {
+            LocalStoredFiles = new Dictionary<int, StoredFileMeta>();
         }
     }
+}
+
+public class StoredFileMeta
+{
+    public string Path { get; set; }
+    public DateTime LastChangeTime { get; set; }
+    public int Version { get; set; }
 }

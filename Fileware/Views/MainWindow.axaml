@@ -38,7 +38,7 @@
             <Panel IsVisible="False" x:Name="LoadPanel">
                 <Rectangle Effect="blur(20)" Fill="Gray" RadiusX="30" RadiusY="30" Opacity="0.2"></Rectangle>
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Image Source="../Res/upload_200dp_E8EAED_FILL0_wght400_GRAD0_opsz48.png" Height="150"></Image>
+                    <Image Source="../Assets/upload_200dp_E8EAED_FILL0_wght400_GRAD0_opsz48.png" Height="150"></Image>
                     <TextBlock>Загрузить новый файл</TextBlock>
                 </StackPanel>
             </Panel>
@@ -47,7 +47,9 @@
                    VerticalAlignment="Stretch">
             <Button Click="SendClick" VerticalAlignment="Center" Margin="10, 0, 0, 0" HorizontalAlignment="Stretch"
                     VerticalContentAlignment="Center" DockPanel.Dock="Right">
-                <Image Source="../Res/keyboard_double_arrow_up_36dp_E8EAED_FILL0_wght400_GRAD0_opsz40.png" Height="20"></Image>
+                <Image Source="../Assets/keyboard_double_arrow_up_36dp_E8EAED_FILL0_wght400_GRAD0_opsz40.png"
+                       Height="20">
+                </Image>
             </Button>
             <TextBox Background="Transparent" x:Name="MsgBox" MaxLines="10" VerticalAlignment="Bottom"
                      TextWrapping="Wrap">

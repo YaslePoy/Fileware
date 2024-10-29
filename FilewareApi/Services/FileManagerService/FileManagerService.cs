@@ -89,12 +89,14 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         if (file is null)
             throw new Exception("Invalid file id");
 
-        file.Version++;
+        file.Version = file.Version + 1;
         file.LastChange = NowWithoutTimezone;
         file.Size = form.Length;
         using var fileStream = new MemoryStream();
         form.CopyTo(fileStream);
         file.Data = fileStream.ToArray();
+
+        dbContext.FileData.Update(file);
         dbContext.SaveChanges();
     }
 
@@ -104,7 +106,7 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
 
         if (file is null)
             throw new Exception("Invalid file id");
-        file.Version++;
+        file.Version = file.Version + 1;
         file.LastChange = NowWithoutTimezone;
         file.Size = data.Length;
 
@@ -120,6 +122,7 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
             file.Data = data;
         }
 
+        dbContext.FileData.Update(file);
         dbContext.SaveChanges();
     }
 

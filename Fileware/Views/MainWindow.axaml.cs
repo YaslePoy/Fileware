@@ -36,6 +36,7 @@ public partial class MainWindow : Window
         });
     }
 
+
     public void ShowHistory()
     {
         var lastDate = DateTime.Today;
@@ -60,8 +61,14 @@ public partial class MainWindow : Window
             {
                 case (int)HistoryPointType.File:
 
+                    var fileData = point.Linked.Deserialize<FileData>(Api.JsonOptions);
                     adding = new FileBlock
-                        { DataContext = point.Linked.Deserialize<FileData>(Api.JsonOptions) };
+                        { DataContext = fileData };
+                    if (AppContext.LocalStoredFiles.ContainsKey(fileData.Id))
+                    {
+                        (adding as FileBlock).StartVersionCheckerTimer();
+                    }
+
                     break;
 
                 case (int)HistoryPointType.Message:
@@ -124,22 +131,20 @@ public partial class MainWindow : Window
                         Size = info.Length, LastChange = DateTime.Now, Id = 0,
                         Name = name
                     };
-                    addedBlock = new FileBlock(fileStream, data)
-                    {
-                        DataContext = data
-                    };
-
+                    addedBlock = new FileBlock(fileStream, data);
+                    addedBlock.StartVersionCheckerTimer();
                     PointsPanel.Children.Add(addedBlock);
                     Viewer.ScrollToEnd();
                 });
 
                 using var response = await Api.Http.PostAsync(
-                    // Api.ApiUrl + "api/File/large",
                     Api.ApiUrl + (info.Length > 30 * 1024 * 1024 ? "api/File/large" : "api/File"),
                     multipartFormContent);
                 var id = int.Parse(await response.Content.ReadAsStringAsync());
-                AppContext.LocalStoredFiles.Add(id, file.Path.LocalPath);
-                AppContext.SaveFileList();
+                AppContext.LocalStoredFiles.Add(id,
+                    new StoredFileMeta
+                        { Path = file.Path.LocalPath, LastChangeTime = info.LastWriteTime, Version = 1 });
+                AppContext.Save();
                 (addedBlock.DataContext as FileData).Id = id;
 
                 History.Add(new HistoryPoint

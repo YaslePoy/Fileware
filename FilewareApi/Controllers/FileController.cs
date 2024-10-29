@@ -3,6 +3,8 @@ using System.Text;
 using FilewareApi.Services.FileManagerService;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 
@@ -181,6 +183,7 @@ public class FileController(IFileManagerService fileService) : Controller
     }
 
     [HttpPatch("large/{id}")]
+    [DisableFormValueModelBinding]
     public async Task<ActionResult> UpdateLargeFile(int id)
     {
         var file = fileService.GetFileById(id);
@@ -347,5 +350,21 @@ public static class MultipartRequestHelper
                && contentDisposition.DispositionType.Equals("form-data")
                && (!string.IsNullOrEmpty(contentDisposition.FileName.Value)
                    || !string.IsNullOrEmpty(contentDisposition.FileNameStar.Value));
+    }
+}
+
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+public class DisableFormValueModelBindingAttribute : Attribute, IResourceFilter
+{
+    public void OnResourceExecuting(ResourceExecutingContext context)
+    {
+        var factories = context.ValueProviderFactories;
+        factories.RemoveType<FormValueProviderFactory>();
+        factories.RemoveType<FormFileValueProviderFactory>();
+        factories.RemoveType<JQueryFormValueProviderFactory>();
+    }
+
+    public void OnResourceExecuted(ResourceExecutedContext context)
+    {
     }
 }

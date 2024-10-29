@@ -10,7 +10,7 @@
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <models:FileData Name="FileData file name.json" Size="410552" Version="1" />
+        <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
 
     </Design.DataContext>
     <Border HorizontalAlignment="Left" Background="{StaticResource MainColor}" CornerRadius="15">
@@ -23,14 +23,26 @@
             </ContextMenu>
         </Border.ContextMenu>
         <DockPanel LastChildFill="False">
-            <Image Margin="10" Source="../Res/file.png" VerticalAlignment="Center" HorizontalAlignment="Center"
+            <Image Margin="10" Source="../Assets/file.png" VerticalAlignment="Center" HorizontalAlignment="Center"
                    Height="35">
             </Image>
             <DockPanel DockPanel.Dock="Right" VerticalAlignment="Stretch" HorizontalAlignment="Right" Margin="10"
                        LastChildFill="False">
                 <Border DockPanel.Dock="Top" BorderBrush="White" BorderThickness="2" CornerRadius="100"
                         HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                    <TextBlock Text="{Binding Version}" Foreground="White" Margin="3"></TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Version}"
+                                   Foreground="White" Margin="3">
+                        </TextBlock>
+                        <Image HorizontalAlignment="Center" VerticalAlignment="Center" Height="20"
+                               IsVisible="{Binding UploadVisibility}" Tapped="UploadNewer"
+                               Source="../Assets/upgrade.png" Margin="0, 0, 3, 0">
+                        </Image>
+                        <Image HorizontalAlignment="Center" VerticalAlignment="Center" Height="20"
+                               IsVisible="{Binding DownloadVisibility}" Tapped="DownloadNewer"
+                               Source="../Assets/download.png" Margin="0, 0, 3, 0">
+                        </Image>
+                    </StackPanel>
                 </Border>
                 <TextBlock DockPanel.Dock="Bottom" Foreground="White" Text="{Binding LastChange, StringFormat=t}"
                            ToolTip.Tip="{Binding LastChange, StringFormat=U}">
@@ -41,9 +53,14 @@
                 <SelectableTextBlock VerticalAlignment="Bottom" Foreground="White" FontSize="12" Margin="4, 2"
                                      Text="{Binding Name}" ToolTip.Tip="{Binding Name}">
                 </SelectableTextBlock>
-                <TextBlock VerticalAlignment="Top" Foreground="White" FontSize="12" Margin="4, 2"
-                           Text="{Binding SizeFormatted}" />
-                <ProgressBar Name="UploadBar" IsVisible="False" Margin="0, 5"></ProgressBar>
+                <Panel HorizontalAlignment="Stretch">
+                    <TextBlock VerticalAlignment="Top" Foreground="White" FontSize="12" Margin="4, 2"
+                               Text="{Binding SizeFormatted}" />
+                    <TextBlock VerticalAlignment="Top" Foreground="White" FontSize="12" Margin="4, 2"
+                               IsVisible="{Binding LoadProgressEnable}" Name="SpeedTB" HorizontalAlignment="Right" />
+                </Panel>
+
+                <ProgressBar Name="UploadBar" IsVisible="{Binding LoadProgressEnable}" Margin="0, 5"></ProgressBar>
             </StackPanel>
 
         </DockPanel>

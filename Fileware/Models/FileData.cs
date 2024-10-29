@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace Fileware.Models;
@@ -15,6 +16,28 @@ public class FileData : INotifyPropertyChanged
     public long Size { get; set; }
     public DateTime LoadTime { get; set; }
     public string FileType { get; set; }
+    public bool UploadVisibility { get; set; }
+    public bool DownloadVisibility { get; set; }
+    public bool LoadProgressEnable { get; set; }
+
+    public void UpdateSyncState()
+    {
+        if (AppContext.LocalStoredFiles.TryGetValue(Id, out var path))
+        {
+            var fileInfo = new FileInfo(path.Path);
+            if (fileInfo.LastWriteTime > path.LastChangeTime != UploadVisibility)
+            {
+                UploadVisibility = fileInfo.LastWriteTime > path.LastChangeTime;
+                OnPropertyChanged("UploadVisibility");
+            }
+
+            if (fileInfo.LastWriteTime < LoadTime != DownloadVisibility)
+            {
+                DownloadVisibility = Version > path.Version;
+                OnPropertyChanged("DownloadVisibility");
+            }
+        }
+    }
 
     public string SizeFormatted
     {
@@ -44,5 +67,15 @@ public class FileData : INotifyPropertyChanged
         field = value;
         OnPropertyChanged(propertyName);
         return true;
+    }
+
+    public static string SpeedFormatted(long bytesPerSecond)
+    {
+        if (bytesPerSecond <= 1024)
+            return bytesPerSecond + " B/s";
+        if (bytesPerSecond <= 1024 * 1024)
+            return Math.Round(bytesPerSecond / 1024d, 1) + " KB/s";
+
+        return Math.Round(bytesPerSecond / 1024d / 1024d, 1) + " MB/s";
     }
 }
