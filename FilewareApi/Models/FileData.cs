@@ -18,4 +18,7 @@ public class FileData
 
     [JsonIgnore]
     public byte[]? Data { get; set; }
+
+    [JsonIgnore]
+    public byte[]? Preview { get; set; }
 }

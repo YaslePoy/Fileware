@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using FilewareApi.Models;
+using SixLabors.ImageSharp;
 
 namespace FilewareApi.Services.FileManagerService;
 
@@ -22,6 +23,7 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         var readBuffer = hashStream.ToArray();
 
         data.Data = readBuffer;
+        data.Preview = EncodePreview(data.Data, data.FileType);
 
         dbContext.FileData.Add(data);
         dbContext.SaveChanges();
@@ -62,6 +64,7 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         else
         {
             file.Data = data;
+            file.Preview = EncodePreview(file.Data, file.FileType);
 
             dbContext.FileData.Add(file);
             dbContext.SaveChanges();
@@ -95,6 +98,7 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         using var fileStream = new MemoryStream();
         form.CopyTo(fileStream);
         file.Data = fileStream.ToArray();
+        file.Preview = EncodePreview(file.Data, file.FileType);
 
         dbContext.FileData.Update(file);
         dbContext.SaveChanges();
@@ -120,6 +124,7 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         else
         {
             file.Data = data;
+            file.Preview = EncodePreview(file.Data, file.FileType);
         }
 
         dbContext.FileData.Update(file);
@@ -165,5 +170,26 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         dbContext.SaveChanges();
     }
 
+    public byte[]? GetFilePreview(int id)
+    {
+        var file = FileById(id);
+
+        if (file is null)
+            throw new Exception("Invalid file id");
+        return file.Preview;
+    }
+
     private FileData? FileById(int id) => dbContext.FileData.FirstOrDefault(i => i.Id == id);
+
+    public byte[] EncodePreview(byte[] raw, string type)
+    {
+        if (!type.StartsWith("image/"))
+            return null;
+        if (type == "image/webp")
+            return null;
+        using var img = Image.Load(raw);
+        using var stream = new MemoryStream();
+        img.SaveAsWebp(stream);
+        return stream.ToArray();
+    }
 }

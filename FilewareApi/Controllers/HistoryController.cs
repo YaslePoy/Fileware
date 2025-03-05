@@ -22,7 +22,7 @@ public class HistoryController(FilewareDbContext db) : Controller
                 else
                 {
                     point.Linked = db.FileData.FromSql($"""
-                                                        SELECT f.Id, null as Data, f.FileType, f.LastChange, f.LoadTime, f.Name, f.Size, f.Version
+                                                        SELECT f.Id, null as Data, f.FileType, f.LastChange, f.LoadTime, f.Name, f.Size, f.Version, null as Preview
                                                         FROM FileData AS f
                                                         WHERE f.Id = {point.LinkedId}
                                                         """).ToList()

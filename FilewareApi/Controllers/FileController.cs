@@ -123,6 +123,13 @@ public class FileController(IFileManagerService fileService) : Controller
         return Ok(id);
     }
 
+    [HttpGet("{id}/preview")]
+    public ActionResult GetFilePreview(int id)
+    {
+        var preview = fileService.GetFilePreview(id);
+        return File(preview, "image/webp");
+    }
+
     [HttpGet("{id}/size")]
     public ActionResult FileSize(int id)
     {

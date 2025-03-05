@@ -5,7 +5,7 @@ namespace Fileware;
 
 public static class Api
 {
-    public const string ApiUrl = "http://217.66.19.16:8000/";
+    public const string ApiUrl = "http://95.105.78.72:8000/";
 
     // public const string ApiUrl = "http://192.168.1.43:8000/";
     public static HttpClient Http = new();

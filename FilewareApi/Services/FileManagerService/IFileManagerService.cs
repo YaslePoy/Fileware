@@ -14,4 +14,5 @@ public interface IFileManagerService
     public Stream? GetFile(int id);
     IReadOnlyList<FileData> GetAllFiles();
     void RenameFile(int id, string name);
+    public byte[]? GetFilePreview(int id);
 }
