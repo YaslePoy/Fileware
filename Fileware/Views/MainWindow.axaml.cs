@@ -9,6 +9,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Fileware.Controls;
 using Fileware.Models;
@@ -27,7 +28,7 @@ public partial class MainWindow : Window
         AddHandler(DragDrop.DragLeaveEvent, DragLeave);
         AddHandler(DragDrop.DropEvent, DragDropEvent);
 
-        Api.Http.GetStringAsync(Api.ApiUrl + "api/History?id=-1&count=100").ContinueWith((t) =>
+        Api.Http.GetStringAsync(Api.ApiUrl + "api/History?id=-1&count=100").ContinueWith(t =>
         {
             var history = t.Result;
             History = JsonSerializer.Deserialize<List<HistoryPoint>>(history, Api.JsonOptions) ??
@@ -36,8 +37,7 @@ public partial class MainWindow : Window
         });
     }
 
-
-    public void ShowHistory()
+    private void ShowHistory()
     {
         var lastDate = DateTime.Today;
         var lastPoint = default(HistoryPoint);
@@ -62,8 +62,19 @@ public partial class MainWindow : Window
                 case (int)HistoryPointType.File:
 
                     var fileData = point.Linked.Deserialize<FileData>(Api.JsonOptions);
-                    adding = new FileBlock
-                        { DataContext = fileData };
+                    if (!fileData.HasPreview)
+                    {
+                        Api.Http.GetAsync($"api/File/{fileData.Id}/preview").ContinueWith(async t =>
+                        {
+                            var stream = await t.Result.Content.ReadAsStreamAsync();
+                            fileData.Preview = new Bitmap(stream);
+                            Dispatcher.UIThread.Invoke(() => { fileData.OnPropertyChanged(nameof(fileData.Preview)); });
+                        });
+                        adding = new ImageBlock { DataContext = fileData };
+                    }
+                    else
+                        adding = new FileBlock
+                            { DataContext = fileData };
                     if (AppContext.LocalStoredFiles.ContainsKey(fileData.Id))
                     {
                         (adding as FileBlock).StartVersionCheckerTimer();

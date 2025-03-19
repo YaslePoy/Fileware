@@ -4,6 +4,9 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Runtime.CompilerServices;
+using Avalonia.Controls;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
 
 namespace Fileware.Models;
 
@@ -19,6 +22,9 @@ public class FileData : INotifyPropertyChanged
     public bool UploadVisibility { get; set; }
     public bool DownloadVisibility { get; set; }
     public bool LoadProgressEnable { get; set; }
+    public bool HasPreview { get; set; }
+    public byte[] PreviewData;
+    public IImage Preview { get; set; }
 
     public void UpdateSyncState()
     {
@@ -28,13 +34,13 @@ public class FileData : INotifyPropertyChanged
             if (fileInfo.LastWriteTime > path.LastChangeTime != UploadVisibility)
             {
                 UploadVisibility = fileInfo.LastWriteTime > path.LastChangeTime;
-                OnPropertyChanged("UploadVisibility");
+                OnPropertyChanged(nameof(UploadVisibility));
             }
 
             if (fileInfo.LastWriteTime < LoadTime != DownloadVisibility)
             {
                 DownloadVisibility = Version > path.Version;
-                OnPropertyChanged("DownloadVisibility");
+                OnPropertyChanged(nameof(DownloadVisibility));
             }
         }
     }

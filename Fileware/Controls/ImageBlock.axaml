@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="clr-namespace:Fileware.Models"
+             mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="300"
+             x:DataType="models:FileData" HorizontalContentAlignment="Stretch"
+             x:Class="Fileware.Controls.ImageBlock" HorizontalAlignment="Stretch">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
+
+    </Design.DataContext>
+    <Border HorizontalAlignment="Stretch" ClipToBounds="True" Background="{StaticResource MainColor}" CornerRadius="15">
+        <Border.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Переименовать" Click="OnRename"></MenuItem>
+                <MenuItem Header="Удалить">
+                    <MenuItem Background="OrangeRed" Header="Точно?" Click="OnDelete"></MenuItem>
+                </MenuItem>
+            </ContextMenu>
+        </Border.ContextMenu>
+        <DockPanel LastChildFill="True">
+            <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" VerticalAlignment="Bottom" Margin="10, 3">
+                <TextBlock DockPanel.Dock="Right" Foreground="White" Text="{Binding LastChange, StringFormat=t}"
+                           ToolTip.Tip="{Binding LastChange, StringFormat=U}">
+                </TextBlock>
+                <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Right"
+                            Orientation="Vertical">
+                    <SelectableTextBlock VerticalAlignment="Bottom" Foreground="White" FontSize="12" Margin="4, 2"
+                                         Text="{Binding Name}" IsVisible="{Binding !LoadProgressEnable}"
+                                         ToolTip.Tip="{Binding Name}">
+                    </SelectableTextBlock>
+                    <Panel HorizontalAlignment="Stretch">
+                        <TextBlock VerticalAlignment="Top" Foreground="White" FontSize="12" Margin="4, 2"
+                                   IsVisible="{Binding LoadProgressEnable}" Name="SpeedTB" HorizontalAlignment="Right" />
+                    </Panel>
+
+                    <ProgressBar Name="UploadBar" IsVisible="{Binding LoadProgressEnable}" Margin="0, 5"></ProgressBar>
+                </StackPanel>
+
+            </DockPanel>
+            <Image Source="{Binding Preview}" DockPanel.Dock="Top" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
+        </DockPanel>
+        
+    </Border>
+</UserControl>

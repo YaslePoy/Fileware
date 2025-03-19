@@ -21,4 +21,7 @@ public class FileData
 
     [JsonIgnore]
     public byte[]? Preview { get; set; }
+
+    [NotMapped]
+    public bool HasPreview => Preview != null;
 }

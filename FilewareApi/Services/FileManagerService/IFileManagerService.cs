@@ -11,8 +11,9 @@ public interface IFileManagerService
     void UpdateBigFile(int id, byte[] data);
     void DeleteFile(int id);
     FileData? GetFileById(int id);
-    public Stream? GetFile(int id);
+    Stream? GetFile(int id);
+    
     IReadOnlyList<FileData> GetAllFiles();
     void RenameFile(int id, string name);
-    public byte[]? GetFilePreview(int id);
+    byte[]? GetFilePreview(int id);
 }
