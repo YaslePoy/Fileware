@@ -62,7 +62,7 @@ public partial class FileBlock : UserControl
                 {
                     var msg = DataContext as FileData;
                     msg.OnPropertyChanged("Name");
-                    Api.Http.PatchAsync(Api.ApiUrl + $"api/File/{msg.Id}/rename",
+                    Api.Http.PatchAsync( $"api/File/{msg.Id}/rename",
                         new StringContent("\"" + msg.Name + "\"",
                             MediaTypeWithQualityHeaderValue.Parse("application/json")));
                 });
@@ -73,7 +73,7 @@ public partial class FileBlock : UserControl
     private void OnDelete(object? sender, RoutedEventArgs e)
     {
         var current = DataContext as FileData;
-        Api.Http.DeleteAsync($"{Api.ApiUrl}api/File/{current.Id}");
+        Api.Http.DeleteAsync($"api/File/{current.Id}");
         AppContext.MainWindow.PointsPanel.Children.Remove(this);
     }
 
@@ -88,7 +88,7 @@ public partial class FileBlock : UserControl
     void LoadFile(string directory)
     {
         var fileData = DataContext as FileData;
-        var streamTask = Api.Http.GetStreamAsync($"{Api.ApiUrl}api/File/{fileData.Id}/load");
+        var streamTask = Api.Http.GetStreamAsync($"api/File/{fileData.Id}/load");
         streamTask.Wait();
         var stream = streamTask.Result;
         var location = directory + fileData.Name;
@@ -224,8 +224,7 @@ public partial class FileBlock : UserControl
         // fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
         // multipartFormContent.Add(fileStreamContent, "file", fileData.Name);
 
-        Api.Http.PatchAsync(
-            Api.ApiUrl + $"api/File/large/{fileData.Id}",
+        Api.Http.PatchAsync($"api/File/large/{fileData.Id}",
             // Api.ApiUrl + (info.Length > 30 * 1024 * 1024 ? $"api/File/large/{fileData.Id}" : $"api/File/{fileData.Id}"),
             multipartFormContent).ContinueWith(async t =>
         {

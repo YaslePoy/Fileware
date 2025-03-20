@@ -32,7 +32,7 @@ public partial class MessageBlock : UserControl
                 {
                     var msg = DataContext as Message;
                     msg.OnPropertyChanged("Text");
-                    Api.Http.PatchAsync(Api.ApiUrl + $"api/Messaging/{msg.Id}",
+                    Api.Http.PatchAsync( $"api/Messaging/{msg.Id}",
                         new StringContent("\"" + msg.Text + "\"",
                             MediaTypeWithQualityHeaderValue.Parse("application/json")));
                 });
@@ -43,7 +43,7 @@ public partial class MessageBlock : UserControl
     private void OnDelete(object? sender, RoutedEventArgs e)
     {
         var current = DataContext as Message;
-        Api.Http.DeleteAsync($"{Api.ApiUrl}api/Messaging/{current.Id}");
+        Api.Http.DeleteAsync($"api/Messaging/{current.Id}");
         AppContext.MainWindow.PointsPanel.Children.Remove(this);
     }
 }

@@ -4,7 +4,6 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -28,7 +27,7 @@ public partial class MainWindow : Window
         AddHandler(DragDrop.DragLeaveEvent, DragLeave);
         AddHandler(DragDrop.DropEvent, DragDropEvent);
 
-        Api.Http.GetStringAsync(Api.ApiUrl + "api/History?id=-1&count=100").ContinueWith(t =>
+        Api.Http.GetStringAsync("api/History?id=-1&count=100").ContinueWith(t =>
         {
             var history = t.Result;
             History = JsonSerializer.Deserialize<List<HistoryPoint>>(history, Api.JsonOptions) ??
@@ -142,24 +141,31 @@ public partial class MainWindow : Window
                         Size = info.Length, LastChange = DateTime.Now, Id = 0,
                         Name = name
                     };
+                    
                     addedBlock = new FileBlock(fileStream, data);
                     addedBlock.StartVersionCheckerTimer();
                     PointsPanel.Children.Add(addedBlock);
                     Viewer.ScrollToEnd();
                 });
+                try
+                {
+                    using var response = await Api.Http.PostAsync(
+                        (info.Length > 30 * 1024 * 1024 ? "api/File/large" : "api/File"),
+                        multipartFormContent);
+                    var id = int.Parse(await response.Content.ReadAsStringAsync());
+                    AppContext.LocalStoredFiles.Add(id,
+                        new StoredFileMeta
+                            { Path = file.Path.LocalPath, LastChangeTime = info.LastWriteTime, Version = 1 });
+                    AppContext.Save();
+                    (addedBlock.DataContext as FileData).Id = id;
 
-                using var response = await Api.Http.PostAsync(
-                    Api.ApiUrl + (info.Length > 30 * 1024 * 1024 ? "api/File/large" : "api/File"),
-                    multipartFormContent);
-                var id = int.Parse(await response.Content.ReadAsStringAsync());
-                AppContext.LocalStoredFiles.Add(id,
-                    new StoredFileMeta
-                        { Path = file.Path.LocalPath, LastChangeTime = info.LastWriteTime, Version = 1 });
-                AppContext.Save();
-                (addedBlock.DataContext as FileData).Id = id;
+                    History.Add(new HistoryPoint
+                        { LinkedId = id, Time = DateTime.Now, Type = (int)HistoryPointType.File });
+                }
+                catch (Exception)
+                {
+                }
 
-                History.Add(new HistoryPoint
-                    { LinkedId = id, Time = DateTime.Now, Type = (int)HistoryPointType.File });
             }
         }
     }
@@ -170,7 +176,7 @@ public partial class MainWindow : Window
             return;
 
         var savedText = MsgBox.Text;
-        Api.Http.PostAsync(Api.ApiUrl + "api/Messaging",
+        Api.Http.PostAsync("api/Messaging",
                 new StringContent("\"" + MsgBox.Text + "\"", MediaTypeWithQualityHeaderValue.Parse("application/json")))
             .ContinueWith(
                 async (t) =>

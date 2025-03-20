@@ -7,6 +7,9 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DefineConstants>TRACE;LOCALHOST;</DefineConstants>
+    </PropertyGroup>
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**"/>
