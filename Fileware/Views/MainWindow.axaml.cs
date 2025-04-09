@@ -61,7 +61,7 @@ public partial class MainWindow : Window
                 case (int)HistoryPointType.File:
 
                     var fileData = point.Linked.Deserialize<FileData>(Api.JsonOptions);
-                    if (!fileData.HasPreview)
+                    if (fileData.HasPreview)
                     {
                         Api.Http.GetAsync($"api/File/{fileData.Id}/preview").ContinueWith(async t =>
                         {

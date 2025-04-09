@@ -8,7 +8,7 @@
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <DefineConstants>TRACE;LOCALHOST;</DefineConstants>
+      <DefineConstants>TRACE;</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
