@@ -8,7 +8,10 @@
         <entry key="Fileware/Controls/FileBlock.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Controls/ImageBlock.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Controls/MessageBlock.axaml" value="Fileware/Fileware.csproj" />
+        <entry key="Fileware/Views/FileChat.axaml" value="Fileware/Fileware.csproj" />
+        <entry key="Fileware/Views/LoginPage.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Views/MainWindow.axaml" value="Fileware/Fileware.csproj" />
+        <entry key="Fileware/Views/Start.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Windows/FileRenameWindow.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Windows/MessageTextEditWindow.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Windows/RenameWindow.axaml" value="Fileware/Fileware.csproj" />

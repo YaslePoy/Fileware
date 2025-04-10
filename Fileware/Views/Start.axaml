@@ -1,0 +1,23 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:Fileware.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Fileware.Views.Start" Background="Transparent"
+             x:DataType="viewModels:StartViewModel">
+    <UserControl.Styles>
+        <Style Selector="StackPanel.Centred">
+        </Style>
+        <Style Selector="StackPanel.Centred > TextBlock, Button">
+            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+        </Style>
+    </UserControl.Styles>
+
+    <StackPanel VerticalAlignment="Center" Classes="Centred" Spacing="5">
+        <TextBlock FontSize="24">Fileware</TextBlock>
+        <TextBlock>Добро пожаловать в Fileware</TextBlock>
+        <TextBlock>Легкий клиент для управления своими файлами</TextBlock>
+        <Button Command="{Binding GoAuth}" Classes="Long">Начать</Button>
+    </StackPanel>
+</UserControl>

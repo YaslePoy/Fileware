@@ -23,7 +23,7 @@ public partial class MessageBlock : UserControl
         {
             DataContext = DataContext
         };
-        var task = changeWin.ShowDialog<bool>(AppContext.MainWindow);
+        var task = changeWin.ShowDialog<bool>(AppContext.WindowInstance);
         task.ContinueWith((t) =>
         {
             if (t.Result)
@@ -44,6 +44,6 @@ public partial class MessageBlock : UserControl
     {
         var current = DataContext as Message;
         Api.Http.DeleteAsync($"api/Messaging/{current.Id}");
-        AppContext.MainWindow.PointsPanel.Children.Remove(this);
+        AppContext.ChatInstance.PointsPanel.Children.Remove(this);
     }
 }

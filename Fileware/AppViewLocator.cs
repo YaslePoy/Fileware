@@ -1,0 +1,19 @@
+using System;
+using Fileware.ViewModels;
+using Fileware.Views;
+using ReactiveUI;
+
+namespace Fileware;
+
+public class AppViewLocator : IViewLocator
+{
+    public IViewFor ResolveView<T>(T? viewModel, string? contract = null)
+    {
+        return viewModel switch
+        {
+            StartViewModel startViewModel => new Start {DataContext = startViewModel},
+            FileChatViewModel fileChatViewModel => new FileChat {DataContext = fileChatViewModel},
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+}

@@ -54,7 +54,7 @@ public partial class FileBlock : UserControl
     private void OnRename(object? sender, RoutedEventArgs e)
     {
         var win = new FileRenameWindow { DataContext = DataContext };
-        win.ShowDialog<bool>(AppContext.MainWindow).ContinueWith(t =>
+        win.ShowDialog<bool>(AppContext.WindowInstance).ContinueWith(t =>
         {
             if (t.Result)
             {
@@ -74,7 +74,7 @@ public partial class FileBlock : UserControl
     {
         var current = DataContext as FileData;
         Api.Http.DeleteAsync($"api/File/{current.Id}");
-        AppContext.MainWindow.PointsPanel.Children.Remove(this);
+        AppContext.ChatInstance.PointsPanel.Children.Remove(this);
     }
 
     void OpenFile()

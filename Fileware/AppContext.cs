@@ -8,7 +8,8 @@ namespace Fileware;
 
 public static class AppContext
 {
-    public static MainWindow MainWindow;
+    public static FileChat ChatInstance;
+    public static MainWindow WindowInstance;
     public static Dictionary<int, StoredFileMeta> LocalStoredFiles;
     public const string StorageDir = "storage/";
 

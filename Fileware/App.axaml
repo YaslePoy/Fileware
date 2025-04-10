@@ -28,6 +28,11 @@
             <Style Selector="Button">
                 <Setter Property="Background" Value="{StaticResource MainColor}"></Setter>
             </Style>
+            
+            <Style Selector="Button.Long">
+                <Setter Property="Padding" Value="30, 10"></Setter>
+            </Style>
+            
             <Style Selector="Button > TextBlock">
                 <Setter Property="Foreground" Value="White"></Setter>
             </Style>
