@@ -214,7 +214,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
             return;
     }
 
-    private bool _firstEnter = false;
+    private bool _firstEnter;
     
     private void MsgBox_OnKeyDown(object? sender, KeyEventArgs e)
     {

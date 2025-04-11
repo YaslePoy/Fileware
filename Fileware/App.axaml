@@ -36,6 +36,11 @@
             <Style Selector="Button > TextBlock">
                 <Setter Property="Foreground" Value="White"></Setter>
             </Style>
+            <Style Selector="StackPanel.Centred">
+            </Style>
+            <Style Selector="StackPanel.Centred > TextBlock, Button, TextBox">
+                <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+            </Style>
         </Styles>
 
         <FluentTheme />

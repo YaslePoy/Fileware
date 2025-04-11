@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using FilewareApi.Models;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace FilewareApi.Services.FileManagerService;
 
@@ -23,8 +24,8 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         var readBuffer = hashStream.ToArray();
 
         data.Data = readBuffer;
-        data.Preview = EncodePreview(data.Data, data.FileType);
-
+        data.Preview = EncodePreview(data.Data, data.FileType, out var bytes);
+        data.SuperPreview = bytes;
         dbContext.FileData.Add(data);
         dbContext.SaveChanges();
 
@@ -64,8 +65,8 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         else
         {
             file.Data = data;
-            file.Preview = EncodePreview(file.Data, file.FileType);
-
+            file.Preview = EncodePreview(file.Data, file.FileType, out var bytes);
+            file.SuperPreview = bytes;
             dbContext.FileData.Add(file);
             dbContext.SaveChanges();
         }
@@ -98,8 +99,9 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         using var fileStream = new MemoryStream();
         form.CopyTo(fileStream);
         file.Data = fileStream.ToArray();
-        file.Preview = EncodePreview(file.Data, file.FileType);
-
+        file.Preview = EncodePreview(file.Data, file.FileType, out var fileSuperPreview);
+        file.SuperPreview = fileSuperPreview;
+        
         dbContext.FileData.Update(file);
         dbContext.SaveChanges();
     }
@@ -124,7 +126,8 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         else
         {
             file.Data = data;
-            file.Preview = EncodePreview(file.Data, file.FileType);
+            file.Preview = EncodePreview(file.Data, file.FileType, out var fileSuperPreview);
+            file.SuperPreview = fileSuperPreview;
         }
 
         dbContext.FileData.Update(file);
@@ -181,15 +184,37 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
 
     private FileData? FileById(int id) => dbContext.FileData.FirstOrDefault(i => i.Id == id);
 
-    public byte[] EncodePreview(byte[] raw, string type)
+    public byte[] EncodePreview(byte[] raw, string type, out byte[]? superPreview)
     {
+        superPreview = null;
         if (!type.StartsWith("image/"))
             return null;
         if (type == "image/webp")
             return null;
+
+
         using var img = Image.Load(raw);
         using var stream = new MemoryStream();
         img.SaveAsWebp(stream);
-        return stream.ToArray();
+        var size = img.Size;
+        if (Math.Min(size.Width, size.Height) > 32)
+        {
+            double div;
+            if (size.Width > size.Height)
+            {
+                div = size.Width / 32.0;
+            }
+            else
+                div = size.Height / 32.0;
+
+            using var superStream = new MemoryStream();
+            img.Mutate(context => context.Resize(new Size((int)(size.Width / div), (int)(size.Height / div))));
+            img.SaveAsWebp(superStream);
+            superPreview = superStream.ToArray();
+        }
+        else
+            superPreview = stream.ToArray();
+
+        return superPreview;
     }
 }

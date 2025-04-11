@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
 
 namespace Fileware;
@@ -13,7 +14,10 @@ public class Message : INotifyPropertyChanged
     public DateTime Time { get; set; }
     public string FormattedTime => Time.ToString("t");
     public event PropertyChangedEventHandler? PropertyChanged;
-
+    [ForeignKey("User")]
+    public int UserId { get; set; }
+    public int User { get; set; }
+    
     public virtual void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

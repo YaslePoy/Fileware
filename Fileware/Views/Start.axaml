@@ -6,18 +6,10 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Fileware.Views.Start" Background="Transparent"
              x:DataType="viewModels:StartViewModel">
-    <UserControl.Styles>
-        <Style Selector="StackPanel.Centred">
-        </Style>
-        <Style Selector="StackPanel.Centred > TextBlock, Button">
-            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
-        </Style>
-    </UserControl.Styles>
-
     <StackPanel VerticalAlignment="Center" Classes="Centred" Spacing="5">
         <TextBlock FontSize="24">Fileware</TextBlock>
         <TextBlock>Добро пожаловать в Fileware</TextBlock>
         <TextBlock>Легкий клиент для управления своими файлами</TextBlock>
-        <Button Command="{Binding GoAuth}" Classes="Long">Начать</Button>
+        <Button Command="{Binding GoAuth}" Classes="Long" Margin="5">Начать</Button>
     </StackPanel>
 </UserControl>

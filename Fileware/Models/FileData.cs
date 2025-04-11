@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -25,7 +26,10 @@ public class FileData : INotifyPropertyChanged
     public bool HasPreview { get; set; }
     public byte[] PreviewData;
     public IImage Preview { get; set; }
-
+    
+    [ForeignKey("User")]
+    public int UserId { get; set; }
+    public int User { get; set; }
     public void UpdateSyncState()
     {
         if (AppContext.LocalStoredFiles.TryGetValue(Id, out var path))

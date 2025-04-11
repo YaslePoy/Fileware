@@ -42,7 +42,7 @@
                 </StackPanel>
 
             </DockPanel>
-            <Image Height="200" Source="{Binding Preview}" DockPanel.Dock="Top" HorizontalAlignment="Stretch"
+            <Image Source="{Binding Preview}" DockPanel.Dock="Top" HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch">
             </Image>
         </DockPanel>

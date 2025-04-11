@@ -11,6 +11,7 @@
         <entry key="Fileware/Views/FileChat.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Views/LoginPage.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Views/MainWindow.axaml" value="Fileware/Fileware.csproj" />
+        <entry key="Fileware/Views/RegisterPage.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Views/Start.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Windows/FileRenameWindow.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Windows/MessageTextEditWindow.axaml" value="Fileware/Fileware.csproj" />

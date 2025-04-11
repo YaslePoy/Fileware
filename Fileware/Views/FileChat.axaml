@@ -38,7 +38,7 @@
                 </Image>
             </Button>
             <TextBox Background="Transparent" x:Name="MsgBox" MaxLines="10" VerticalAlignment="Bottom"
-                     TextWrapping="WrapWithOverflow" KeyDown="MsgBox_OnKeyDown">
+                     TextWrapping="WrapWithOverflow" HorizontalAlignment="Stretch" KeyDown="MsgBox_OnKeyDown">
             </TextBox>
         </DockPanel>
     </Grid>

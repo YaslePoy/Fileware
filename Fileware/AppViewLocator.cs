@@ -11,8 +11,10 @@ public class AppViewLocator : IViewLocator
     {
         return viewModel switch
         {
-            StartViewModel startViewModel => new Start {DataContext = startViewModel},
-            FileChatViewModel fileChatViewModel => new FileChat {DataContext = fileChatViewModel},
+            StartViewModel startViewModel => new Start { DataContext = startViewModel },
+            FileChatViewModel fileChatViewModel => new FileChat { DataContext = fileChatViewModel },
+            LoginPageViewModel loginPageViewModel => new LoginPage { DataContext = loginPageViewModel },
+            RegisterPageViewModel registerPageViewModel => new RegisterPage { DataContext = registerPageViewModel },
             _ => throw new ArgumentOutOfRangeException()
         };
     }

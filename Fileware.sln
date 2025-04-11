@@ -6,8 +6,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilewareApi", "FilewareApi\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TotpTest", "TotpTest\TotpTest.csproj", "{5CAB40D9-29F9-4E3F-A2BB-CCC2EA099B40}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileShare", "FileShare\FileShare.csproj", "{1FC6A003-52C5-4C78-BDB0-B22A872951E5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,9 +24,5 @@ Global
 		{5CAB40D9-29F9-4E3F-A2BB-CCC2EA099B40}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CAB40D9-29F9-4E3F-A2BB-CCC2EA099B40}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CAB40D9-29F9-4E3F-A2BB-CCC2EA099B40}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1FC6A003-52C5-4C78-BDB0-B22A872951E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1FC6A003-52C5-4C78-BDB0-B22A872951E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1FC6A003-52C5-4C78-BDB0-B22A872951E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1FC6A003-52C5-4C78-BDB0-B22A872951E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
