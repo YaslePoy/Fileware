@@ -26,10 +26,27 @@ public class FileData : INotifyPropertyChanged
     public bool HasPreview { get; set; }
     public byte[] PreviewData;
     public IImage Preview { get; set; }
-    
+    public byte[] SuperPreviewData;
+    private IImage? _superPreview;
+
+    public IImage SuperPreview
+    {
+        get
+        {
+            if (_superPreview != null) return _superPreview;
+
+            using var stream = new MemoryStream(SuperPreviewData);
+            _superPreview = new Bitmap(stream);
+            return _superPreview;
+        }
+        set => _superPreview = value;
+    }
+
     [ForeignKey("User")]
     public int UserId { get; set; }
+
     public int User { get; set; }
+
     public void UpdateSyncState()
     {
         if (AppContext.LocalStoredFiles.TryGetValue(Id, out var path))

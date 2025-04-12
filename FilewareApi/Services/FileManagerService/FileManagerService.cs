@@ -101,7 +101,7 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         file.Data = fileStream.ToArray();
         file.Preview = EncodePreview(file.Data, file.FileType, out var fileSuperPreview);
         file.SuperPreview = fileSuperPreview;
-        
+
         dbContext.FileData.Update(file);
         dbContext.SaveChanges();
     }
@@ -215,6 +215,6 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         else
             superPreview = stream.ToArray();
 
-        return superPreview;
+        return stream.ToArray();
     }
 }
