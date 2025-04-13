@@ -9,7 +9,7 @@
             <RowDefinition></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <Panel Margin="50, 10" VerticalAlignment="Stretch">
+        <Panel Margin="50, 0, 50, 10" VerticalAlignment="Stretch">
             <ScrollViewer x:Name="Viewer" CornerRadius="15" HorizontalScrollBarVisibility="Disabled"
                           VerticalContentAlignment="Bottom"
                           ScrollChanged="Viewer_OnScrollChanged">

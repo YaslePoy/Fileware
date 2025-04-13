@@ -10,7 +10,7 @@
     <Design.DataContext>
         <models:FileData Name="FileData file name qwer.json" Size="410552" Version="13" />
     </Design.DataContext>
-    <Border HorizontalAlignment="Left" ClipToBounds="True" Background="{StaticResource MainColor}" CornerRadius="15">
+    <Border HorizontalAlignment="Left" ClipToBounds="True" Background="{StaticResource MainColorBrush}" CornerRadius="15">
         <Border.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="Переименовать" Click="OnRename"></MenuItem>
@@ -39,7 +39,7 @@
 
                 <ProgressBar Name="UploadBar" IsVisible="{Binding LoadProgressEnable}" Margin="0, 5"></ProgressBar>
             </Grid>
-            <Image Source="{Binding Preview}" Name="ViewImage" DockPanel.Dock="Top" HorizontalAlignment="Left"
+            <Image Source="{Binding Preview}" Name="ViewImage" Effect="{Binding PreviewEffect}" DockPanel.Dock="Top" HorizontalAlignment="Left"
                    VerticalAlignment="Stretch">
             </Image>
         </DockPanel>

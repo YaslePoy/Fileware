@@ -18,7 +18,7 @@
         </fileware:Message>
 
     </Design.DataContext>
-    <Border VerticalAlignment="Center" HorizontalAlignment="Center" Background="{StaticResource MainColor}"
+    <Border VerticalAlignment="Center" HorizontalAlignment="Center" Background="{StaticResource MainColorBrush}"
             CornerRadius="10">
 
         <Border.ContextMenu>

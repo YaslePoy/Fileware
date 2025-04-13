@@ -25,31 +25,35 @@ public class FileData : INotifyPropertyChanged
     public bool LoadProgressEnable { get; set; }
     public bool HasPreview { get; set; }
     public byte[]? PreviewData;
+    public IEffect PreviewEffect { get; set; }
 
     public IImage Preview
     {
         get
         {
-            if (_preview != null) return _preview;
-
             if (PreviewData is not null)
             {
                 using var fullPreview = new MemoryStream(PreviewData);
                 _preview = new Bitmap(fullPreview);
+                PreviewEffect = null;
+                OnPropertyChanged(nameof(PreviewEffect));
+
                 return _preview;
             }
 
-            if (SuperPreviewData is null)
+            if (SuperPreview is null)
                 return null;
-
-            using var stream = new MemoryStream(SuperPreviewData);
+            PreviewEffect = new BlurEffect { Radius = 10 };
+            using var stream = new MemoryStream(SuperPreview);
             _preview = new Bitmap(stream);
+
             return _preview;
+            
         }
         set => _preview = value;
     }
 
-    public byte[] SuperPreviewData;
+    public byte[] SuperPreview { get; set; }
     private IImage? _preview;
 
 

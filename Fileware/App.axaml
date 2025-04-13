@@ -9,12 +9,13 @@
         <local:ViewLocator />
     </Application.DataTemplates>
     <Application.Resources>
-        <SolidColorBrush x:Key="MainColor" Color="#59A96A"></SolidColorBrush>
+        <SolidColorBrush x:Key="MainColorBrush" Color="#59A96A"></SolidColorBrush>
+        <Color x:Key="MainColor">#59A96A</Color>
     </Application.Resources>
     <Application.Styles>
         <Styles>
             <Style Selector="TextBox">
-                <Setter Property="BorderBrush" Value="{StaticResource MainColor}"></Setter>
+                <Setter Property="BorderBrush" Value="{StaticResource MainColorBrush}"></Setter>
                 <Setter Property="BorderThickness" Value="1.75"></Setter>
                 <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
                 <Setter Property="FontSize" Value="16"></Setter>
@@ -26,7 +27,7 @@
             </Style>
 
             <Style Selector="Button">
-                <Setter Property="Background" Value="{StaticResource MainColor}"></Setter>
+                <Setter Property="Background" Value="{StaticResource MainColorBrush}"></Setter>
             </Style>
             
             <Style Selector="Button.Long">

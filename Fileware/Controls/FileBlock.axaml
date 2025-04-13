@@ -13,7 +13,7 @@
         <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
 
     </Design.DataContext>
-    <Border HorizontalAlignment="Left" Background="{StaticResource MainColor}" CornerRadius="15">
+    <Border HorizontalAlignment="Left" Background="{StaticResource MainColorBrush}" CornerRadius="15">
         <Border.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="Переименовать" Click="OnRename"></MenuItem>

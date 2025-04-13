@@ -78,9 +78,10 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
                     {
                         Api.Http.GetAsync($"api/File/{fileData.Id}/preview").ContinueWith(async t =>
                         {
-                            // return;
                             var stream = await t.Result.Content.ReadAsStreamAsync();
-                            fileData.Preview = new Bitmap(stream);
+                            var ms = new MemoryStream();
+                            await stream.CopyToAsync(ms);
+                            fileData.PreviewData = ms.ToArray();
                             Dispatcher.UIThread.Invoke(() => { fileData.OnPropertyChanged(nameof(fileData.Preview)); });
                         });
                         adding = new ImageBlock { DataContext = fileData };
@@ -237,7 +238,8 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
 
     private void MsgBox_OnKeyDown(object? sender, KeyEventArgs e)
     {
-        if (_firstEnter is not null && e.PhysicalKey == _firstEnter.PhysicalKey && e.KeyModifiers == _firstEnter.KeyModifiers)
+        if (_firstEnter is not null && e.PhysicalKey == _firstEnter.PhysicalKey &&
+            e.KeyModifiers == _firstEnter.KeyModifiers)
         {
             _firstEnter = null;
             return;
@@ -246,7 +248,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
         _firstEnter = e;
         if (e is { PhysicalKey: PhysicalKey.Enter, KeyModifiers: KeyModifiers.Shift })
         {
-           MsgBox.Text += "\n";
+            MsgBox.Text += "\n";
             MsgBox.CaretIndex = MsgBox.CaretIndex + 1;
         }
         else if (e.PhysicalKey == PhysicalKey.Enter)

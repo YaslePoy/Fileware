@@ -1,0 +1,64 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:reactiveUi="http://reactiveui.net"
+             xmlns:fileware="clr-namespace:Fileware"
+             xmlns:viewModels="clr-namespace:Fileware.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Fileware.Views.BasePage" x:DataType="viewModels:BasePageViewModel">
+    <UserControl.Styles>
+        <Style Selector="Svg">
+            <Setter Property="(Svg.Css)" Value=".Black { fill: #FF0000; }" />
+        </Style>
+        <Style Selector="Border.Dock">
+            <Setter Property="Height" Value="5"></Setter>
+            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Height" Duration="0:0:0.2"/>
+                </Transitions>
+                
+            </Setter>
+            <Setter Property="Background" Value="Gainsboro"/>
+
+            <Setter Property="BorderBrush">#999999</Setter>
+        </Style> 
+        <Style Selector="Border.Dock:pointerover">
+            <Setter Property="BorderBrush">
+                <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                    <GradientStop Color="#999999" Offset="0.0"/>
+                    <GradientStop Color="{StaticResource MainColor}" Offset="{Binding DockPosition}"/>
+                    <GradientStop Color="#999999" Offset="1.0"/>
+                </LinearGradientBrush>
+            </Setter>
+            <Setter Property="Background" Value="Gainsboro"/>
+            <Setter Property="Height" Value="5"></Setter>
+        </Style>
+        
+        <Style Selector="Border.Dock > StackPanel > Svg">
+            <Setter Property="Margin" Value="0, 5"></Setter>
+        </Style>
+        <Style Selector="Border.Dock > StackPanel > Svg:pointerover">
+        </Style>
+    </UserControl.Styles>
+    <Panel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <reactiveUi:RoutedViewHost HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Router="{Binding Router}">
+            <reactiveUi:RoutedViewHost.PageTransition>
+                <CrossFade Duration="0:00:00.500" />
+            </reactiveUi:RoutedViewHost.PageTransition>
+            <reactiveUi:RoutedViewHost.ViewLocator>
+                <fileware:AppViewLocator />
+            </reactiveUi:RoutedViewHost.ViewLocator>
+        </reactiveUi:RoutedViewHost>
+        <Panel Background="Transparent" VerticalAlignment="Top" HorizontalAlignment="Center" PointerEntered="OpenDock" PointerExited="CloseDock">
+            <Border PointerMoved="UpdateGradient" MinWidth="100" Name="DockBorder" Classes="Dock" VerticalAlignment="Top" Margin="10, 3, 10, 10" BorderThickness="2" CornerRadius="10">
+                <StackPanel Margin="5, 0" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Spacing="10">
+                    <Svg Path="/Assets/ChatView.svg"/>
+                    <Svg Path="/Assets/BlockView.svg" Css=".Black { fill: #FF0000; }"/>
+                    <Svg Path="/Assets/UserView.svg"/>
+                </StackPanel>
+            </Border>
+        </Panel>
+    </Panel>
+</UserControl>

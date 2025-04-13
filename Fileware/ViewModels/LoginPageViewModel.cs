@@ -24,7 +24,7 @@ public class LoginPageViewModel : ReactiveObject, IRoutableViewModel
     public ICommand TryAuth => ReactiveCommand.Create(() =>
     {
         Debug.WriteLine($"Login: {Login}, password: {Password}");
-        HostScreen.Router.Navigate.Execute(new FileChatViewModel(HostScreen));
+        HostScreen.Router.Navigate.Execute(new BasePageViewModel(HostScreen));
     });
 
 }
