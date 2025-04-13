@@ -24,26 +24,36 @@ public class FileData : INotifyPropertyChanged
     public bool DownloadVisibility { get; set; }
     public bool LoadProgressEnable { get; set; }
     public bool HasPreview { get; set; }
-    public byte[] PreviewData;
-    public IImage Preview { get; set; }
-    public byte[] SuperPreviewData;
-    private IImage? _superPreview;
+    public byte[]? PreviewData;
 
-    public IImage SuperPreview
+    public IImage Preview
     {
         get
         {
-            if (_superPreview != null) return _superPreview;
+            if (_preview != null) return _preview;
+
+            if (PreviewData is not null)
+            {
+                using var fullPreview = new MemoryStream(PreviewData);
+                _preview = new Bitmap(fullPreview);
+                return _preview;
+            }
+
+            if (SuperPreviewData is null)
+                return null;
 
             using var stream = new MemoryStream(SuperPreviewData);
-            _superPreview = new Bitmap(stream);
-            return _superPreview;
+            _preview = new Bitmap(stream);
+            return _preview;
         }
-        set => _superPreview = value;
+        set => _preview = value;
     }
 
-    [ForeignKey("User")]
-    public int UserId { get; set; }
+    public byte[] SuperPreviewData;
+    private IImage? _preview;
+
+
+    [ForeignKey("User")] public int UserId { get; set; }
 
     public int User { get; set; }
 

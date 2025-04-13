@@ -26,7 +26,7 @@
         
         <reactiveUi:RoutedViewHost Grid.Row="0" Router="{Binding Router}">
             <reactiveUi:RoutedViewHost.PageTransition>
-                <CrossFade Duration="0:00:00.500" />
+                <CrossFade Duration="0:00:01.000" />
                 
             </reactiveUi:RoutedViewHost.PageTransition>
             <reactiveUi:RoutedViewHost.ViewLocator>

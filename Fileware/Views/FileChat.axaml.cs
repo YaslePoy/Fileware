@@ -1,15 +1,21 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 using Fileware.Controls;
@@ -27,7 +33,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
     {
         InitializeComponent();
         this.WhenActivated(disposables => { });
-        
+
         AppContext.ChatInstance = this;
         AddHandler(DragDrop.DragEnterEvent, DragOver);
         AddHandler(DragDrop.DragLeaveEvent, DragLeave);
@@ -41,7 +47,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
             Dispatcher.UIThread.Invoke(ShowHistory);
         });
     }
-    
+
     private void ShowHistory()
     {
         var lastDate = DateTime.Today;
@@ -53,7 +59,8 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
             {
                 if (!dontAdd)
                 {
-                    var dateLine = new DateLine { DataContext = lastDate };
+                    var dateLine = new DateLine
+                        { DataContext = lastDate, HorizontalAlignment = HorizontalAlignment.Center };
                     PointsPanel.Children.Insert(0, dateLine);
                 }
 
@@ -71,6 +78,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
                     {
                         Api.Http.GetAsync($"api/File/{fileData.Id}/preview").ContinueWith(async t =>
                         {
+                            // return;
                             var stream = await t.Result.Content.ReadAsStreamAsync();
                             fileData.Preview = new Bitmap(stream);
                             Dispatcher.UIThread.Invoke(() => { fileData.OnPropertyChanged(nameof(fileData.Preview)); });
@@ -80,6 +88,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
                     else
                         adding = new FileBlock
                             { DataContext = fileData };
+
                     if (AppContext.LocalStoredFiles.ContainsKey(fileData.Id))
                     {
                         (adding as FileBlock).StartVersionCheckerTimer();
@@ -127,52 +136,62 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
         {
             foreach (var file in fileNames)
             {
-                var info = new FileInfo(file.Path.LocalPath);
-                var name = file.Name;
-                using var multipartFormContent = new MultipartFormDataContent();
-                var fileStream = new FileStream(file.Path.LocalPath, FileMode.Open, FileAccess.Read,
-                    FileShare.ReadWrite);
-                var fileStreamContent = new StreamContent(fileStream);
-                var mimeType = MimeTypes.GetMimeType(name);
-                fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
-                multipartFormContent.Add(fileStreamContent, "file", name);
-
-                FileBlock addedBlock = null;
-
-                Dispatcher.UIThread.Invoke(() =>
-                {
-                    var data = new FileData
-                    {
-                        FileType = mimeType, Version = 1, LoadTime = DateTime.Now,
-                        Size = info.Length, LastChange = DateTime.Now, Id = 0,
-                        Name = name
-                    };
-                    
-                    addedBlock = new FileBlock(fileStream, data);
-                    addedBlock.StartVersionCheckerTimer();
-                    PointsPanel.Children.Add(addedBlock);
-                    Viewer.ScrollToEnd();
-                });
-                try
-                {
-                    using var response = await Api.Http.PostAsync(
-                        (info.Length > 30 * 1024 * 1024 ? "api/File/large" : "api/File"),
-                        multipartFormContent);
-                    var id = int.Parse(await response.Content.ReadAsStringAsync());
-                    AppContext.LocalStoredFiles.Add(id,
-                        new StoredFileMeta
-                            { Path = file.Path.LocalPath, LastChangeTime = info.LastWriteTime, Version = 1 });
-                    AppContext.Save();
-                    (addedBlock.DataContext as FileData).Id = id;
-
-                    History.Add(new HistoryPoint
-                        { LinkedId = id, Time = DateTime.Now, Type = (int)HistoryPointType.File });
-                }
-                catch (Exception)
-                {
-                }
-
+                await SendFile(new FileInfo(file.Path.LocalPath));
             }
+        }
+    }
+
+    private async Task SendFile(FileInfo info)
+    {
+        var name = info.Name;
+        using var multipartFormContent = new MultipartFormDataContent();
+        var fileStream = new FileStream(info.FullName, FileMode.Open, FileAccess.Read,
+            FileShare.ReadWrite);
+        var fileStreamContent = new StreamContent(fileStream);
+        var mimeType = MimeTypes.GetMimeType(name);
+        fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
+        multipartFormContent.Add(fileStreamContent, "file", name);
+
+        FileBlock addedBlock = null;
+
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            var data = new FileData
+            {
+                FileType = mimeType, Version = 1, LoadTime = DateTime.Now,
+                Size = info.Length, LastChange = DateTime.Now, Id = 0,
+                Name = name
+            };
+
+            if (data.FileType.StartsWith("image"))
+            {
+                data.PreviewData = File.ReadAllBytes(info.FullName);
+            }
+
+            addedBlock = data.FileType.StartsWith("image")
+                ? new ImageBlock { DataContext = data }
+                : new FileBlock(fileStream, data);
+            addedBlock.StartVersionCheckerTimer();
+            PointsPanel.Children.Add(addedBlock);
+            Viewer.ScrollToEnd();
+        });
+        try
+        {
+            using var response = await Api.Http.PostAsync(
+                info.Length > 30 * 1024 * 1024 ? "api/File/large" : "api/File",
+                multipartFormContent);
+            var id = int.Parse(await response.Content.ReadAsStringAsync());
+            AppContext.LocalStoredFiles.Add(id,
+                new StoredFileMeta
+                    { Path = info.FullName, LastChangeTime = info.LastWriteTime, Version = 1 });
+            AppContext.Save();
+            (addedBlock.DataContext as FileData).Id = id;
+
+            History.Add(new HistoryPoint
+                { LinkedId = id, Time = DateTime.Now, Type = (int)HistoryPointType.File });
+        }
+        catch (Exception)
+        {
         }
     }
 
@@ -180,9 +199,9 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
     {
         if (string.IsNullOrWhiteSpace(MsgBox.Text))
             return;
-        
+
         var savedText = MsgBox.Text;
-        
+
         Api.Http.PostAsync("api/Messaging",
                 new StringContent("\"" + MsgBox.Text + "\"", MediaTypeWithQualityHeaderValue.Parse("application/json")))
             .ContinueWith(
@@ -202,7 +221,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
         MsgBox.Text = String.Empty;
         Viewer.ScrollToEnd();
     }
-    
+
     private void SendClick(object? sender, RoutedEventArgs e)
     {
         SendText();
@@ -214,24 +233,53 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
             return;
     }
 
-    private bool _firstEnter;
-    
+    private KeyEventArgs? _firstEnter;
+
     private void MsgBox_OnKeyDown(object? sender, KeyEventArgs e)
     {
+        if (_firstEnter is not null && e.PhysicalKey == _firstEnter.PhysicalKey && e.KeyModifiers == _firstEnter.KeyModifiers)
+        {
+            _firstEnter = null;
+            return;
+        }
+
+        _firstEnter = e;
         if (e is { PhysicalKey: PhysicalKey.Enter, KeyModifiers: KeyModifiers.Shift })
         {
-            if (_firstEnter)
-            {
-                _firstEnter = false;
-                return;
-            }
-            _firstEnter = true;
-            MsgBox.Text += "\n";
+           MsgBox.Text += "\n";
             MsgBox.CaretIndex = MsgBox.CaretIndex + 1;
         }
         else if (e.PhysicalKey == PhysicalKey.Enter)
         {
             SendText();
         }
+        else if (e is { PhysicalKey: PhysicalKey.V, KeyModifiers: KeyModifiers.Control })
+        {
+            var clipboard = TopLevel.GetTopLevel(sender as Visual).Clipboard;
+            clipboard.GetFormatsAsync().ContinueWith(task =>
+            {
+                var png = task.Result.First(i => i.EndsWith(".png"));
+                var obj = clipboard.GetDataAsync(png).ContinueWith(it =>
+                {
+                    SendFile(SaveImageToCache(it.Result as byte[]));
+                });
+                Debug.Print(obj.ToString());
+            });
+        }
+    }
+
+    private FileInfo SaveImageToCache(byte[] pngData)
+    {
+        if (!Directory.Exists("./Cache"))
+        {
+            Directory.CreateDirectory("./Cache");
+        }
+
+        var now = DateTime.Now;
+        var name = $"clipboard_{now.ToString("MM_dd_yyyy_hh_mm_ss")}.png";
+        var path = "./Cache/" + name;
+        File.WriteAllBytes(path, pngData);
+        // return path;
+        return new FileInfo(path);
     }
 }

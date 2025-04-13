@@ -30,7 +30,7 @@
             </Style>
             
             <Style Selector="Button.Long">
-                <Setter Property="Padding" Value="30, 10"></Setter>
+                <Setter Property="Padding" Value="50, 10"></Setter>
             </Style>
             
             <Style Selector="Button > TextBlock">
