@@ -192,7 +192,6 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         if (type == "image/webp")
             return null;
 
-
         using var img = Image.Load(raw);
         using var stream = new MemoryStream();
         img.SaveAsWebp(stream);
