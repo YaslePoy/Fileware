@@ -24,7 +24,19 @@ public class FileData : INotifyPropertyChanged
     public bool DownloadVisibility { get; set; }
     public bool LoadProgressEnable { get; set; }
     public bool HasPreview { get; set; }
-    public byte[]? PreviewData;
+
+    public byte[]? PreviewData
+    {
+        get => _previewData;
+        set
+        {
+            if (Equals(value, _previewData)) return;
+            _previewData = value;
+            OnPropertyChanged(nameof(PreviewData));
+            OnPropertyChanged(nameof(Preview));
+        }
+    }
+
     public IEffect PreviewEffect { get; set; }
 
     public IImage Preview
@@ -37,24 +49,27 @@ public class FileData : INotifyPropertyChanged
                 _preview = new Bitmap(fullPreview);
                 PreviewEffect = null;
                 OnPropertyChanged(nameof(PreviewEffect));
-
+                // OnPropertyChanged(nameof(Preview));
                 return _preview;
             }
 
             if (SuperPreview is null)
                 return null;
+            
             PreviewEffect = new BlurEffect { Radius = 10 };
             using var stream = new MemoryStream(SuperPreview);
             _preview = new Bitmap(stream);
-
+            OnPropertyChanged(nameof(PreviewEffect));
+            // OnPropertyChanged(nameof(Preview));
             return _preview;
             
         }
         set => _preview = value;
     }
 
-    public byte[] SuperPreview { get; set; }
+    public byte[]? SuperPreview { get; set; }
     private IImage? _preview;
+    private byte[]? _previewData;
 
 
     [ForeignKey("User")] public int UserId { get; set; }

@@ -16,6 +16,8 @@ public partial class BasePage : ReactiveUserControl<BasePageViewModel>
         InitializeComponent();
     }
 
+    private string _currentPage = "chat";
+
     private void OpenDock(object? sender, PointerEventArgs e)
     {
         Debug.Print("Opening dock");
@@ -35,5 +37,28 @@ public partial class BasePage : ReactiveUserControl<BasePageViewModel>
         var progress = position.X / dock.DesiredSize.Width;
         (DataContext as BasePageViewModel).DockPosition = progress;
         Debug.Print(progress.ToString());
+    }
+
+    private void NavigateTo(object? sender, TappedEventArgs e)
+    {
+        if ((sender as Control).Tag == _currentPage)
+            return;
+
+        _currentPage = (sender as Control).Tag as string;
+
+        var vm = DataContext as BasePageViewModel;
+
+        switch (_currentPage)
+        {
+            case "chat":
+                vm.Router.Navigate.Execute(new FileChatViewModel(vm));
+                break;
+            case "tile":
+                vm.Router.Navigate.Execute(new TilesViewModel(vm));
+                break;
+            case "profile":
+                vm.Router.Navigate.Execute(new ProfileViewModel(vm));
+                break;
+        }
     }
 }

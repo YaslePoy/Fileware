@@ -12,4 +12,5 @@ public class FilewareDbContext : DbContext
     public DbSet<FileData> FileData { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<HistoryPoint> HistoryPoints { get; set; }
+    public DbSet<User> Users { get; set; }
 }

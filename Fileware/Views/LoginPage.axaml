@@ -5,12 +5,22 @@
              xmlns:viewModels="clr-namespace:Fileware.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Fileware.Views.LoginPage" x:DataType="viewModels:LoginPageViewModel">
+    <UserControl.Styles>
+        <Style Selector="Button.LoginButton">
+            <Setter Property="Margin" Value="20, 5"></Setter>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Height" Duration="0:0:0.3"/>
+                </Transitions>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
     <StackPanel Width="250" Classes="Centred" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
         <TextBlock FontSize="24">Авторизация</TextBlock>
         <TextBlock>Введите логин или пароль</TextBlock>
-        <TextBox Watermark="Логин" HorizontalAlignment="Stretch"></TextBox>
-        <TextBox HorizontalAlignment="Stretch" PasswordChar="~" Watermark="Пароль"/>
-        <Button Command="{Binding TryAuth}" Padding="20, 5">Войти</Button>
+        <TextBox TextChanged="UpdateLoginVisibility" Name="LoginText" Watermark="Логин" HorizontalAlignment="Stretch"></TextBox>
+        <TextBox TextChanged="UpdateLoginVisibility" Name="PasswordText" HorizontalAlignment="Stretch" PasswordChar="~" Watermark="Пароль"/>
+        <Button Height="0" Name="LoginButton" VerticalAlignment="Top" Command="{Binding TryAuth}" Classes="Long LoginButton">Войти</Button>
         <HyperlinkButton Command="{Binding GoRegister}" HorizontalAlignment="Right">Зарегистрироваться</HyperlinkButton>
     </StackPanel>
 </UserControl>

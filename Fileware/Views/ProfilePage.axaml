@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:Fileware.ViewModels"
+             xmlns:models="clr-namespace:Fileware.Models"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Fileware.Views.ProfilePage" x:DataType="viewModels:ProfileViewModel">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <viewModels:ProfileViewModel>
+            <viewModels:ProfileViewModel.User>
+                <models:User Id="123" Username="@mmm_fileware" ShowName="Митрованов Михаил"
+                             AvatarImage="{SvgImage /Assets/UserView.svg}" />
+            </viewModels:ProfileViewModel.User>
+        </viewModels:ProfileViewModel>
+    </Design.DataContext>
+    <Panel>
+        <Image Height="35" Width="35" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10" Tapped="EditProfile" Source="{SvgImage /Assets/Edit.svg}"></Image>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="7">
+            <Border ClipToBounds="True" BorderBrush="{StaticResource MainColorBrush}" BorderThickness="3"
+                    CornerRadius="16">
+                <Image Source="{Binding User.AvatarImage}" Height="75" Width="75" />
+            </Border>
+            <TextBlock FontSize="20" Text="{Binding User.ShowName}" />
+            <TextBlock Text="{Binding User.Username}" HorizontalAlignment="Center" FontWeight="SemiBold" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding User.FileCount, StringFormat='{}У вас хранится {0} файлов.'}"></TextBlock>
+            </StackPanel>
+        </StackPanel>
+    </Panel>
+
+</UserControl>

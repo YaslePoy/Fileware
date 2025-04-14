@@ -1,12 +1,11 @@
-using System.Text.Json;
-using FilewareApi.Models;
 using FilewareApi.Services.FileManagerService;
 using FilewareApi.Services.MessagingService;
+using FilewareApi.Services.UserService;
 using Microsoft.EntityFrameworkCore;
 
 namespace FilewareApi;
 
-public class Program
+public static class Program
 {
     public static void Main(string[] args)
     {
@@ -20,13 +19,14 @@ public class Program
         builder.Services.AddSwaggerGen();
         builder.Services.AddScoped<IFileManagerService, FileManagerService>();
         builder.Services.AddScoped<IMessagingService, MessagingService>();
+        builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("CorsPolicy",
-                builder => builder
+                bld => bld
                     .AllowAnyMethod()
                     .AllowCredentials()
-                    .SetIsOriginAllowed((host) => true)
+                    .SetIsOriginAllowed(_ => true)
                     .AllowAnyHeader());
         });
         builder.Services.AddDbContext<FilewareDbContext>(options =>
@@ -52,5 +52,5 @@ public class Program
         app.Run();
     }
 
-    public const long TenGigabytes = 10737418240;
+    private const long TenGigabytes = 10737418240;
 }

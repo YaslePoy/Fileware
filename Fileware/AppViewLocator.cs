@@ -15,7 +15,10 @@ public class AppViewLocator : IViewLocator
             FileChatViewModel fileChatViewModel => new FileChat { DataContext = fileChatViewModel },
             LoginPageViewModel loginPageViewModel => new LoginPage { DataContext = loginPageViewModel },
             RegisterPageViewModel registerPageViewModel => new RegisterPage { DataContext = registerPageViewModel },
-            BasePageViewModel basePageViewModel => new BasePage {DataContext = basePageViewModel},
+            BasePageViewModel basePageViewModel => new BasePage { DataContext = basePageViewModel },
+            TilesViewModel tilesViewModel => new TilesPage { DataContext = tilesViewModel },
+            ProfileViewModel profileViewModel => new ProfilePage { DataContext = profileViewModel },
+            EditProfileViewModel editProfileViewModel => new EditProfilePage { DataContext = editProfileViewModel },
             _ => throw new ArgumentOutOfRangeException()
         };
     }

@@ -16,26 +16,26 @@
             <Setter Property="HorizontalAlignment" Value="Center"></Setter>
             <Setter Property="Transitions">
                 <Transitions>
-                    <DoubleTransition Property="Height" Duration="0:0:0.2"/>
+                    <DoubleTransition Easing="CubicEaseInOut" Property="Height" Duration="0:0:0.2" />
                 </Transitions>
-                
-            </Setter>
-            <Setter Property="Background" Value="Gainsboro"/>
 
+            </Setter>
+            <Setter Property="Background" Value="Gainsboro" />
             <Setter Property="BorderBrush">#999999</Setter>
-        </Style> 
+        </Style>
+        
         <Style Selector="Border.Dock:pointerover">
             <Setter Property="BorderBrush">
                 <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
-                    <GradientStop Color="#999999" Offset="0.0"/>
-                    <GradientStop Color="{StaticResource MainColor}" Offset="{Binding DockPosition}"/>
-                    <GradientStop Color="#999999" Offset="1.0"/>
+                    <GradientStop Color="#999999" Offset="0.0" />
+                    <GradientStop Color="{StaticResource MainColor}" Offset="{Binding DockPosition}" />
+                    <GradientStop Color="#999999" Offset="1.0" />
                 </LinearGradientBrush>
             </Setter>
-            <Setter Property="Background" Value="Gainsboro"/>
+            <Setter Property="Background" Value="Gainsboro" />
             <Setter Property="Height" Value="5"></Setter>
         </Style>
-        
+
         <Style Selector="Border.Dock > StackPanel > Svg">
             <Setter Property="Margin" Value="0, 5"></Setter>
         </Style>
@@ -51,12 +51,15 @@
                 <fileware:AppViewLocator />
             </reactiveUi:RoutedViewHost.ViewLocator>
         </reactiveUi:RoutedViewHost>
-        <Panel Background="Transparent" VerticalAlignment="Top" HorizontalAlignment="Center" PointerEntered="OpenDock" PointerExited="CloseDock">
-            <Border PointerMoved="UpdateGradient" MinWidth="100" Name="DockBorder" Classes="Dock" VerticalAlignment="Top" Margin="10, 3, 10, 10" BorderThickness="2" CornerRadius="10">
-                <StackPanel Margin="5, 0" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Spacing="10">
-                    <Svg Path="/Assets/ChatView.svg"/>
-                    <Svg Path="/Assets/BlockView.svg" Css=".Black { fill: #FF0000; }"/>
-                    <Svg Path="/Assets/UserView.svg"/>
+        <Panel Background="Transparent" VerticalAlignment="Top" HorizontalAlignment="Center" PointerEntered="OpenDock"
+               PointerExited="CloseDock">
+            <Border PointerMoved="UpdateGradient" MinWidth="100" Name="DockBorder" Classes="Dock"
+                    VerticalAlignment="Top" Margin="10, 3, 10, 10" BorderThickness="2" CornerRadius="10">
+                <StackPanel Margin="5, 0" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center"
+                            Spacing="10">
+                    <Svg Path="/Assets/ChatView.svg" Tag="chat" Tapped="NavigateTo" />
+                    <Svg Path="/Assets/BlockView.svg" Tag="tile" Tapped="NavigateTo" />
+                    <Svg Path="/Assets/UserView.svg" Tag="profile" Tapped="NavigateTo" />
                 </StackPanel>
             </Border>
         </Panel>

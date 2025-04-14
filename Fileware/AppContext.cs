@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using Avalonia;
+using Fileware.Models;
 using Fileware.Views;
 
 namespace Fileware;
@@ -12,6 +14,7 @@ public static class AppContext
     public static MainWindow WindowInstance;
     public static Dictionary<int, StoredFileMeta> LocalStoredFiles;
     public const string StorageDir = "storage/";
+    public static User CurrentUser { get; set; }
 
     public static void Save()
     {

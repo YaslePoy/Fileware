@@ -168,8 +168,9 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
             {
                 data.PreviewData = File.ReadAllBytes(info.FullName);
             }
-
-            addedBlock = data.FileType.StartsWith("image")
+            
+            addedBlock = data.FileType.StartsWith("image/png") || data.FileType.StartsWith("image/jpeg") ||
+                         data.FileType.StartsWith("image/webp")
                 ? new ImageBlock { DataContext = data }
                 : new FileBlock(fileStream, data);
             addedBlock.StartVersionCheckerTimer();
