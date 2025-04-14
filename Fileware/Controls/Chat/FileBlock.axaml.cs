@@ -29,26 +29,6 @@ public partial class FileBlock : UserControl
     {
         DataContext = data;
         ActivateTransferTimer(stream, data.Size, () => { });
-        // UploadBar.IsVisible = true;
-        // var timer = new DispatcherTimer();
-        // timer.Interval = TimeSpan.FromMilliseconds(100);
-        // timer.Tick += (sender, args) =>
-        // {
-        //     if (!stream.CanRead)
-        //     {
-        //         timer.Stop();
-        //         UploadBar.IsVisible = false;
-        //     }
-        //
-        //     var progress = stream.Position / (double)data.Size * 100;
-        //     UploadBar.Value = progress;
-        //     if (stream.Position == data.Size)
-        //     {
-        //         timer.Stop();
-        //         UploadBar.IsVisible = false;
-        //     }
-        // };
-        // timer.Start();
     }
 
     private void OnRename(object? sender, RoutedEventArgs e)
@@ -215,15 +195,7 @@ public partial class FileBlock : UserControl
         var mimeType = MimeTypes.GetMimeType(fileData.Name);
         fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
         multipartFormContent.Add(fileStreamContent, "file", fileData.Name);
-
-        // var multipartFormContent = new MultipartFormDataContent();
-        // var fileStream = new FileStream(info.FullName, FileMode.Open, FileAccess.Read,
-        //     FileShare.ReadWrite);
-        // var fileStreamContent = new StreamContent(fileStream);
-        // var mimeType = MimeTypes.GetMimeType(fileData.Name);
-        // fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
-        // multipartFormContent.Add(fileStreamContent, "file", fileData.Name);
-
+        
         Api.Http.PatchAsync($"api/File/large/{fileData.Id}",
             // Api.ApiUrl + (info.Length > 30 * 1024 * 1024 ? $"api/File/large/{fileData.Id}" : $"api/File/{fileData.Id}"),
             multipartFormContent).ContinueWith(async t =>

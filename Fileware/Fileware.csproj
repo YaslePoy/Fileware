@@ -121,4 +121,24 @@
     <ItemGroup>
         <None Remove="Res\upgrade_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24.png"/>
     </ItemGroup>
+
+
+    <ItemGroup>
+      <Compile Update="Controls\Chat\DateLine.axaml.cs">
+        <DependentUpon>DateLine.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Controls\Chat\FileBlock.axaml.cs">
+        <DependentUpon>FileBlock.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Controls\Chat\ImageBlock.axaml.cs">
+        <DependentUpon>ImageBlock.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Controls\Chat\MessageBlock.axaml.cs">
+        <DependentUpon>MessageBlock.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
 </Project>

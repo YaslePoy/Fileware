@@ -21,7 +21,7 @@ public partial class BasePage : ReactiveUserControl<BasePageViewModel>
     private void OpenDock(object? sender, PointerEventArgs e)
     {
         Debug.Print("Opening dock");
-        DockBorder.Height = 50;
+        DockBorder.Height = 60;
     }
 
     private void CloseDock(object? sender, PointerEventArgs e)

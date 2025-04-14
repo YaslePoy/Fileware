@@ -2,7 +2,85 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:tile="clr-namespace:Fileware.Controls.Tile"
+             xmlns:models="clr-namespace:Fileware.Models"
+             xmlns:controls="clr-namespace:Fileware.Controls"
+             xmlns:fileware="clr-namespace:Fileware"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Fileware.Views.TilesPage">
-    Welcome to Tiles!
+    <UserControl.Styles>
+        <Style Selector="WrapPanel > tile|FileTile">
+            <Setter Property="Width" Value="190"></Setter>
+            <Setter Property="Margin" Value="5"></Setter>
+        </Style>
+        <Style Selector="WrapPanel > controls|MessageBlock">
+            <Setter Property="Width" Value="190"></Setter>
+            <Setter Property="Margin" Value="5"></Setter>
+        </Style>
+    </UserControl.Styles>
+    <ScrollViewer VerticalScrollBarVisibility="Disabled">
+        <WrapPanel Orientation="Vertical" Margin="5">
+            <tile:FileTile Height="100">
+                <tile:FileTile.DataContext>
+                    <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+                    <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
+                </tile:FileTile.DataContext>
+            </tile:FileTile>
+            <tile:FileTile Height="100" Margin="5">
+                <tile:FileTile.DataContext>
+                    <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+                    <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
+                </tile:FileTile.DataContext>
+            </tile:FileTile>
+            <tile:FileTile Height="100" Margin="5">
+                <tile:FileTile.DataContext>
+                    <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+                    <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
+                </tile:FileTile.DataContext>
+            </tile:FileTile>
+            <tile:FileTile Height="100" Margin="5">
+                <tile:FileTile.DataContext>
+                    <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+                    <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
+                </tile:FileTile.DataContext>
+            </tile:FileTile>
+            <tile:FileTile Height="100" Margin="5">
+                <tile:FileTile.DataContext>
+                    <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+                    <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
+                </tile:FileTile.DataContext>
+            </tile:FileTile>
+            <tile:FileTile Height="100" Margin="5">
+                <tile:FileTile.DataContext>
+                    <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+                    <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
+                </tile:FileTile.DataContext>
+            </tile:FileTile>
+            <tile:FileTile Height="100" Margin="5">
+                <tile:FileTile.DataContext>
+                    <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+                    <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
+                </tile:FileTile.DataContext>
+            </tile:FileTile>
+            <tile:FileTile Height="100" Margin="5">
+                <tile:FileTile.DataContext>
+                    <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+                    <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
+                </tile:FileTile.DataContext>
+            </tile:FileTile>
+            <controls:MessageBlock>
+                <controls:MessageBlock.DataContext>
+                    <fileware:Message Text="qeasodasjndjasjfnaskjfnjkasdkasdjasnfaks"/>
+                </controls:MessageBlock.DataContext>
+            </controls:MessageBlock>
+        </WrapPanel>
+    </ScrollViewer>
 </UserControl>

@@ -23,7 +23,7 @@
             </ContextMenu>
         </Border.ContextMenu>
         <DockPanel LastChildFill="False">
-            <Image Margin="10" Source="../Assets/file.png" VerticalAlignment="Center" HorizontalAlignment="Center"
+            <Image Margin="10" Source="../../../../Assets/file.png" VerticalAlignment="Center" HorizontalAlignment="Center"
                    Height="35">
             </Image>
             <DockPanel DockPanel.Dock="Right" VerticalAlignment="Stretch" HorizontalAlignment="Right" Margin="10"
@@ -36,11 +36,11 @@
                         </TextBlock>
                         <Image HorizontalAlignment="Center" VerticalAlignment="Center" Height="20"
                                IsVisible="{Binding UploadVisibility}" Tapped="UploadNewer"
-                               Source="../Assets/upgrade.png" Margin="0, 0, 3, 0">
+                               Source="../../Assets/upgrade.png" Margin="0, 0, 3, 0">
                         </Image>
                         <Image HorizontalAlignment="Center" VerticalAlignment="Center" Height="20"
                                IsVisible="{Binding DownloadVisibility}" Tapped="DownloadNewer"
-                               Source="../Assets/download.png" Margin="0, 0, 3, 0">
+                               Source="../../Assets/download.png" Margin="0, 0, 3, 0">
                         </Image>
                     </StackPanel>
                 </Border>

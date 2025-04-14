@@ -33,7 +33,7 @@ public class UserController(IUserService userService) : Controller
             var claims = new List<Claim>
             {
                 new(ClaimTypes.Authentication, loggedIn.Id.ToString()),
-                new (ClaimTypes.Name, loggedIn.Username),
+                new(ClaimTypes.Name, loggedIn.Username),
             };
             var jwt = new JwtSecurityToken(
                 issuer: AuthOptions.ISSUER,
@@ -61,7 +61,22 @@ public class UserController(IUserService userService) : Controller
 
         return Ok(new GetUserResponce
             { BirthDate = user.BirthDate, Id = user.Id, Username = user.Username, ShowName = user.ShowName });
-        
+    }
+
+    [HttpGet("{id}/avatar")]
+    public ActionResult GetAvatar(int id)
+    {
+        var user = userService.Get(id);
+        return File(userService.GetAvatar(id), "image/webp", $"{user.Username}_avatar.webp");
+    }
+
+    [HttpPost("{id}/avatar")]
+    public async Task<ActionResult> SetAvatar(int id, IFormFile avatar)
+    {
+        using var ms = new MemoryStream();
+        await avatar.OpenReadStream().CopyToAsync(ms);
+        await userService.SetupAvatar(id, ms.ToArray());
+        return Ok();
     }
 }
 

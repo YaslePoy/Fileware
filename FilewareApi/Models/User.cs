@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace FilewareApi.Models;
@@ -13,6 +14,7 @@ public class User
     public string? Password { get; set; }
     public DateOnly BirthDate { get; set; }
     public byte[]? TotpKey { get; set; }
+    [JsonIgnore]
     public byte[]? Avatar { get; set; }
 }
 

@@ -4,10 +4,13 @@
     <option name="projectPerEditor">
       <map>
         <entry key="Fileware/App.axaml" value="Fileware/Fileware.csproj" />
+        <entry key="Fileware/Controls/Chat/DateLine.axaml" value="Fileware/Fileware.csproj" />
+        <entry key="Fileware/Controls/Chat/FileBlock.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Controls/DateLine.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Controls/FileBlock.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Controls/ImageBlock.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Controls/MessageBlock.axaml" value="Fileware/Fileware.csproj" />
+        <entry key="Fileware/Controls/Tile/FileTile.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Views/BasePage.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Views/EditProfilePage.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Views/FileChat.axaml" value="Fileware/Fileware.csproj" />

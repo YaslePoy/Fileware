@@ -11,6 +11,8 @@ public interface IUserService
     bool IsExists(string username);
     User? Auth(string login, string security);
     User? Get(int id);
+    Task SetupAvatar(int id, byte[] avatar);
+    byte[] GetAvatar(int id);
 }
 
 public class UserService(FilewareDbContext db) : IUserService
@@ -59,5 +61,23 @@ public class UserService(FilewareDbContext db) : IUserService
     public User? Get(int id)
     {
         return db.Users.FirstOrDefault(i => i.Id == id);
+    }
+
+    public async Task SetupAvatar(int id, byte[] avatar)
+    {
+        var user = db.Users.FirstOrDefault(i => i.Id == id);
+        user.Avatar = avatar;
+        db.Users.Update(user);
+        await db.SaveChangesAsync();
+    }
+
+    public byte[] GetAvatar(int id)
+    {
+        var user = db.Users.FirstOrDefault(i => i.Id == id);
+        if (user.Avatar is null)
+        {
+            return File.ReadAllBytes("");
+        }
+        return user.Avatar;
     }
 }
