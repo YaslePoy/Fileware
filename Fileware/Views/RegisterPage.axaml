@@ -4,5 +4,21 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Fileware.Views.RegisterPage">
-    Welcome to Avalonia!
+    <UserControl.Styles>
+        <Style Selector="TextBlock.Invisible">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Height" Duration="0:0:0.5"></DoubleTransition>
+                </Transitions>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Spacing="10">
+        <StackPanel Spacing="2">
+            <TextBlock Height="0" Foreground="Red">Этот логин уже занят</TextBlock>
+            <TextBox HorizontalAlignment="Stretch" Watermark="Введите желаемый логин" />
+        </StackPanel>
+        <TextBox HorizontalAlignment="Stretch" Watermark="Как к вам обращаться" />
+        
+    </StackPanel>
 </UserControl>

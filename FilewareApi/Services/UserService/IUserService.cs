@@ -17,9 +17,15 @@ public interface IUserService
 
 public class UserService(FilewareDbContext db) : IUserService
 {
+    private static Dictionary<string, byte[]> TotpKeys = new();
+
     public string GenerateTotpKey(string username)
     {
-        var uriString = new OtpUri(OtpType.Totp, RandomNumberGenerator.GetBytes(64), username, "Fileware").ToString();
+        var key = RandomNumberGenerator.GetBytes(48);
+        if (!TotpKeys.TryAdd(username, key))
+            TotpKeys[username] = key;
+
+        var uriString = new OtpUri(OtpType.Totp, key, username, "Fileware").ToString();
         return uriString;
     }
 
@@ -29,6 +35,15 @@ public class UserService(FilewareDbContext db) : IUserService
         {
             return -1;
         }
+
+        if (user.TotpKey is { Length: 1 })
+        {
+            user.TotpKey = TotpKeys[user.Username];
+            TotpKeys.Remove(user.Username);
+            user.Password = null;
+        }
+        else
+            user.TotpKey = null;
 
         db.Users.Add(user);
         await db.SaveChangesAsync();
@@ -40,7 +55,7 @@ public class UserService(FilewareDbContext db) : IUserService
     {
         return db.Users.Any(i => i.Username == username);
     }
-    
+
     public User? Auth(string login, string security)
     {
         var user = db.Users.FirstOrDefault(i => i.Username == login);
@@ -78,6 +93,7 @@ public class UserService(FilewareDbContext db) : IUserService
         {
             return File.ReadAllBytes("");
         }
+
         return user.Avatar;
     }
 }

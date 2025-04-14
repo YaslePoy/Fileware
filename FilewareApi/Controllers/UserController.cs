@@ -50,6 +50,16 @@ public class UserController(IUserService userService) : Controller
         return Unauthorized();
     }
 
+    [HttpPost("reg")]
+    public async Task<ActionResult> RegisterUser(User user)
+    {
+        if (userService.IsExists(user.Username))
+        {
+            return Conflict();
+        }
+
+        return Ok(userService.Register(user));
+    }
     [HttpGet("{id}")]
     public ActionResult<GetUserResponce> GetUser(int id)
     {
