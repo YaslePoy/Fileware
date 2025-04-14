@@ -58,7 +58,7 @@ public class UserController(IUserService userService) : Controller
             return Conflict();
         }
 
-        return Ok(userService.Register(user));
+        return Ok(await userService.Register(user));
     }
     [HttpGet("{id}")]
     public ActionResult<GetUserResponce> GetUser(int id)
