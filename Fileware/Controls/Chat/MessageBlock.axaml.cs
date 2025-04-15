@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using Fileware.Models;
 using Fileware.Windows;
 
 namespace Fileware.Controls;
@@ -35,6 +36,15 @@ public partial class MessageBlock : UserControl
         });
     }
 
+    
+    protected override void OnDataContextEndUpdate()
+    {
+        base.OnDataContextEndUpdate();
+        var data = DataContext as Message;
+        data.TagsPreviewPanel = TagsPanel;
+        data.UpdateTagPanel();
+    }
+    
     private void OnDelete(object? sender, RoutedEventArgs e)
     {
         var current = DataContext as Message;

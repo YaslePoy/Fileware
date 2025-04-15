@@ -7,5 +7,12 @@
              Width="19" Height="19"
              x:Class="Fileware.Controls.TagPoint" x:DataType="viewModels:Tag">
     <Border HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip.Tip="{Binding Name}"
-            Background="{Binding Color}" Margin="6" Width="6" Height="6" CornerRadius="10" />
+            Background="{Binding Color}" Width="8" Height="8" CornerRadius="10">
+        <Border.ContextMenu>
+            <ContextMenu>
+                <MenuItem Command="{Binding ChangeColor}" Header="Изменить цвет тега"></MenuItem>
+                <MenuItem Click="RemoveTag" Header="Убрать тег"></MenuItem>
+            </ContextMenu>
+        </Border.ContextMenu>
+    </Border>
 </UserControl>

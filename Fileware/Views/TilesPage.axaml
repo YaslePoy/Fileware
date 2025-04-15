@@ -78,7 +78,7 @@
             </tile:FileTile>
             <controls:MessageBlock>
                 <controls:MessageBlock.DataContext>
-                    <fileware:Message Text="qeasodasjndjasjfnaskjfnjkasdkasdjasnfaks" />
+                    <models:Message Text="qeasodasjndjasjfnaskjfnjkasdkasdjasnfaks" />
                 </controls:MessageBlock.DataContext>
             </controls:MessageBlock>
         </WrapPanel>

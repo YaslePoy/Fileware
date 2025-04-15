@@ -14,7 +14,7 @@
     <DockPanel HorizontalAlignment="Left" VerticalAlignment="Center" LastChildFill="True">
         <WrapPanel Name="TagsPanel" MaxHeight="{Binding #ViewImage.Bounds.Height}" Orientation="Vertical"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
-                   DockPanel.Dock="Right" Margin="5, 0" />
+                   DockPanel.Dock="Right" Margin="5, 0"  />
         <Border DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Center"
                 ClipToBounds="True" Background="{StaticResource MainColorBrush}" CornerRadius="15">
             <Border.ContextMenu>

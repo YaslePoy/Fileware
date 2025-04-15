@@ -13,6 +13,7 @@
         <Color x:Key="MainColor">#59A96A</Color>
     </Application.Resources>
     <Application.Styles>
+        <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
         <Styles>
             <Style Selector="TextBox">
                 <Setter Property="BorderBrush" Value="{StaticResource MainColorBrush}" />

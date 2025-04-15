@@ -12,8 +12,8 @@
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
-
     </Design.DataContext>
+
     <Border HorizontalAlignment="Left" Background="{StaticResource MainColorBrush}" CornerRadius="15">
         <Border.ContextMenu>
             <ContextMenu>

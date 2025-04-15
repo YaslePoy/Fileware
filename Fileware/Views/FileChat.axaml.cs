@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -19,18 +20,22 @@ using Avalonia.Threading;
 using Fileware.Controls;
 using Fileware.Models;
 using Fileware.ViewModels;
+using Fileware.Windows;
 using ReactiveUI;
 
 namespace Fileware.Views;
 
-public partial class FileChat : ReactiveUserControl<FileChatViewModel>
+public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLevelView
 {
+    private static FileChat Instance;
     private static List<HistoryPoint> History;
 
     private KeyEventArgs? _firstEnter;
 
     public FileChat()
     {
+        AppContext.CurrentMultiLevelView = this;
+        Instance = this;
         InitializeComponent();
         this.WhenActivated(_ => { });
 
@@ -99,7 +104,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
                     else
                     {
                         adding = new FileBlock
-                            { DataContext = fileData, Width = 350 };
+                            { DataContext = fileData, Width = 350,  host = this};
                     }
 
                     if (AppContext.LocalStoredFiles.ContainsKey(fileData.Id))
@@ -175,7 +180,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
             addedBlock = data.FileType.StartsWith("image/png") || data.FileType.StartsWith("image/jpeg") ||
                          data.FileType.StartsWith("image/webp")
                 ? new ImageBlock { DataContext = data, Width = 350 }
-                : new FileBlock(fileStream, data);
+                : new FileBlock(fileStream, data){host = this};
             addedBlock.StartVersionCheckerTimer();
             PointsPanel.Children.Add(addedBlock);
             Viewer.ScrollToEnd();
@@ -292,5 +297,65 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
         {
             foreach (var file in t.Result) await SendFile(new FileInfo(file.Path.LocalPath));
         });
+    }
+
+    public void MakeTopLevel(string key, object sender)
+    {
+        TopLevelActions[key].Item1(sender);
+    }
+
+    public void RemoveTopLevel(string key)
+    {
+        TopLevelActions[key].Item2();
+    }
+
+    private static FileData vm;
+    private static Tag ColoringTag;
+    private FrozenDictionary<string, (Action<object>, Action)> TopLevelActions =
+        new Dictionary<string, (Action<object>, Action)> { { "FileRename", (s =>
+        {
+            Instance.RenamingPanel.IsVisible = true;
+            vm = s as FileData;
+            var winVm = new RenameViewModel { FileName = vm.Name };
+            Instance.RenamingPanel.DataContext = winVm;
+        }, () =>
+        {
+            
+        }) },
+            { "RecolorTag", (s =>
+            {
+                Instance.RecolorPanel.IsVisible = true;
+                ColoringTag = s as Tag;
+            }, () =>
+            {
+                Instance.RecolorPanel.IsVisible = true;
+            }) }
+        }.ToFrozenDictionary();
+
+    private void OnCancelRename(object? sender, RoutedEventArgs e)
+    {
+        RenamingPanel.IsVisible = false;
+    }
+
+    private void OnApplyRename(object? sender, RoutedEventArgs e)
+    {
+        vm.Name = (Instance.RenamingPanel.DataContext as RenameViewModel).FileName;
+        vm.OnPropertyChanged("Name");
+        RenamingPanel.IsVisible = false;
+
+        Api.Http.PatchAsync($"api/File/{vm.Id}/rename",
+            new StringContent("\"" + vm.Name + "\"",
+                MediaTypeWithQualityHeaderValue.Parse("application/json")));
+    }
+
+    private void OnCancelRecolor(object? sender, RoutedEventArgs e)
+    {
+        RecolorPanel.IsVisible = false;
+    }
+
+    private void OnApplyRecolor(object? sender, RoutedEventArgs e)
+    {
+        RecolorPanel.IsVisible = false;
+        ColoringTag.Color = new SolidColorBrush(RecolorColorPicker.Color);
     }
 }

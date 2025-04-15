@@ -16,23 +16,6 @@ public partial class ImageBlock : FileBlock
         InitializeComponent();
     }
 
-    private void OnRename(object? sender, RoutedEventArgs e)
-    {
-        var win = new FileRenameWindow { DataContext = DataContext };
-        win.ShowDialog<bool>(AppContext.WindowInstance).ContinueWith(t =>
-        {
-            if (t.Result)
-                Dispatcher.UIThread.Invoke(() =>
-                {
-                    var msg = DataContext as FileData;
-                    msg.OnPropertyChanged("Name");
-                    Api.Http.PatchAsync($"api/File/{msg.Id}/rename",
-                        new StringContent("\"" + msg.Name + "\"",
-                            MediaTypeWithQualityHeaderValue.Parse("application/json")));
-                });
-        });
-    }
-
     private void OnDelete(object? sender, RoutedEventArgs e)
     {
         var current = DataContext as FileData;
@@ -40,6 +23,14 @@ public partial class ImageBlock : FileBlock
         AppContext.ChatInstance.PointsPanel.Children.Remove(this);
     }
 
+    protected override void OnDataContextEndUpdate()
+    {
+        base.OnDataContextEndUpdate();
+        var data = DataContext as FileData;
+        data.TagsPreviewPanel = TagsPanel;
+        data.UpdateTagPanel();
+    }
+    
     protected override void OnSizeChanged(SizeChangedEventArgs e)
     {
         base.OnSizeChanged(e);

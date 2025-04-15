@@ -2,46 +2,76 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="clr-namespace:Fileware.Models"
+             xmlns:viewModels="clr-namespace:Fileware.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Fileware.Views.FileChat">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Panel Margin="50, 0, 50, 10" VerticalAlignment="Stretch">
+    <Panel>
+
+        <Grid RowDefinitions="*,Auto">
             <ScrollViewer x:Name="Viewer" CornerRadius="15" HorizontalScrollBarVisibility="Disabled"
                           VerticalContentAlignment="Bottom"
-                          ScrollChanged="Viewer_OnScrollChanged">
+                          ScrollChanged="Viewer_OnScrollChanged"
+                          Margin="50, 0, 50, 10" VerticalAlignment="Stretch">
                 <StackPanel x:Name="PointsPanel" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
                             Margin="5"
                             Spacing="10" />
                 <!-- <Rectangle Height="50" Width="50" Fill="Yellow"></Rectangle> -->
             </ScrollViewer>
-            <Panel IsVisible="False" x:Name="LoadPanel">
-                <Rectangle Effect="blur(20)" Fill="Gray" RadiusX="30" RadiusY="30" Opacity="0.2" />
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Image Source="../../Assets/upload_200dp_E8EAED_FILL0_wght400_GRAD0_opsz48.png" Height="150" />
-                    <TextBlock>Загрузить новый файл</TextBlock>
-                </StackPanel>
-            </Panel>
+            <DockPanel Grid.Row="1" Margin="10, 0, 10, 10" LastChildFill="True" HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch">
+                <Button CornerRadius="0, 5, 5, 0" Click="SendClick" VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        VerticalContentAlignment="Center" DockPanel.Dock="Right">
+                    <Image Source="../../Assets/keyboard_double_arrow_up_36dp_E8EAED_FILL0_wght400_GRAD0_opsz40.png"
+                           Height="20" />
+                </Button>
+                <Button Click="AttachFile" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                        CornerRadius="5, 0, 0, 5"
+                        VerticalContentAlignment="Center" DockPanel.Dock="Left">
+                    <Image Source="{SvgImage ../../Assets/attach.svg}"
+                           Height="20" />
+                </Button>
+                <TextBox CornerRadius="0" Background="Transparent" x:Name="MsgBox" MaxLines="10"
+                         VerticalAlignment="Bottom"
+                         TextWrapping="WrapWithOverflow" HorizontalAlignment="Stretch" KeyDown="MsgBox_OnKeyDown" />
+            </DockPanel>
+        </Grid>
+        <Panel IsVisible="False" x:Name="LoadPanel" VerticalAlignment="Stretch">
+            <Rectangle Effect="blur(20)" Fill="Gray" RadiusX="30" RadiusY="30" Opacity="0.2" />
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Image Source="../../Assets/upload_200dp_E8EAED_FILL0_wght400_GRAD0_opsz48.png" Height="150" />
+                <TextBlock>Загрузить новый файл</TextBlock>
+            </StackPanel>
         </Panel>
-        <DockPanel Grid.Row="1" Margin="10, 0, 10, 10" LastChildFill="True" HorizontalAlignment="Stretch"
-                   VerticalAlignment="Stretch">
-            <Button CornerRadius="0, 5, 5, 0" Click="SendClick" VerticalAlignment="Stretch"
-                    HorizontalAlignment="Stretch"
-                    VerticalContentAlignment="Center" DockPanel.Dock="Right">
-                <Image Source="../../Assets/keyboard_double_arrow_up_36dp_E8EAED_FILL0_wght400_GRAD0_opsz40.png"
-                       Height="20" />
-            </Button>
-            <Button Click="AttachFile" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                    CornerRadius="5, 0, 0, 5"
-                    VerticalContentAlignment="Center" DockPanel.Dock="Left">
-                <Image Source="{SvgImage ../../Assets/attach.svg}"
-                       Height="20" />
-            </Button>
-            <TextBox CornerRadius="0" Background="Transparent" x:Name="MsgBox" MaxLines="10" VerticalAlignment="Bottom"
-                     TextWrapping="WrapWithOverflow" HorizontalAlignment="Stretch" KeyDown="MsgBox_OnKeyDown" />
+        <DockPanel Name="RenamingPanel" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center" x:DataType="viewModels:RenameViewModel">
+            <DockPanel.DataContext>
+                <viewModels:RenameViewModel></viewModels:RenameViewModel>
+            </DockPanel.DataContext>
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Click="OnCancelRename" HorizontalAlignment="Right" Margin="10, 0,0, 10" Background="OrangeRed"
+                        Foreground="White">
+                    Отменить
+                </Button>
+                <Button Click="OnApplyRename" HorizontalAlignment="Right" Margin="10, 0, 10, 10" Foreground="White">Переименовать</Button>
+            </StackPanel>
+            <TextBox Name="Redactor" DockPanel.Dock="Top" Text="{Binding FileName}" TextWrapping="Wrap" BorderThickness="0"
+                     Margin="10" Background="Transparent" />
         </DockPanel>
-    </Grid>
+        <DockPanel Name="RecolorPanel" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center" x:DataType="viewModels:RenameViewModel">
+            <DockPanel.DataContext>
+                <viewModels:RenameViewModel></viewModels:RenameViewModel>
+            </DockPanel.DataContext>
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Click="OnCancelRecolor" HorizontalAlignment="Right" Margin="10, 0,0, 10" Background="OrangeRed"
+                        Foreground="White">
+                    Отменить
+                </Button>
+                <Button Click="OnApplyRecolor" HorizontalAlignment="Right" Margin="10, 0, 10, 10" Foreground="White">Изменить цвет</Button>
+            </StackPanel>
+            <ColorPicker Margin="10" Width="120" Name="RecolorColorPicker"></ColorPicker>
+        </DockPanel>
+
+    </Panel>
+
 </UserControl>

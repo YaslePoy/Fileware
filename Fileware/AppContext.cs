@@ -12,6 +12,7 @@ public static class AppContext
     public const string StorageDir = "storage/";
     public static FileChat ChatInstance;
     public static MainWindow WindowInstance;
+    public static IMultiLevelView CurrentMultiLevelView;
     public static Dictionary<int, StoredFileMeta> LocalStoredFiles;
 
     static AppContext()

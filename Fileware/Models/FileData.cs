@@ -3,21 +3,47 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
-using System.Runtime.CompilerServices;
+using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Fileware.Controls;
 using Fileware.ViewModels;
 
 namespace Fileware.Models;
 
-public class FileData : INotifyPropertyChanged
+public class FileData : INotifyPropertyChanged, ITagContainer
 {
-    public static Tag[] AllTags = [new() { Name = "Избранное", Color = new SolidColorBrush(Colors.Teal) }];
     private string _name;
     private IImage? _preview;
     private byte[]? _previewData;
     public int Id { get; set; }
-    public Tag[] Tags { get; set; } = AllTags;
+    private List<Tag> _tags = [Tag.FromName("Избранное"), Tag.FromName("Секретное")];
+
+    public WrapPanel? TagsPreviewPanel { get; set; }
+
+    public void UpdateTagPanel()
+    {
+        if (TagsPreviewPanel is null) return;
+        TagsPreviewPanel.Children.Clear();
+        foreach (var tag in _tags)
+        {
+            TagsPreviewPanel.Children.Add(new TagPoint { DataContext = tag });
+        }
+    }
+
+    public List<Tag> Tags
+    {
+        get => _tags;
+        set
+        {
+            if (Equals(value, _tags)) return;
+            _tags = value;
+            UpdateTagPanel();
+
+            OnPropertyChanged(nameof(Tags));
+            OnPropertyChanged(nameof(HasTags));
+        }
+    }
 
     public string Name
     {
@@ -36,7 +62,7 @@ public class FileData : INotifyPropertyChanged
         }
     }
 
-    public bool HasTags => Tags.Length > 0;
+    public bool HasTags => Tags.Count > 0;
 
     public int Version { get; set; }
     public DateTime LastChange { get; set; }
@@ -137,14 +163,6 @@ public class FileData : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-        field = value;
-        OnPropertyChanged(propertyName);
-        return true;
-    }
-
     public static string SpeedFormatted(long bytesPerSecond)
     {
         if (bytesPerSecond <= 1024)
@@ -154,4 +172,24 @@ public class FileData : INotifyPropertyChanged
 
         return Math.Round(bytesPerSecond / 1024d / 1024d, 1) + " MB/s";
     }
+}
+
+public interface ITagContainer
+{
+    public WrapPanel? TagsPreviewPanel { get; set; }
+
+    public void UpdateTagPanel()
+    {
+        if (TagsPreviewPanel is not null)
+        {
+            TagsPreviewPanel.Children.Clear();
+            foreach (var tag in Tags)
+            {
+                TagsPreviewPanel.Children.Add(new TagPoint { DataContext = tag });
+            }
+        }
+    }
+
+    public bool HasTags => Tags.Count > 0;
+    List<Tag> Tags { get; set; }
 }

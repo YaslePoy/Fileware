@@ -19,6 +19,7 @@ namespace Fileware.Controls;
 public partial class FileBlock : UserControl
 {
     public bool IsCheckUpdates;
+    public IMultiLevelView host;
     private bool IsTransfering;
 
     public FileBlock()
@@ -32,23 +33,18 @@ public partial class FileBlock : UserControl
         ActivateTransferTimer(stream, data.Size, () => { });
     }
 
-    private void OnRename(object? sender, RoutedEventArgs e)
+    protected void OnRename(object? sender, RoutedEventArgs e)
     {
-        var vm = DataContext as FileData;
-        var winVm = new RenameViewModel { FileName = vm.Name };
-        var win = new FileRenameWindow { DataContext = winVm };
-        win.ShowDialog<bool>(AppContext.WindowInstance).ContinueWith(t =>
-        {
-            if (t.Result)
-                Dispatcher.UIThread.Invoke(() =>
-                {
-                    vm.Name = winVm.FileName;
-                    vm.OnPropertyChanged("Name");
-                    Api.Http.PatchAsync($"api/File/{vm.Id}/rename",
-                        new StringContent("\"" + vm.Name + "\"",
-                            MediaTypeWithQualityHeaderValue.Parse("application/json")));
-                });
-        });
+        host.MakeTopLevel("FileRename", DataContext);
+        
+    }
+
+    protected override void OnDataContextEndUpdate()
+    {
+        base.OnDataContextEndUpdate();
+        var data = DataContext as FileData;
+        data.TagsPreviewPanel = TagsPanel;
+        data.UpdateTagPanel();
     }
 
     private void OnDelete(object? sender, RoutedEventArgs e)

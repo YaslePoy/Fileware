@@ -3,25 +3,26 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:fileware="clr-namespace:Fileware"
+             xmlns:models="clr-namespace:Fileware.Models"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Fileware.Controls.MessageBlock"
-             x:DataType="fileware:Message" HorizontalAlignment="Left">
+             x:DataType="models:Message" HorizontalAlignment="Left">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <fileware:Message
+        <models:Message
             Text="weqrsarsdtfdyfgdfccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccgjidfhfgushufbsauirhosahr">
-            <fileware:Message.Time>
+            <models:Message.Time>
 
-            </fileware:Message.Time>
-        </fileware:Message>
+            </models:Message.Time>
+        </models:Message>
 
     </Design.DataContext>
     <DockPanel HorizontalAlignment="Left" VerticalAlignment="Center" LastChildFill="True">
         <WrapPanel Name="TagsPanel" MaxWidth="{Binding #ViewText.Bounds.Width}" Orientation="Horizontal"
                    VerticalAlignment="Top"
                    HorizontalAlignment="Center"
-                   DockPanel.Dock="Bottom" Margin="5, 0" />
+                   DockPanel.Dock="Bottom" Margin="5, 0"  />
         <Border DockPanel.Dock="Top" VerticalAlignment="Center" HorizontalAlignment="Center"
                 Background="{StaticResource MainColorBrush}"
                 CornerRadius="10" MaxWidth="700">
