@@ -6,50 +6,59 @@
              MinHeight="300"
              mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="300"
              x:DataType="models:FileData" HorizontalContentAlignment="Stretch"
-             x:Class="Fileware.Controls.ImageBlock" VerticalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+             x:Class="Fileware.Controls.ImageBlock" VerticalContentAlignment="Center" HorizontalAlignment="Left"
+             VerticalAlignment="Bottom">
     <Design.DataContext>
         <models:FileData Name="FileData file name qwer.json" Size="410552" Version="13" />
     </Design.DataContext>
-    <Border HorizontalAlignment="Left" VerticalAlignment="Center"
-            ClipToBounds="True" Background="{StaticResource MainColorBrush}" CornerRadius="15">
-        <Border.ContextMenu>
-            <ContextMenu>
-                <MenuItem Header="Переименовать" Click="OnRename"></MenuItem>
-                <MenuItem Header="Удалить">
-                    <MenuItem Background="OrangeRed" Header="Точно?" Click="OnDelete"></MenuItem>
-                </MenuItem>
-            </ContextMenu>
-        </Border.ContextMenu>
-        <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <Panel DockPanel.Dock="Bottom" Width="{Binding #ViewImage.Bounds.Width}">
-                <Grid VerticalAlignment="Stretch" Margin="10, 3"
-                      ColumnDefinitions="* Auto" HorizontalAlignment="Stretch">
+    <DockPanel HorizontalAlignment="Left" VerticalAlignment="Center" LastChildFill="True">
+        <WrapPanel Name="TagsPanel" MaxHeight="{Binding #ViewImage.Bounds.Height}" Orientation="Vertical"
+                   VerticalAlignment="Center" HorizontalAlignment="Center"
+                   DockPanel.Dock="Right" Margin="5, 0" />
+        <Border DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Center"
+                ClipToBounds="True" Background="{StaticResource MainColorBrush}" CornerRadius="15">
+            <Border.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Переименовать" Click="OnRename" />
+                    <MenuItem Header="Удалить">
+                        <MenuItem Background="OrangeRed" Header="Точно?" Click="OnDelete" />
+                    </MenuItem>
+                </ContextMenu>
+            </Border.ContextMenu>
+            <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Panel DockPanel.Dock="Bottom" Width="{Binding #ViewImage.Bounds.Width}">
+                    <Grid VerticalAlignment="Stretch" Margin="10, 3"
+                          ColumnDefinitions="* Auto" HorizontalAlignment="Stretch">
 
-                    <TextBlock Grid.Column="1" DockPanel.Dock="Right" Foreground="White"
-                               TextTrimming="CharacterEllipsis"
-                               Text="{Binding LastChange, StringFormat=t}"
-                               ToolTip.Tip="{Binding LastChange, StringFormat=U}" 
-                               VerticalAlignment="Center"/>
-                    <SelectableTextBlock VerticalAlignment="Center" Foreground="White"
-                                         FontSize="12" Margin="4"
-                                         Text="{Binding Name}" HorizontalAlignment="Stretch"
-                                         IsVisible="{Binding !LoadProgressEnable}"
-                                         TextTrimming="CharacterEllipsis"
-                                         ToolTip.Tip="{Binding Name}" />
-                    <Panel HorizontalAlignment="Stretch" Grid.Column="1" VerticalAlignment="Center">
-                        <TextBlock VerticalAlignment="Top" Foreground="White" FontSize="12" Margin="4, 2"
-                                   IsVisible="{Binding LoadProgressEnable}" IsEnabled="{Binding LoadProgressEnable}"
-                                   Name="SpeedTB" HorizontalAlignment="Right" />
-                    </Panel>
-                    <ProgressBar VerticalAlignment="Center" Name="UploadBar" IsEnabled="{Binding LoadProgressEnable}"
-                                 IsVisible="{Binding LoadProgressEnable}" Margin="0, 5" />
-                </Grid>
-            </Panel>
+                        <TextBlock Grid.Column="1" DockPanel.Dock="Right" Foreground="White"
+                                   TextTrimming="CharacterEllipsis"
+                                   Text="{Binding LastChange, StringFormat=t}"
+                                   ToolTip.Tip="{Binding LastChange, StringFormat=U}"
+                                   VerticalAlignment="Center" />
+                        <SelectableTextBlock VerticalAlignment="Center" Foreground="White"
+                                             FontSize="12" Margin="4"
+                                             Text="{Binding Name}" HorizontalAlignment="Stretch"
+                                             IsVisible="{Binding !LoadProgressEnable}"
+                                             TextTrimming="CharacterEllipsis"
+                                             ToolTip.Tip="{Binding Name}" />
+                        <Panel HorizontalAlignment="Stretch" Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock VerticalAlignment="Top" Foreground="White" FontSize="12" Margin="4, 2"
+                                       IsVisible="{Binding LoadProgressEnable}"
+                                       IsEnabled="{Binding LoadProgressEnable}"
+                                       Name="SpeedTB" HorizontalAlignment="Right" />
+                        </Panel>
+                        <ProgressBar VerticalAlignment="Center" Name="UploadBar"
+                                     IsEnabled="{Binding LoadProgressEnable}"
+                                     IsVisible="{Binding LoadProgressEnable}" Margin="0, 5" />
+                    </Grid>
+                </Panel>
 
-            <Image Source="{Binding Preview}" Name="ViewImage" Effect="{Binding PreviewEffect}" DockPanel.Dock="Top"
-                   HorizontalAlignment="Stretch"
-                   VerticalAlignment="Stretch" >
-            </Image>
-        </DockPanel>
-    </Border>
+                <Image Source="{Binding Preview}" Name="ViewImage" Effect="{Binding PreviewEffect}"
+                       DockPanel.Dock="Top"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch" />
+            </DockPanel>
+        </Border>
+
+    </DockPanel>
 </UserControl>

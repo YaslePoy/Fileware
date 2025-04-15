@@ -10,6 +10,6 @@
         <system:DateTime>2021-1-1</system:DateTime>
     </Design.DataContext>
     <Border Background="Gray" VerticalAlignment="Center" HorizontalAlignment="Left" CornerRadius="20">
-        <TextBlock Margin="20, 5" Text="{Binding StringFormat=D}" Foreground="White"></TextBlock>
+        <TextBlock Margin="20, 5" Text="{Binding StringFormat=D}" Foreground="White" />
     </Border>
 </UserControl>

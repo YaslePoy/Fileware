@@ -13,11 +13,12 @@ public class Message : INotifyPropertyChanged
     public string Text { get; set; }
     public DateTime Time { get; set; }
     public string FormattedTime => Time.ToString("t");
-    public event PropertyChangedEventHandler? PropertyChanged;
-    [ForeignKey("User")]
-    public int UserId { get; set; }
+
+    [ForeignKey("User")] public int UserId { get; set; }
+
     public int User { get; set; }
-    
+    public event PropertyChangedEventHandler? PropertyChanged;
+
     public virtual void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

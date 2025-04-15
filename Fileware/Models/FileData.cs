@@ -2,19 +2,42 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Drawing;
 using System.IO;
 using System.Runtime.CompilerServices;
-using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Fileware.ViewModels;
 
 namespace Fileware.Models;
 
 public class FileData : INotifyPropertyChanged
 {
+    public static Tag[] AllTags = [new() { Name = "Избранное", Color = new SolidColorBrush(Colors.Teal) }];
+    private string _name;
+    private IImage? _preview;
+    private byte[]? _previewData;
     public int Id { get; set; }
-    public string Name { get; set; }
+    public Tag[] Tags { get; set; } = AllTags;
+
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            if (value == _name) return;
+            if (_name is not null && AppContext.LocalStoredFiles.TryGetValue(Id, out var meta))
+            {
+                File.Move(meta.Path, meta.Path.Replace(Name, value));
+                meta.Path = meta.Path.Replace(Name, value);
+            }
+
+            _name = value;
+            OnPropertyChanged(nameof(Name));
+        }
+    }
+
+    public bool HasTags => Tags.Length > 0;
+
     public int Version { get; set; }
     public DateTime LastChange { get; set; }
     public long Size { get; set; }
@@ -55,26 +78,40 @@ public class FileData : INotifyPropertyChanged
 
             if (SuperPreview is null)
                 return null;
-            
+
             PreviewEffect = new BlurEffect { Radius = 10 };
             using var stream = new MemoryStream(SuperPreview);
             _preview = new Bitmap(stream);
             OnPropertyChanged(nameof(PreviewEffect));
             // OnPropertyChanged(nameof(Preview));
             return _preview;
-            
         }
         set => _preview = value;
     }
 
     public byte[]? SuperPreview { get; set; }
-    private IImage? _preview;
-    private byte[]? _previewData;
 
 
     [ForeignKey("User")] public int UserId { get; set; }
 
     public int User { get; set; }
+
+    public string SizeFormatted
+    {
+        get
+        {
+            if (Size <= 1024)
+                return Size + " B";
+            if (Size <= 1024 * 1024)
+                return Math.Round(Size / 1024d, 1) + " KB";
+            if (Size <= 1024 * 1024 * 1024)
+                return Math.Round(Size / 1024d / 1024d, 1) + " MB";
+
+            return Math.Round(Size / 1024d / 1024d / 1024d, 1) + " GB";
+        }
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     public void UpdateSyncState()
     {
@@ -94,23 +131,6 @@ public class FileData : INotifyPropertyChanged
             }
         }
     }
-
-    public string SizeFormatted
-    {
-        get
-        {
-            if (Size <= 1024)
-                return Size + " B";
-            if (Size <= 1024 * 1024)
-                return Math.Round(Size / 1024d, 1) + " KB";
-            if (Size <= 1024 * 1024 * 1024)
-                return Math.Round(Size / 1024d / 1024d, 1) + " MB";
-
-            return Math.Round(Size / 1024d / 1024d / 1024d, 1) + " GB";
-        }
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
 
     public virtual void OnPropertyChanged(string propertyName)
     {

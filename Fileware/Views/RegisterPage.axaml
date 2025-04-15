@@ -2,13 +2,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:Fileware.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Fileware.Views.RegisterPage">
+             x:Class="Fileware.Views.RegisterPage" x:DataType="viewModels:RegisterPageViewModel">
     <UserControl.Styles>
         <Style Selector="TextBlock.Invisible">
             <Setter Property="Transitions">
                 <Transitions>
-                    <DoubleTransition Property="Height" Duration="0:0:0.5"></DoubleTransition>
+                    <DoubleTransition Property="Height" Duration="0:0:0.5" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.LoginButton">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Height" Duration="0:0:0.3" />
                 </Transitions>
             </Setter>
         </Style>
@@ -19,6 +27,11 @@
             <TextBox HorizontalAlignment="Stretch" Watermark="Введите желаемый логин" />
         </StackPanel>
         <TextBox HorizontalAlignment="Stretch" Watermark="Как к вам обращаться" />
-        
+        <TextBox Watermark="День рождения" HorizontalAlignment="Stretch" />
+        <TextBox Watermark="Пароль" HorizontalAlignment="Stretch" PasswordChar="~" />
+        <Button Height="0" IsEnabled="{Binding LoginActive}" Name="LoginButton" VerticalAlignment="Top"
+                Command="{Binding Register}" Classes="Long LoginButton">
+            Войти
+        </Button>
     </StackPanel>
 </UserControl>

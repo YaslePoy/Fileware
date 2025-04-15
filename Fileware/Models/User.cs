@@ -5,10 +5,8 @@ using System.IO;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using ReactiveUI;
 
 namespace Fileware.Models;
 
@@ -21,7 +19,10 @@ public class User : INotifyPropertyChanged
     public int FileCount { get; set; }
     public int FileWeigth { get; set; }
     public DateOnly BirthDate { get; set; }
-    public Task<Bitmap?> AvatarImage { get; } = ImageHelper.LoadFromWeb(new Uri("https://upload.wikimedia.org/wikipedia/commons/4/41/NewtonsPrincipia.jpg"));
+
+    public Task<Bitmap?> AvatarImage { get; } =
+        ImageHelper.LoadFromWeb(new Uri("https://upload.wikimedia.org/wikipedia/commons/4/41/NewtonsPrincipia.jpg"));
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

@@ -1,11 +1,8 @@
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Fileware.Models;
 using Fileware.Windows;
@@ -25,16 +22,14 @@ public partial class ImageBlock : FileBlock
         win.ShowDialog<bool>(AppContext.WindowInstance).ContinueWith(t =>
         {
             if (t.Result)
-            {
                 Dispatcher.UIThread.Invoke(() =>
                 {
                     var msg = DataContext as FileData;
                     msg.OnPropertyChanged("Name");
-                    Api.Http.PatchAsync( $"api/File/{msg.Id}/rename",
+                    Api.Http.PatchAsync($"api/File/{msg.Id}/rename",
                         new StringContent("\"" + msg.Name + "\"",
                             MediaTypeWithQualityHeaderValue.Parse("application/json")));
                 });
-            }
         });
     }
 

@@ -12,8 +12,8 @@
             <Setter Property="(Svg.Css)" Value=".Black { fill: #FF0000; }" />
         </Style>
         <Style Selector="Border.Dock">
-            <Setter Property="Height" Value="5"></Setter>
-            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+            <Setter Property="Height" Value="5" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="Transitions">
                 <Transitions>
                     <DoubleTransition Easing="CubicEaseInOut" Property="Height" Duration="0:0:0.2" />
@@ -23,7 +23,7 @@
             <Setter Property="Background" Value="Gainsboro" />
             <Setter Property="BorderBrush">#999999</Setter>
         </Style>
-        
+
         <Style Selector="Border.Dock:pointerover">
             <Setter Property="BorderBrush">
                 <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
@@ -33,14 +33,13 @@
                 </LinearGradientBrush>
             </Setter>
             <Setter Property="Background" Value="Gainsboro" />
-            <Setter Property="Height" Value="5"></Setter>
+            <Setter Property="Height" Value="5" />
         </Style>
 
         <Style Selector="Border.Dock > StackPanel > Svg">
-            <Setter Property="Margin" Value="0, 5"></Setter>
+            <Setter Property="Margin" Value="0, 5" />
         </Style>
-        <Style Selector="Border.Dock > StackPanel > Svg:pointerover">
-        </Style>
+        <Style Selector="Border.Dock > StackPanel > Svg:pointerover" />
     </UserControl.Styles>
     <Panel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <reactiveUi:RoutedViewHost HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Router="{Binding Router}">

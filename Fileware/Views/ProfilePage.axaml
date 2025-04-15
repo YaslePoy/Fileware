@@ -17,8 +17,7 @@
     </Design.DataContext>
     <Panel>
         <Image Height="35" Width="35" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10"
-               Tapped="EditProfile" Source="{SvgImage /Assets/Edit.svg}">
-        </Image>
+               Tapped="EditProfile" Source="{SvgImage /Assets/Edit.svg}" />
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="7">
             <Border ClipToBounds="True" BorderBrush="{StaticResource MainColorBrush}" BorderThickness="3"
                     CornerRadius="16">
@@ -27,7 +26,7 @@
             <TextBlock FontSize="20" Text="{Binding User.ShowName}" />
             <TextBlock Text="{Binding User.Username}" HorizontalAlignment="Center" FontWeight="SemiBold" />
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <TextBlock Text="{Binding User.FileCount, StringFormat='{}У вас хранится {0} файлов.'}"></TextBlock>
+                <TextBlock Text="{Binding User.FileCount, StringFormat='{}У вас хранится {0} файлов.'}" />
             </StackPanel>
         </StackPanel>
     </Panel>

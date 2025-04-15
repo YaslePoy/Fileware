@@ -1,9 +1,6 @@
 using System.Diagnostics;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
-using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using Fileware.ViewModels;
 
@@ -11,12 +8,12 @@ namespace Fileware.Views;
 
 public partial class BasePage : ReactiveUserControl<BasePageViewModel>
 {
+    private string _currentPage = "chat";
+
     public BasePage()
     {
         InitializeComponent();
     }
-
-    private string _currentPage = "chat";
 
     private void OpenDock(object? sender, PointerEventArgs e)
     {

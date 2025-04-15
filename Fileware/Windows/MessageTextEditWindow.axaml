@@ -2,7 +2,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:system="clr-namespace:System;assembly=System.Runtime"
         xmlns:fileware="clr-namespace:Fileware"
         mc:Ignorable="d"
         HorizontalAlignment="Left"
@@ -27,7 +26,6 @@
             <Button Click="OnApply" HorizontalAlignment="Right" Margin="10, 0, 10, 10" Foreground="White">Сохранить</Button>
         </StackPanel>
         <TextBox Name="Redactor" DockPanel.Dock="Top" Text="{Binding Text}" TextWrapping="Wrap" BorderThickness="0"
-                 Margin="10" Background="Transparent">
-        </TextBox>
+                 Margin="10" Background="Transparent" />
     </DockPanel>
 </Window>

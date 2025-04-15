@@ -2,11 +2,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:models="clr-namespace:Fileware.Models"
              xmlns:fileware="clr-namespace:Fileware"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Fileware.Controls.MessageBlock"
-             x:DataType="fileware:Message" HorizontalAlignment="Left" MaxWidth="700">
+             x:DataType="fileware:Message" HorizontalAlignment="Left">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
@@ -18,22 +17,29 @@
         </fileware:Message>
 
     </Design.DataContext>
-    <Border VerticalAlignment="Center" HorizontalAlignment="Center" Background="{StaticResource MainColorBrush}"
-            CornerRadius="10">
+    <DockPanel HorizontalAlignment="Left" VerticalAlignment="Center" LastChildFill="True">
+        <WrapPanel Name="TagsPanel" MaxWidth="{Binding #ViewText.Bounds.Width}" Orientation="Horizontal"
+                   VerticalAlignment="Top"
+                   HorizontalAlignment="Center"
+                   DockPanel.Dock="Bottom" Margin="5, 0" />
+        <Border DockPanel.Dock="Top" VerticalAlignment="Center" HorizontalAlignment="Center"
+                Background="{StaticResource MainColorBrush}"
+                CornerRadius="10" MaxWidth="700">
 
-        <Border.ContextMenu>
-            <ContextMenu>
-                <MenuItem Header="Изменить" Click="ChangeText"></MenuItem>
-                <MenuItem Header="Удалить">
-                    <MenuItem Background="OrangeRed" Header="Точно?" Click="OnDelete"></MenuItem>
-                </MenuItem>
-            </ContextMenu>
-        </Border.ContextMenu>
-        <DockPanel Margin="10">
-            <TextBlock Foreground="White" Margin="10, 0, 0, 0" DockPanel.Dock="Right" VerticalAlignment="Bottom"
-                       Text="{Binding Time, StringFormat=t}" ToolTip.Tip="{Binding Time, StringFormat=U}">
-            </TextBlock>
-            <SelectableTextBlock Foreground="White" Text="{Binding Text}" TextWrapping="Wrap"></SelectableTextBlock>
-        </DockPanel>
-    </Border>
+            <Border.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Изменить" Click="ChangeText" />
+                    <MenuItem Header="Удалить">
+                        <MenuItem Background="OrangeRed" Header="Точно?" Click="OnDelete" />
+                    </MenuItem>
+                </ContextMenu>
+            </Border.ContextMenu>
+            <DockPanel Margin="10">
+                <TextBlock Name="ViewText" Foreground="White" Margin="10, 0, 0, 0" DockPanel.Dock="Right"
+                           VerticalAlignment="Bottom"
+                           Text="{Binding Time, StringFormat=t}" ToolTip.Tip="{Binding Time, StringFormat=U}" />
+                <SelectableTextBlock Foreground="White" Text="{Binding Text}" TextWrapping="Wrap" />
+            </DockPanel>
+        </Border>
+    </DockPanel>
 </UserControl>

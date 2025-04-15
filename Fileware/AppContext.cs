@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using Avalonia;
 using Fileware.Models;
 using Fileware.Views;
 
@@ -10,24 +9,20 @@ namespace Fileware;
 
 public static class AppContext
 {
+    public const string StorageDir = "storage/";
     public static FileChat ChatInstance;
     public static MainWindow WindowInstance;
     public static Dictionary<int, StoredFileMeta> LocalStoredFiles;
-    public const string StorageDir = "storage/";
-    public static User CurrentUser { get; set; }
-
-    public static void Save()
-    {
-        File.WriteAllText("storedFiles.json", JsonSerializer.Serialize(LocalStoredFiles));
-    }
 
     static AppContext()
     {
         try
         {
             if (File.Exists("storedFiles.json"))
+            {
                 LocalStoredFiles =
                     JsonSerializer.Deserialize<Dictionary<int, StoredFileMeta>>(File.ReadAllText("storedFiles.json"));
+            }
             else
             {
                 using var file = File.Create("storedFiles.json");
@@ -39,6 +34,13 @@ public static class AppContext
         {
             LocalStoredFiles = new Dictionary<int, StoredFileMeta>();
         }
+    }
+
+    public static User CurrentUser { get; set; }
+
+    public static void Save()
+    {
+        File.WriteAllText("storedFiles.json", JsonSerializer.Serialize(LocalStoredFiles));
     }
 }
 

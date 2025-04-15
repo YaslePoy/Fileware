@@ -12,9 +12,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
-using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
@@ -29,21 +27,32 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
 {
     private static List<HistoryPoint> History;
 
+    private KeyEventArgs? _firstEnter;
+
     public FileChat()
     {
         InitializeComponent();
-        this.WhenActivated(disposables => { });
+        this.WhenActivated(_ => { });
 
         AppContext.ChatInstance = this;
         AddHandler(DragDrop.DragEnterEvent, DragOver);
         AddHandler(DragDrop.DragLeaveEvent, DragLeave);
         AddHandler(DragDrop.DropEvent, DragDropEvent);
+        if (File.Exists("./Cache/testHistory.json"))
+        {
+            var history = File.ReadAllText("./Cache/testHistory.json");
+            History = JsonSerializer.Deserialize<List<HistoryPoint>>(history, Api.JsonOptions) ??
+                      new List<HistoryPoint>();
+            ShowHistory();
+        }
 
         Api.Http.GetStringAsync("api/History?id=-1&count=100").ContinueWith(t =>
         {
             var history = t.Result;
+            File.WriteAllText("./Cache/testHistory.json", t.Result);
             History = JsonSerializer.Deserialize<List<HistoryPoint>>(history, Api.JsonOptions) ??
                       new List<HistoryPoint>();
+
             Dispatcher.UIThread.Invoke(ShowHistory);
         });
     }
@@ -52,7 +61,8 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
     {
         var lastDate = DateTime.Today;
         var lastPoint = default(HistoryPoint);
-        bool dontAdd = true;
+        var dontAdd = true;
+        PointsPanel.Children.Clear();
         foreach (var point in History)
         {
             if (point.Time.Date != DateTime.Today && point.Time.Date != lastDate)
@@ -84,16 +94,16 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
                             fileData.PreviewData = ms.ToArray();
                             Dispatcher.UIThread.Invoke(() => { fileData.OnPropertyChanged(nameof(fileData.Preview)); });
                         });
-                        adding = new ImageBlock { DataContext = fileData };
+                        adding = new ImageBlock { DataContext = fileData, Width = 350 };
                     }
                     else
+                    {
                         adding = new FileBlock
-                            { DataContext = fileData };
+                            { DataContext = fileData, Width = 350 };
+                    }
 
                     if (AppContext.LocalStoredFiles.ContainsKey(fileData.Id))
-                    {
                         (adding as FileBlock).StartVersionCheckerTimer();
-                    }
 
                     break;
 
@@ -134,12 +144,8 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
         Viewer.Effect = null;
         LoadPanel.IsVisible = false;
         if (e.Data.GetFiles() is { } fileNames)
-        {
             foreach (var file in fileNames)
-            {
                 await SendFile(new FileInfo(file.Path.LocalPath));
-            }
-        }
     }
 
     private async Task SendFile(FileInfo info)
@@ -164,14 +170,11 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
                 Name = name
             };
 
-            if (data.FileType.StartsWith("image"))
-            {
-                data.PreviewData = File.ReadAllBytes(info.FullName);
-            }
-            
+            if (data.FileType.StartsWith("image")) data.PreviewData = File.ReadAllBytes(info.FullName);
+
             addedBlock = data.FileType.StartsWith("image/png") || data.FileType.StartsWith("image/jpeg") ||
                          data.FileType.StartsWith("image/webp")
-                ? new ImageBlock { DataContext = data }
+                ? new ImageBlock { DataContext = data, Width = 350 }
                 : new FileBlock(fileStream, data);
             addedBlock.StartVersionCheckerTimer();
             PointsPanel.Children.Add(addedBlock);
@@ -207,7 +210,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
         Api.Http.PostAsync("api/Messaging",
                 new StringContent("\"" + MsgBox.Text + "\"", MediaTypeWithQualityHeaderValue.Parse("application/json")))
             .ContinueWith(
-                async (t) =>
+                async t =>
                 {
                     var id = int.Parse(await t.Result.Content.ReadAsStringAsync());
                     History.Add(new HistoryPoint
@@ -220,7 +223,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
                         Viewer.ScrollToEnd();
                     });
                 });
-        MsgBox.Text = String.Empty;
+        MsgBox.Text = string.Empty;
         Viewer.ScrollToEnd();
     }
 
@@ -234,8 +237,6 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
         if (Viewer.Offset.Y != 0)
             return;
     }
-
-    private KeyEventArgs? _firstEnter;
 
     private void MsgBox_OnKeyDown(object? sender, KeyEventArgs e)
     {
@@ -273,10 +274,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
 
     private FileInfo SaveImageToCache(byte[] pngData)
     {
-        if (!Directory.Exists("./Cache"))
-        {
-            Directory.CreateDirectory("./Cache");
-        }
+        if (!Directory.Exists("./Cache")) Directory.CreateDirectory("./Cache");
 
         var now = DateTime.Now;
         var name = $"clipboard_{now.ToString("MM_dd_yyyy_hh_mm_ss")}.png";
@@ -284,5 +282,15 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>
         File.WriteAllBytes(path, pngData);
         // return path;
         return new FileInfo(path);
+    }
+
+    private void AttachFile(object? sender, RoutedEventArgs e)
+    {
+        var topLevel = TopLevel.GetTopLevel(this);
+        topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            { Title = "Выберите файл", AllowMultiple = false }).ContinueWith(async t =>
+        {
+            foreach (var file in t.Result) await SendFile(new FileInfo(file.Path.LocalPath));
+        });
     }
 }

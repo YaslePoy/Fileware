@@ -12,8 +12,8 @@ public enum HistoryPointType
 
 public class HistoryPoint
 {
-    [Key]
-    public int Id { get; set; }
+    [Key] public int Id { get; set; }
+
     public int Type { get; set; }
     public int LinkedId { get; set; }
     public DateTime Time { get; set; }

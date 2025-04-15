@@ -13,6 +13,8 @@
             <TextBlock FontSize="20">Легкий клиент для управления своими файлами</TextBlock>
         </StackPanel>
 
-        <Button Command="{Binding GoAuth}" Classes="Long" Margin="5"><TextBlock FontSize="22">Начать</TextBlock></Button>
+        <Button Command="{Binding GoAuth}" Classes="Long" Margin="5">
+            <TextBlock FontSize="22">Начать</TextBlock>
+        </Button>
     </StackPanel>
 </UserControl>

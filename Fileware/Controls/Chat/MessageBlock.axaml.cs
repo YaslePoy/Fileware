@@ -1,11 +1,8 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Headers;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using Fileware.Views;
 using Fileware.Windows;
 
 namespace Fileware.Controls;
@@ -24,19 +21,17 @@ public partial class MessageBlock : UserControl
             DataContext = DataContext
         };
         var task = changeWin.ShowDialog<bool>(AppContext.WindowInstance);
-        task.ContinueWith((t) =>
+        task.ContinueWith(t =>
         {
             if (t.Result)
-            {
                 Dispatcher.UIThread.Invoke(() =>
                 {
                     var msg = DataContext as Message;
                     msg.OnPropertyChanged("Text");
-                    Api.Http.PatchAsync( $"api/Messaging/{msg.Id}",
+                    Api.Http.PatchAsync($"api/Messaging/{msg.Id}",
                         new StringContent("\"" + msg.Text + "\"",
                             MediaTypeWithQualityHeaderValue.Parse("application/json")));
                 });
-            }
         });
     }
 

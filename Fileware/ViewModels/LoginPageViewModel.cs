@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Reactive;
 using System.Windows.Input;
 using ReactiveUI;
 
@@ -13,11 +12,9 @@ public class LoginPageViewModel : ReactiveObject, IRoutableViewModel
         HostScreen = hostScreen;
     }
 
-    public string? UrlPathSegment { get; } = Guid.NewGuid().ToString()[..5];
-    public IScreen HostScreen { get; }
     public string Login { get; set; }
     public string Password { get; set; }
-    
+
     public ICommand GoRegister => ReactiveCommand.CreateFromObservable(() =>
         HostScreen.Router.Navigate.Execute(new RegisterPageViewModel(HostScreen)));
 
@@ -27,4 +24,6 @@ public class LoginPageViewModel : ReactiveObject, IRoutableViewModel
         HostScreen.Router.Navigate.Execute(new BasePageViewModel(HostScreen));
     });
 
+    public string? UrlPathSegment { get; } = Guid.NewGuid().ToString()[..5];
+    public IScreen HostScreen { get; }
 }

@@ -7,10 +7,10 @@
              x:Class="Fileware.Views.LoginPage" x:DataType="viewModels:LoginPageViewModel">
     <UserControl.Styles>
         <Style Selector="Button.LoginButton">
-            <Setter Property="Margin" Value="20, 5"></Setter>
+            <Setter Property="Margin" Value="20, 5" />
             <Setter Property="Transitions">
                 <Transitions>
-                    <DoubleTransition Property="Height" Duration="0:0:0.3"/>
+                    <DoubleTransition Property="Height" Duration="0:0:0.3" />
                 </Transitions>
             </Setter>
         </Style>
@@ -18,9 +18,13 @@
     <StackPanel Width="250" Classes="Centred" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
         <TextBlock FontSize="24">Авторизация</TextBlock>
         <TextBlock>Введите логин или пароль</TextBlock>
-        <TextBox TextChanged="UpdateLoginVisibility" Name="LoginText" Watermark="Логин" HorizontalAlignment="Stretch"></TextBox>
-        <TextBox TextChanged="UpdateLoginVisibility" Name="PasswordText" HorizontalAlignment="Stretch" PasswordChar="~" Watermark="Пароль"/>
-        <Button Height="0" Name="LoginButton" VerticalAlignment="Top" Command="{Binding TryAuth}" Classes="Long LoginButton">Войти</Button>
+        <TextBox TextChanged="UpdateLoginVisibility" Name="LoginText" Watermark="Логин" HorizontalAlignment="Stretch" />
+        <TextBox TextChanged="UpdateLoginVisibility" Name="PasswordText" HorizontalAlignment="Stretch" PasswordChar="~"
+                 Watermark="Пароль" />
+        <Button Height="0" Name="LoginButton" VerticalAlignment="Top" Command="{Binding TryAuth}"
+                Classes="Long LoginButton">
+            Войти
+        </Button>
         <HyperlinkButton Command="{Binding GoRegister}" HorizontalAlignment="Right">Зарегистрироваться</HyperlinkButton>
     </StackPanel>
 </UserControl>

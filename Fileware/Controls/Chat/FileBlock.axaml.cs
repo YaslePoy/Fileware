@@ -11,6 +11,7 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Fileware.Models;
+using Fileware.ViewModels;
 using Fileware.Windows;
 
 namespace Fileware.Controls;
@@ -33,20 +34,20 @@ public partial class FileBlock : UserControl
 
     private void OnRename(object? sender, RoutedEventArgs e)
     {
-        var win = new FileRenameWindow { DataContext = DataContext };
+        var vm = DataContext as FileData;
+        var winVm = new RenameViewModel { FileName = vm.Name };
+        var win = new FileRenameWindow { DataContext = winVm };
         win.ShowDialog<bool>(AppContext.WindowInstance).ContinueWith(t =>
         {
             if (t.Result)
-            {
                 Dispatcher.UIThread.Invoke(() =>
                 {
-                    var msg = DataContext as FileData;
-                    msg.OnPropertyChanged("Name");
-                    Api.Http.PatchAsync( $"api/File/{msg.Id}/rename",
-                        new StringContent("\"" + msg.Name + "\"",
+                    vm.Name = winVm.FileName;
+                    vm.OnPropertyChanged("Name");
+                    Api.Http.PatchAsync($"api/File/{vm.Id}/rename",
+                        new StringContent("\"" + vm.Name + "\"",
                             MediaTypeWithQualityHeaderValue.Parse("application/json")));
                 });
-            }
         });
     }
 
@@ -57,7 +58,7 @@ public partial class FileBlock : UserControl
         AppContext.ChatInstance.PointsPanel.Children.Remove(this);
     }
 
-    void OpenFile()
+    private void OpenFile()
     {
         var file = DataContext as FileData;
 
@@ -65,7 +66,7 @@ public partial class FileBlock : UserControl
             { FileName = AppContext.LocalStoredFiles[file.Id].Path, UseShellExecute = true });
     }
 
-    void LoadFile(string directory)
+    private void LoadFile(string directory)
     {
         var fileData = DataContext as FileData;
         var streamTask = Api.Http.GetStreamAsync($"api/File/{fileData.Id}/load");
@@ -88,7 +89,7 @@ public partial class FileBlock : UserControl
         });
     }
 
-    void ActivateTransferTimer(Stream stream, long total, Action onFinish)
+    private void ActivateTransferTimer(Stream stream, long total, Action onFinish)
     {
         IsTransfering = true;
         var timer = new DispatcherTimer();
@@ -100,7 +101,7 @@ public partial class FileBlock : UserControl
         timer.Interval = TimeSpan.FromMilliseconds(100);
 
         long lastPosition = 0;
-        int iter = 0;
+        var iter = 0;
         timer.Tick += (_, _) =>
         {
             iter++;
@@ -142,13 +143,13 @@ public partial class FileBlock : UserControl
         timer.Start();
     }
 
-    void LoadToDefaultDir()
+    private void LoadToDefaultDir()
     {
         Directory.CreateDirectory(AppContext.StorageDir);
         LoadFile(AppContext.StorageDir);
     }
 
-    async Task LoadToSelectionDir()
+    private async Task LoadToSelectionDir()
     {
         var topLevel = TopLevel.GetTopLevel(this);
         var dir = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
@@ -177,7 +178,7 @@ public partial class FileBlock : UserControl
         timer.Start();
     }
 
-    void UploadFile()
+    private void UploadFile()
     {
         var fileData = DataContext as FileData;
         var localStoreData = AppContext.LocalStoredFiles[fileData.Id];
@@ -195,7 +196,7 @@ public partial class FileBlock : UserControl
         var mimeType = MimeTypes.GetMimeType(fileData.Name);
         fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
         multipartFormContent.Add(fileStreamContent, "file", fileData.Name);
-        
+
         Api.Http.PatchAsync($"api/File/large/{fileData.Id}",
             // Api.ApiUrl + (info.Length > 30 * 1024 * 1024 ? $"api/File/large/{fileData.Id}" : $"api/File/{fileData.Id}"),
             multipartFormContent).ContinueWith(async t =>
@@ -219,13 +220,8 @@ public partial class FileBlock : UserControl
     {
         var file = DataContext as FileData;
         if (AppContext.LocalStoredFiles.ContainsKey(file.Id))
-        {
             OpenFile();
-        }
-        else if (!IsTransfering)
-        {
-            LoadToDefaultDir();
-        }
+        else if (!IsTransfering) LoadToDefaultDir();
     }
 
     private void InputElement_OnTapped(object? sender, TappedEventArgs e)

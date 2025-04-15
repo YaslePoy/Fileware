@@ -10,12 +10,12 @@
              x:Class="Fileware.Views.TilesPage">
     <UserControl.Styles>
         <Style Selector="WrapPanel > tile|FileTile">
-            <Setter Property="Width" Value="190"></Setter>
-            <Setter Property="Margin" Value="5"></Setter>
+            <Setter Property="Width" Value="190" />
+            <Setter Property="Margin" Value="5" />
         </Style>
         <Style Selector="WrapPanel > controls|MessageBlock">
-            <Setter Property="Width" Value="190"></Setter>
-            <Setter Property="Margin" Value="5"></Setter>
+            <Setter Property="Width" Value="190" />
+            <Setter Property="Margin" Value="5" />
         </Style>
     </UserControl.Styles>
     <ScrollViewer VerticalScrollBarVisibility="Disabled">
@@ -78,7 +78,7 @@
             </tile:FileTile>
             <controls:MessageBlock>
                 <controls:MessageBlock.DataContext>
-                    <fileware:Message Text="qeasodasjndjasjfnaskjfnjkasdkasdjasnfaks"/>
+                    <fileware:Message Text="qeasodasjndjasjfnaskjfnjkasdkasdjasnfaks" />
                 </controls:MessageBlock.DataContext>
             </controls:MessageBlock>
         </WrapPanel>

@@ -1,0 +1,11 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:Fileware.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="50" d:DesignHeight="50"
+             Width="19" Height="19"
+             x:Class="Fileware.Controls.TagPoint" x:DataType="viewModels:Tag">
+    <Border HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip.Tip="{Binding Name}"
+            Background="{Binding Color}" Margin="6" Width="6" Height="6" CornerRadius="10" />
+</UserControl>
