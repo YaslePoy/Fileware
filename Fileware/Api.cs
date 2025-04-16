@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Threading.Tasks;
+using Fileware.ViewModels;
 
 namespace Fileware;
 
@@ -20,4 +25,10 @@ public static class Api
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         WriteIndented = true
     };
+
+    public static Task UpdateTags(int point, List<Tag> tags)
+    {
+        return Http.PatchAsync($"api/History?pointId={point}",
+            new StringContent(JsonSerializer.Serialize(tags.Select(i => i.Name)), MediaTypeWithQualityHeaderValue.Parse("application/json")));
+    }
 }

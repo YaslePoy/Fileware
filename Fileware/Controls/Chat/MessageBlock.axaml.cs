@@ -51,4 +51,9 @@ public partial class MessageBlock : UserControl
         Api.Http.DeleteAsync($"api/Messaging/{current.Id}");
         AppContext.ChatInstance.PointsPanel.Children.Remove(this);
     }
+
+    private void AddTag(object? sender, RoutedEventArgs e)
+    {
+        AppContext.CurrentMultiLevelView.MakeTopLevel("TagManager", DataContext);
+    }
 }

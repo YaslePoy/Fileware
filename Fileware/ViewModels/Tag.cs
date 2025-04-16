@@ -43,3 +43,8 @@ public class Tag : ReactiveObject
         AppContext.CurrentMultiLevelView.MakeTopLevel("RecolorTag", this);
     });
 }
+
+public class SkipTag : Tag
+{
+    
+}

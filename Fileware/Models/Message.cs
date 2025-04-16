@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
 using Avalonia.Controls;
 using Fileware.Controls;
 using Fileware.ViewModels;
@@ -33,16 +36,22 @@ public sealed class Message : INotifyPropertyChanged, ITagContainer
     public int PointId { get; set; } = -1;
     public WrapPanel? TagsPreviewPanel { get; set; }
 
+    private int _lastTagCount = -1;
+
     public void UpdateTagPanel()
     {
-        if (TagsPreviewPanel is not null)
+        if (_lastTagCount == _tags.Count)
+            return;
+        _lastTagCount = _tags.Count;
+        if (TagsPreviewPanel is null) return;
+
+        TagsPreviewPanel.Children.Clear();
+        foreach (var tag in _tags)
         {
-            TagsPreviewPanel.Children.Clear();
-            foreach (var tag in _tags)
-            {
-                TagsPreviewPanel.Children.Add(new TagPoint { DataContext = tag });
-            }
+            TagsPreviewPanel.Children.Add(new TagPoint { DataContext = tag });
         }
+
+        Api.UpdateTags(PointId, _tags);
     }
 
     public List<Tag> Tags
@@ -53,9 +62,7 @@ public sealed class Message : INotifyPropertyChanged, ITagContainer
             if (Equals(value, _tags)) return;
             _tags = value;
             UpdateTagPanel();
-            
-            
-            
+
             OnPropertyChanged(nameof(Tags));
             OnPropertyChanged(nameof(HasTags));
         }

@@ -2,7 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text.Json;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -22,14 +27,24 @@ public class FileData : INotifyPropertyChanged, ITagContainer
     public int PointId { get; set; } = -1;
     public WrapPanel? TagsPreviewPanel { get; set; }
 
+    private int _lastTagCount = -1;
+    
     public void UpdateTagPanel()
     {
+        if (_lastTagCount == _tags.Count) 
+            return;
+        _lastTagCount = _tags.Count;
+        
         if (TagsPreviewPanel is null) return;
+        
         TagsPreviewPanel.Children.Clear();
         foreach (var tag in _tags)
         {
             TagsPreviewPanel.Children.Add(new TagPoint { DataContext = tag });
         }
+
+        Api.UpdateTags(PointId, _tags);
+
     }
 
     public List<Tag> Tags
@@ -41,10 +56,6 @@ public class FileData : INotifyPropertyChanged, ITagContainer
             _tags = value;
             UpdateTagPanel();
 
-            if (PointId != -1)
-            {
-            }
-            
             OnPropertyChanged(nameof(Tags));
             OnPropertyChanged(nameof(HasTags));
         }
@@ -177,25 +188,4 @@ public class FileData : INotifyPropertyChanged, ITagContainer
 
         return Math.Round(bytesPerSecond / 1024d / 1024d, 1) + " MB/s";
     }
-}
-
-public interface ITagContainer
-{
-    public int PointId { get; set; }
-    public WrapPanel? TagsPreviewPanel { get; set; }
-
-    public void UpdateTagPanel()
-    {
-        if (TagsPreviewPanel is not null)
-        {
-            TagsPreviewPanel.Children.Clear();
-            foreach (var tag in Tags)
-            {
-                TagsPreviewPanel.Children.Add(new TagPoint { DataContext = tag });
-            }
-        }
-    }
-
-    public bool HasTags => Tags.Count > 0;
-    List<Tag> Tags { get; set; }
 }

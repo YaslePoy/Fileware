@@ -19,7 +19,7 @@ namespace Fileware.Controls;
 public partial class FileBlock : UserControl
 {
     public bool IsCheckUpdates;
-    public IMultiLevelView host;
+    public IMultiLevelView Host;
     private bool IsTransfering;
 
     public FileBlock()
@@ -35,7 +35,7 @@ public partial class FileBlock : UserControl
 
     protected void OnRename(object? sender, RoutedEventArgs e)
     {
-        host.MakeTopLevel("FileRename", DataContext);
+        Host.MakeTopLevel("FileRename", DataContext);
         
     }
 
@@ -246,7 +246,7 @@ public partial class FileBlock : UserControl
         LoadFile(AppContext.LocalStoredFiles[(DataContext as FileData).Id].Path);
     }
 
-    private void AddTag(object? sender, RoutedEventArgs e)
+    public void AddTag(object? sender, RoutedEventArgs e)
     {
         AppContext.CurrentMultiLevelView.MakeTopLevel("TagManager", DataContext);
     }

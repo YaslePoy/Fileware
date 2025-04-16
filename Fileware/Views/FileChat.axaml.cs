@@ -50,7 +50,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
             ShowHistory();
         }
 
-        Api.Http.GetStringAsync("api/History?id=-1&count=100").ContinueWith(t =>
+        Api.Http.GetStringAsync("api/History?id=-1&count=100&key=test").ContinueWith(t =>
         {
             var history = t.Result;
             File.WriteAllText("./Cache/testHistory.json", t.Result);
@@ -98,12 +98,12 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
                             fileData.PreviewData = ms.ToArray();
                             Dispatcher.UIThread.Invoke(() => { fileData.OnPropertyChanged(nameof(fileData.Preview)); });
                         });
-                        adding = new ImageBlock { DataContext = fileData, Width = 350 };
+                        adding = new ImageBlock { DataContext = fileData, Width = 350, Host = this};
                     }
                     else
                     {
                         adding = new FileBlock
-                            { DataContext = fileData, Width = 350, host = this };
+                            { DataContext = fileData, Width = 350, Host = this };
                     }
 
                     if (AppContext.LocalStoredFiles.ContainsKey(fileData.Id))
@@ -120,8 +120,8 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
             if (adding != null)
             {
                 PointsPanel.Children.Insert(0, adding);
-                (adding as ITagContainer).Tags = point.Tags.Select(ViewModels.Tag.FromName).ToList();
-                (adding as ITagContainer).PointId = point.Id;
+                (adding.DataContext as ITagContainer).Tags = point.Tags.Select(ViewModels.Tag.FromName).ToList();
+                (adding.DataContext as ITagContainer).PointId = point.Id;
 
             }
 
@@ -184,8 +184,8 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
 
             addedBlock = data.FileType.StartsWith("image/png") || data.FileType.StartsWith("image/jpeg") ||
                          data.FileType.StartsWith("image/webp")
-                ? new ImageBlock { DataContext = data, Width = 350 }
-                : new FileBlock(fileStream, data) { host = this };
+                ? new ImageBlock { DataContext = data, Width = 350, Host = this}
+                : new FileBlock(fileStream, data) { Host = this };
             addedBlock.StartVersionCheckerTimer();
             PointsPanel.Children.Add(addedBlock);
             Viewer.ScrollToEnd();
@@ -287,7 +287,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
         if (!Directory.Exists("./Cache")) Directory.CreateDirectory("./Cache");
 
         var now = DateTime.Now;
-        var name = $"clipboard_{now.ToString("MM_dd_yyyy_hh_mm_ss")}.png";
+        var name = $"clipboard_{now:MM_dd_yyyy_hh_mm_ss}.png";
         var path = "./Cache/" + name;
         File.WriteAllBytes(path, pngData);
         // return path;
@@ -380,8 +380,9 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
     private void OnApplyTagAdd(object? sender, RoutedEventArgs e)
     {
         var currentContext = TagManagerPanel.DataContext as TagEditorViewModel;
-        currentContext.CurrentTagsOwner.Tags.Add(ViewModels.Tag.FromName(currentContext.CurrentTagName));
-        currentContext.CurrentTagsOwner.UpdateTagPanel();
+        var nextTags = new List<Tag>(currentContext.CurrentTagsOwner.Tags);
+        nextTags.Add(ViewModels.Tag.FromName(currentContext.CurrentTagName));
+        currentContext.CurrentTagsOwner.Tags = nextTags;
         TagManagerPanel.IsVisible = false;
     }
 

@@ -3,28 +3,43 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:models="clr-namespace:Fileware.Models"
+             xmlns:viewModels="clr-namespace:Fileware.ViewModels"
              MinHeight="300"
              mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="300"
              x:DataType="models:FileData" HorizontalContentAlignment="Stretch"
              x:Class="Fileware.Controls.ImageBlock" VerticalContentAlignment="Center" HorizontalAlignment="Left"
              VerticalAlignment="Bottom">
+    <UserControl.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="Переименовать" Click="OnRename" />
+            <MenuItem Header="Удалить">
+                <MenuItem Background="OrangeRed" Header="Точно?" Click="OnDelete" />
+            </MenuItem>
+            <MenuItem Header="Тэги" ItemsSource="{Binding Tags}">
+                <MenuItem.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:Tag">
+                        <DockPanel LastChildFill="True" Width="150">
+                            <Border Width="5" Height="5" VerticalAlignment="Center" CornerRadius="10"
+                                    Background="{Binding Color}" />
+                            <TextBlock VerticalAlignment="Center" Text="{Binding Name}"
+                                       TextTrimming="CharacterEllipsis" Margin="5" />
+                        </DockPanel>
+                    </DataTemplate>
+                </MenuItem.ItemTemplate>
+            </MenuItem>
+            <MenuItem Header="Добавить тег" Click="AddTag"></MenuItem>
+        </ContextMenu>
+
+    </UserControl.ContextMenu>
     <Design.DataContext>
         <models:FileData Name="FileData file name qwer.json" Size="410552" Version="13" />
     </Design.DataContext>
     <DockPanel HorizontalAlignment="Left" VerticalAlignment="Center" LastChildFill="True">
         <WrapPanel Name="TagsPanel" MaxHeight="{Binding #ViewImage.Bounds.Height}" Orientation="Vertical"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
-                   DockPanel.Dock="Right" Margin="5, 0"  />
+                   DockPanel.Dock="Right" Margin="5, 0" />
         <Border DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Center"
                 ClipToBounds="True" Background="{StaticResource MainColorBrush}" CornerRadius="15">
-            <Border.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Переименовать" Click="OnRename" />
-                    <MenuItem Header="Удалить">
-                        <MenuItem Background="OrangeRed" Header="Точно?" Click="OnDelete" />
-                    </MenuItem>
-                </ContextMenu>
-            </Border.ContextMenu>
             <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Panel DockPanel.Dock="Bottom" Width="{Binding #ViewImage.Bounds.Width}">
                     <Grid VerticalAlignment="Stretch" Margin="10, 3"
