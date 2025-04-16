@@ -245,4 +245,9 @@ public partial class FileBlock : UserControl
 
         LoadFile(AppContext.LocalStoredFiles[(DataContext as FileData).Id].Path);
     }
+
+    private void AddTag(object? sender, RoutedEventArgs e)
+    {
+        AppContext.CurrentMultiLevelView.MakeTopLevel("TagManager", DataContext);
+    }
 }

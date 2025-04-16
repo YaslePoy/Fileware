@@ -2,23 +2,26 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:models="clr-namespace:Fileware.Models"
              xmlns:viewModels="clr-namespace:Fileware.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Fileware.Views.FileChat">
     <Panel>
-
-        <Grid RowDefinitions="*,Auto">
-            <ScrollViewer x:Name="Viewer" CornerRadius="15" HorizontalScrollBarVisibility="Disabled"
+        <Grid RowDefinitions="Auto, *,Auto" IsVisible="True">
+            <DockPanel LastChildFill="False" Height="35" Margin="10, 3, 10, 0">
+                <StackPanel Orientation="Horizontal" Classes="Centred" DockPanel.Dock="Left" VerticalAlignment="Center" Spacing="10">
+                    <TextBlock VerticalAlignment="Center">Файловое пространство</TextBlock>
+                    <ComboBox Name="FileSpacesComboBox"></ComboBox>
+                </StackPanel>
+            </DockPanel>
+            <ScrollViewer Grid.Row="1" x:Name="Viewer" CornerRadius="15" HorizontalScrollBarVisibility="Disabled"
                           VerticalContentAlignment="Bottom"
                           ScrollChanged="Viewer_OnScrollChanged"
                           Margin="50, 0, 50, 10" VerticalAlignment="Stretch">
                 <StackPanel x:Name="PointsPanel" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
                             Margin="5"
                             Spacing="10" />
-                <!-- <Rectangle Height="50" Width="50" Fill="Yellow"></Rectangle> -->
             </ScrollViewer>
-            <DockPanel Grid.Row="1" Margin="10, 0, 10, 10" LastChildFill="True" HorizontalAlignment="Stretch"
+            <DockPanel Grid.Row="2" Margin="10, 0, 10, 10" LastChildFill="True" HorizontalAlignment="Stretch"
                        VerticalAlignment="Stretch">
                 <Button CornerRadius="0, 5, 5, 0" Click="SendClick" VerticalAlignment="Stretch"
                         HorizontalAlignment="Stretch"
@@ -44,7 +47,8 @@
                 <TextBlock>Загрузить новый файл</TextBlock>
             </StackPanel>
         </Panel>
-        <DockPanel Name="RenamingPanel" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center" x:DataType="viewModels:RenameViewModel">
+        <DockPanel Name="RenamingPanel" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   x:DataType="viewModels:RenameViewModel">
             <DockPanel.DataContext>
                 <viewModels:RenameViewModel></viewModels:RenameViewModel>
             </DockPanel.DataContext>
@@ -55,10 +59,12 @@
                 </Button>
                 <Button Click="OnApplyRename" HorizontalAlignment="Right" Margin="10, 0, 10, 10" Foreground="White">Переименовать</Button>
             </StackPanel>
-            <TextBox Name="Redactor" DockPanel.Dock="Top" Text="{Binding FileName}" TextWrapping="Wrap" BorderThickness="0"
+            <TextBox Name="Redactor" DockPanel.Dock="Top" Text="{Binding FileName}" TextWrapping="Wrap"
+                     BorderThickness="0"
                      Margin="10" Background="Transparent" />
         </DockPanel>
-        <DockPanel Name="RecolorPanel" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center" x:DataType="viewModels:RenameViewModel">
+        <DockPanel Name="RecolorPanel" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   x:DataType="viewModels:RenameViewModel">
             <DockPanel.DataContext>
                 <viewModels:RenameViewModel></viewModels:RenameViewModel>
             </DockPanel.DataContext>
@@ -71,7 +77,28 @@
             </StackPanel>
             <ColorPicker Margin="10" Width="120" Name="RecolorColorPicker"></ColorPicker>
         </DockPanel>
-
+        
+        <StackPanel IsVisible="False" Name="TagManagerPanel" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Spacing="5" x:DataType="viewModels:TagEditorViewModel">
+            <StackPanel.DataContext>
+                <viewModels:TagEditorViewModel></viewModels:TagEditorViewModel>
+            </StackPanel.DataContext>
+            <TextBlock HorizontalAlignment="Center">Добавление тега</TextBlock>
+            <StackPanel Orientation="Horizontal">
+                <AutoCompleteBox TextChanged="UpdateTagAddFieldColor" FilterMode="ContainsOrdinal"
+                                 ItemsSource="{Binding AllTags}" Text="{Binding CurrentTagName}" HorizontalAlignment="Center"
+                                 Watermark="#" Width="200">
+                </AutoCompleteBox>
+                <Border  Name="TagColorIndicator" Width="16" Height="16" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10" />
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Click="OnCancelTagAdd" HorizontalAlignment="Right" Margin="10, 0,0, 10" Background="OrangeRed"
+                        Foreground="White">
+                    Отменить
+                </Button>
+                <Button Name="ApplyTagAddButton" Click="OnApplyTagAdd" HorizontalAlignment="Right" Margin="10, 0, 10, 10" Foreground="White">Добавить тег</Button>
+            </StackPanel>
+        </StackPanel>
     </Panel>
 
 </UserControl>

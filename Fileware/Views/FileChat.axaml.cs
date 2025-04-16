@@ -20,7 +20,6 @@ using Avalonia.Threading;
 using Fileware.Controls;
 using Fileware.Models;
 using Fileware.ViewModels;
-using Fileware.Windows;
 using ReactiveUI;
 
 namespace Fileware.Views;
@@ -104,7 +103,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
                     else
                     {
                         adding = new FileBlock
-                            { DataContext = fileData, Width = 350,  host = this};
+                            { DataContext = fileData, Width = 350, host = this };
                     }
 
                     if (AppContext.LocalStoredFiles.ContainsKey(fileData.Id))
@@ -180,7 +179,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
             addedBlock = data.FileType.StartsWith("image/png") || data.FileType.StartsWith("image/jpeg") ||
                          data.FileType.StartsWith("image/webp")
                 ? new ImageBlock { DataContext = data, Width = 350 }
-                : new FileBlock(fileStream, data){host = this};
+                : new FileBlock(fileStream, data) { host = this };
             addedBlock.StartVersionCheckerTimer();
             PointsPanel.Children.Add(addedBlock);
             Viewer.ScrollToEnd();
@@ -301,36 +300,43 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
 
     public void MakeTopLevel(string key, object sender)
     {
-        TopLevelActions[key].Item1(sender);
+        TopLevelActions[key](sender);
     }
 
-    public void RemoveTopLevel(string key)
-    {
-        TopLevelActions[key].Item2();
-    }
 
     private static FileData vm;
     private static Tag ColoringTag;
-    private FrozenDictionary<string, (Action<object>, Action)> TopLevelActions =
-        new Dictionary<string, (Action<object>, Action)> { { "FileRename", (s =>
+
+    private FrozenDictionary<string, Action<object>> TopLevelActions =
+        new Dictionary<string, Action<object>>
         {
-            Instance.RenamingPanel.IsVisible = true;
-            vm = s as FileData;
-            var winVm = new RenameViewModel { FileName = vm.Name };
-            Instance.RenamingPanel.DataContext = winVm;
-        }, () =>
-        {
-            
-        }) },
-            { "RecolorTag", (s =>
             {
-                Instance.RecolorPanel.IsVisible = true;
-                ColoringTag = s as Tag;
-            }, () =>
+                "FileRename", s =>
+                {
+                    Instance.RenamingPanel.IsVisible = true;
+                    vm = s as FileData;
+                    var winVm = new RenameViewModel { FileName = vm.Name };
+                    Instance.RenamingPanel.DataContext = winVm;
+                }
+            },
             {
-                Instance.RecolorPanel.IsVisible = true;
-            }) }
+                "RecolorTag", s =>
+                {
+                    Instance.RecolorPanel.IsVisible = true;
+                    ColoringTag = s as Tag;
+                }
+            },
+            {
+                "TagManager", s =>
+                {
+                    Instance.TagManagerPanel.IsVisible = true;
+                    Instance.TagManagerPanel.DataContext = new TagEditorViewModel
+                        { CurrentTagsOwner = s as ITagContainer, AllTags = ["Избранное", "Секретное"] };
+                }
+            }
         }.ToFrozenDictionary();
+
+    private IBrush _defaultBrush;
 
     private void OnCancelRename(object? sender, RoutedEventArgs e)
     {
@@ -357,5 +363,35 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
     {
         RecolorPanel.IsVisible = false;
         ColoringTag.Color = new SolidColorBrush(RecolorColorPicker.Color);
+    }
+
+
+    private void OnCancelTagAdd(object? sender, RoutedEventArgs e)
+    {
+        TagManagerPanel.IsVisible = false;
+    }
+
+    private void OnApplyTagAdd(object? sender, RoutedEventArgs e)
+    {
+        var currentContext = TagManagerPanel.DataContext as TagEditorViewModel;
+        currentContext.CurrentTagsOwner.Tags.Add(ViewModels.Tag.FromName(currentContext.CurrentTagName));
+        currentContext.CurrentTagsOwner.UpdateTagPanel();
+        TagManagerPanel.IsVisible = false;
+    }
+
+    private void UpdateTagAddFieldColor(object? sender, TextChangedEventArgs e)
+    {
+        var textBox = sender as AutoCompleteBox;
+        if (!string.IsNullOrWhiteSpace(textBox.Text))
+        {
+            var currentContext = TagManagerPanel.DataContext as TagEditorViewModel;
+            ApplyTagAddButton.IsEnabled = !currentContext.CurrentTagsOwner.Tags.Any(i => i.Name == textBox.Text);
+            TagColorIndicator.Background = new SolidColorBrush(TagColorService.GetColorByString(textBox.Text));
+        }
+        else
+        {
+            TagColorIndicator.Background = (IBrush?)Application.Current.Resources["MainColorBrush"];
+            ApplyTagAddButton.IsEnabled = false;
+        }
     }
 }

@@ -9,7 +9,7 @@ namespace FilewareApi.Controllers;
 public class HistoryController(FilewareDbContext db) : Controller
 {
     [HttpGet]
-    public ActionResult<IReadOnlyList<HistoryPoint>> GetHistoryAfterId(int id, int count)
+    public ActionResult<IReadOnlyList<HistoryPoint>> GetHistoryAfterId(int id, int count, string key)
     {
         List<HistoryPoint> mapLinked(List<HistoryPoint> list)
         {
@@ -34,7 +34,10 @@ public class HistoryController(FilewareDbContext db) : Controller
         }
 
         if (id == -1)
-            return Ok(mapLinked(db.HistoryPoints.OrderByDescending(i => i.Id).Take(count).ToList()));
-        return Ok(mapLinked(db.HistoryPoints.Where(i => i.Id < id).OrderByDescending(i => i.Id).Take(count).ToList()));
+            return Ok(mapLinked(db.HistoryPoints.Where(i => i.FileSpaceKey == key).OrderByDescending(i => i.Id)
+                .Take(count).ToList()));
+
+        return Ok(mapLinked(db.HistoryPoints.Where(i => i.Id < id && i.FileSpaceKey == key).OrderByDescending(i => i.Id)
+            .Take(count).ToList()));
     }
 }
