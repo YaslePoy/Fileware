@@ -17,8 +17,9 @@ public class FileData : INotifyPropertyChanged, ITagContainer
     private IImage? _preview;
     private byte[]? _previewData;
     public int Id { get; set; }
-    private List<Tag> _tags = [Tag.FromName("Избранное"), Tag.FromName("Секретное")];
+    private List<Tag> _tags = [];
 
+    public int PointId { get; set; } = -1;
     public WrapPanel? TagsPreviewPanel { get; set; }
 
     public void UpdateTagPanel()
@@ -40,6 +41,10 @@ public class FileData : INotifyPropertyChanged, ITagContainer
             _tags = value;
             UpdateTagPanel();
 
+            if (PointId != -1)
+            {
+            }
+            
             OnPropertyChanged(nameof(Tags));
             OnPropertyChanged(nameof(HasTags));
         }
@@ -176,6 +181,7 @@ public class FileData : INotifyPropertyChanged, ITagContainer
 
 public interface ITagContainer
 {
+    public int PointId { get; set; }
     public WrapPanel? TagsPreviewPanel { get; set; }
 
     public void UpdateTagPanel()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 
@@ -19,4 +20,5 @@ public class HistoryPoint
     public DateTime Time { get; set; }
     public JsonElement Linked { get; set; }
     public string Key { get; set; }
+    public List<string> Tags { get; set; }
 }

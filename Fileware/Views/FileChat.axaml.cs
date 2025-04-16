@@ -117,7 +117,13 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
                     break;
             }
 
-            if (adding != null) PointsPanel.Children.Insert(0, adding);
+            if (adding != null)
+            {
+                PointsPanel.Children.Insert(0, adding);
+                (adding as ITagContainer).Tags = point.Tags.Select(ViewModels.Tag.FromName).ToList();
+                (adding as ITagContainer).PointId = point.Id;
+
+            }
 
             lastPoint = point;
             dontAdd = false;

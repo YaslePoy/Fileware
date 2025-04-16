@@ -20,4 +20,5 @@ public class HistoryPoint
     [NotMapped]
     public object Linked { get; set; }
     public string FileSpaceKey { get; set; }
+    public List<string> Tags { get; set; }
 }

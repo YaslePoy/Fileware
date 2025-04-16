@@ -25,10 +25,12 @@ public sealed class Message : INotifyPropertyChanged, ITagContainer
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
     public bool HasTags => Tags.Count > 0;
 
-    private List<Tag> _tags = [ Tag.FromName("Избранное") ];
+    private List<Tag> _tags = [];
 
+    public int PointId { get; set; } = -1;
     public WrapPanel? TagsPreviewPanel { get; set; }
 
     public void UpdateTagPanel()
@@ -51,7 +53,9 @@ public sealed class Message : INotifyPropertyChanged, ITagContainer
             if (Equals(value, _tags)) return;
             _tags = value;
             UpdateTagPanel();
-
+            
+            
+            
             OnPropertyChanged(nameof(Tags));
             OnPropertyChanged(nameof(HasTags));
         }

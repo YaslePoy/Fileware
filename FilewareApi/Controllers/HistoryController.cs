@@ -40,4 +40,16 @@ public class HistoryController(FilewareDbContext db) : Controller
         return Ok(mapLinked(db.HistoryPoints.Where(i => i.Id < id && i.FileSpaceKey == key).OrderByDescending(i => i.Id)
             .Take(count).ToList()));
     }
+
+    public async Task<ActionResult> UpdateTags(int pointId, List<string> tags)
+    {
+        var point = db.HistoryPoints.FirstOrDefault(i => i.Id == pointId);
+        if (point is null)
+            return NotFound();
+
+        point.Tags = tags;
+        db.HistoryPoints.Update(point);
+        await db.SaveChangesAsync();
+        return Ok();
+    }
 }
