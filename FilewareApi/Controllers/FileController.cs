@@ -17,7 +17,7 @@ public class FileController(IFileManagerService fileService) : Controller
     private FormOptions _defaultFormOptions = new();
 
     [HttpPost("large")]
-    public async Task<IActionResult> UploadBigFile()
+    public async Task<IActionResult> UploadBigFile(string filespace)
     {
         if (!MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
         {
@@ -113,13 +113,13 @@ public class FileController(IFileManagerService fileService) : Controller
         }
 
 
-        return Ok(fileService.RegisterBigFile(streamedFileContent, untrustedFileNameForStorage, Request.ContentType));
+        return Ok(fileService.RegisterBigFile(streamedFileContent, untrustedFileNameForStorage, Request.ContentType, filespace));
     }
 
     [HttpPost]
-    public async Task<ActionResult> RegisterNewFile(IFormFile file)
+    public async Task<ActionResult> RegisterNewFile(IFormFile file, string filespace)
     {
-        var id = fileService.RegisterNewFile(file);
+        var id = fileService.RegisterNewFile(file, filespace);
         return Ok(id);
     }
 

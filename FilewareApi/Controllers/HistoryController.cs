@@ -1,4 +1,5 @@
 ﻿using FilewareApi.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,6 +42,7 @@ public class HistoryController(FilewareDbContext db) : Controller
             .Take(count).ToList()));
     }
 
+    [HttpPatch]
     public async Task<ActionResult> UpdateTags(int pointId, List<string> tags)
     {
         var point = db.HistoryPoints.FirstOrDefault(i => i.Id == pointId);
@@ -48,6 +50,19 @@ public class HistoryController(FilewareDbContext db) : Controller
             return NotFound();
 
         point.Tags = tags;
+        db.HistoryPoints.Update(point);
+        await db.SaveChangesAsync();
+        return Ok();
+    } 
+
+    [HttpPatch("filespace")]
+    public async Task<ActionResult> SetupPointSpace(int source, int type, string key)
+    {
+        var point = db.HistoryPoints.FirstOrDefault(i => i.LinkedId == source && i.Type == type);
+        if (point == null)
+            return NotFound();
+
+        point.FileSpaceKey = key;
         db.HistoryPoints.Update(point);
         await db.SaveChangesAsync();
         return Ok();

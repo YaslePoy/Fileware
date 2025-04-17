@@ -11,7 +11,7 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
 
     public static DateTime NowWithoutTimezone => new(DateTime.Now.Ticks);
 
-    public int RegisterNewFile(IFormFile file)
+    public int RegisterNewFile(IFormFile file, string filespace)
     {
         var data = new FileData
         {
@@ -30,7 +30,9 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         dbContext.SaveChanges();
 
         dbContext.HistoryPoints.Add(new HistoryPoint
-            { LinkedId = data.Id, Type = (int)HistoryPointType.File, Time = NowWithoutTimezone });
+        {
+            LinkedId = data.Id, Type = (int)HistoryPointType.File, Time = NowWithoutTimezone, FileSpaceKey = filespace
+        });
 
         Directory.CreateDirectory("storage");
 
@@ -43,7 +45,7 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         return data.Id;
     }
 
-    public int RegisterBigFile(byte[] data, string name, string type)
+    public int RegisterBigFile(byte[] data, string name, string type, string filespace)
     {
         var file = new FileData
         {
@@ -72,7 +74,7 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         }
 
         dbContext.HistoryPoints.Add(new HistoryPoint
-            { LinkedId = file.Id, Type = (int)HistoryPointType.File, Time = NowWithoutTimezone });
+            { LinkedId = file.Id, Type = (int)HistoryPointType.File, Time = NowWithoutTimezone, FileSpaceKey = filespace});
         dbContext.SaveChanges();
 
         return file.Id;

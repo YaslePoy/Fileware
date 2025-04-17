@@ -131,8 +131,11 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
 
         Dispatcher.UIThread.Invoke(() =>
         {
-            var dateLine = new DateLine { DataContext = lastPoint.Time };
-            PointsPanel.Children.Insert(0, dateLine);
+            if (lastPoint != null)
+            {
+                var dateLine = new DateLine { DataContext = lastPoint.Time };
+                PointsPanel.Children.Insert(0, dateLine);   
+            }
             Viewer.ScrollToEnd();
         });
     }
