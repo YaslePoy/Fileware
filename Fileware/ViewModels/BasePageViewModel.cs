@@ -10,7 +10,7 @@ public class BasePageViewModel : ReactiveObject, IRoutableViewModel, IScreen
     public BasePageViewModel(IScreen hostScreen)
     {
         HostScreen = hostScreen;
-        Router.Navigate.Execute(new FileChatViewModel(this));
+        Router.Navigate.Execute(new FileChatPageViewModel(this));
     }
 
     public double DockPosition

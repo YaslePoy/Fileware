@@ -49,7 +49,7 @@ public partial class MessageBlock : UserControl
     {
         var current = DataContext as Message;
         Api.Http.DeleteAsync($"api/Messaging/{current.Id}");
-        AppContext.ChatInstance.PointsPanel.Children.Remove(this);
+        AppContext.ChatPageInstance.PointsPanel.Children.Remove(this);
     }
 
     private void AddTag(object? sender, RoutedEventArgs e)

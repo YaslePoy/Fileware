@@ -6,7 +6,7 @@ namespace Fileware.ViewModels;
 
 public class EditProfileViewModel : ReactiveObject, IRoutableViewModel
 {
-    public EditProfileViewModel(IScreen hostScreen, User editingUser)
+    public EditProfileViewModel(IScreen hostScreen, UserData editingUser)
     {
         HostScreen = hostScreen;
         User = editingUser;
@@ -16,7 +16,7 @@ public class EditProfileViewModel : ReactiveObject, IRoutableViewModel
     {
     }
 
-    public User User { get; set; }
+    public UserData User { get; set; }
     public string? UrlPathSegment { get; } = Guid.NewGuid().ToString()[..5];
     public IScreen HostScreen { get; }
 }

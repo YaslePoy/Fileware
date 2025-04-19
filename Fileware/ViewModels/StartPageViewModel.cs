@@ -4,9 +4,9 @@ using ReactiveUI;
 
 namespace Fileware.ViewModels;
 
-public class StartViewModel : ReactiveObject, IRoutableViewModel
+public class StartPageViewModel : ReactiveObject, IRoutableViewModel
 {
-    public StartViewModel(IScreen screen)
+    public StartPageViewModel(IScreen screen)
     {
         HostScreen = screen;
     }

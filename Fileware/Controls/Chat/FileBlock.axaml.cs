@@ -51,7 +51,7 @@ public partial class FileBlock : UserControl
     {
         var current = DataContext as FileData;
         Api.Http.DeleteAsync($"api/File/{current.Id}");
-        AppContext.ChatInstance.PointsPanel.Children.Remove(this);
+        AppContext.ChatPageInstance.PointsPanel.Children.Remove(this);
     }
 
     private void OpenFile()

@@ -48,7 +48,7 @@ public partial class BasePage : ReactiveUserControl<BasePageViewModel>
         switch (_currentPage)
         {
             case "chat":
-                vm.Router.Navigate.Execute(new FileChatViewModel(vm));
+                vm.Router.Navigate.Execute(new FileChatPageViewModel(vm));
                 break;
             case "tile":
                 vm.Router.Navigate.Execute(new TilesViewModel(vm));

@@ -3,9 +3,9 @@ using ReactiveUI;
 
 namespace Fileware.ViewModels;
 
-public class FileChatViewModel : ReactiveObject, IRoutableViewModel
+public class FileChatPageViewModel : ReactiveObject, IRoutableViewModel
 {
-    public FileChatViewModel(IScreen hostScreen)
+    public FileChatPageViewModel(IScreen hostScreen)
     {
         HostScreen = hostScreen;
     }

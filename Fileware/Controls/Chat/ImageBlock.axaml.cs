@@ -20,7 +20,7 @@ public partial class ImageBlock : FileBlock
     {
         var current = DataContext as FileData;
         Api.Http.DeleteAsync($"api/File/{current.Id}");
-        AppContext.ChatInstance.PointsPanel.Children.Remove(this);
+        AppContext.ChatPageInstance.PointsPanel.Children.Remove(this);
     }
 
     protected override void OnDataContextEndUpdate()

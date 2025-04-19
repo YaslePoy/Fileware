@@ -10,11 +10,11 @@ namespace Fileware;
 public static class AppContext
 {
     public const string StorageDir = "storage/";
-    public static FileChat ChatInstance;
+    public static FileChatPage ChatPageInstance;
     public static MainWindow WindowInstance;
     public static IMultiLevelView CurrentMultiLevelView;
     public static Dictionary<int, StoredFileMeta> LocalStoredFiles;
-
+    public static LoginResponse? CurrentUser;
     static AppContext()
     {
         try
@@ -36,9 +36,7 @@ public static class AppContext
             LocalStoredFiles = new Dictionary<int, StoredFileMeta>();
         }
     }
-
-    public static User CurrentUser { get; set; }
-
+    
     public static void Save()
     {
         File.WriteAllText("storedFiles.json", JsonSerializer.Serialize(LocalStoredFiles));

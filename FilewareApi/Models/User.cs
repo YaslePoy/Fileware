@@ -16,12 +16,26 @@ public class User
     public byte[]? TotpKey { get; set; }
     [JsonIgnore]
     public byte[]? Avatar { get; set; }
+
+    public List<string> AttachedFilespaces { get; set; } = [];
 }
 
-public class GetUserResponce
+public class CommonUserData
 {
     public int Id { get; set; }
     public string Username { get; set; }
     public string ShowName { get; set; }
     public DateOnly BirthDate { get; set; }
+    public List<string> AttachedFilespaces { get; set; }
+    public int FileCount { get; set; }
+
+}
+
+public static class BasincExtentions
+{
+    public static T Also<T>(this T value, Action<T> operation)
+    {
+        operation(value);
+        return value;
+    }
 }

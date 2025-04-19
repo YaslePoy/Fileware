@@ -44,7 +44,11 @@ public class UserController(IUserService userService) : Controller
                     SecurityAlgorithms.HmacSha256));
 
             return Ok(new LoginResponse
-                { Token = new JwtSecurityTokenHandler().WriteToken(jwt), UserId = loggedIn.Id });
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(jwt), UserData = Utils
+                    .TransferData<CommonUserData>(loggedIn).Also(
+                        u => { u.FileCount = userService.GetFileCount(u.Id); })
+            });
         }
 
         return Unauthorized();
@@ -61,8 +65,9 @@ public class UserController(IUserService userService) : Controller
         var id = await userService.Register(user);
         return Ok(id);
     }
+
     [HttpGet("{id}")]
-    public ActionResult<GetUserResponce> GetUser(int id)
+    public ActionResult<CommonUserData> GetUser(int id)
     {
         var user = userService.Get(id);
         if (user is null)
@@ -70,8 +75,7 @@ public class UserController(IUserService userService) : Controller
             return NotFound();
         }
 
-        return Ok(new GetUserResponce
-            { BirthDate = user.BirthDate, Id = user.Id, Username = user.Username, ShowName = user.ShowName });
+        return Ok(Utils.TransferData<CommonUserData>(user));
     }
 
     [HttpGet("{id}/avatar")]
@@ -94,7 +98,7 @@ public class UserController(IUserService userService) : Controller
 public class LoginResponse
 {
     public string Token { get; set; }
-    public int UserId { get; set; }
+    public CommonUserData UserData { get; set; }
 }
 
 public class AuthOptions

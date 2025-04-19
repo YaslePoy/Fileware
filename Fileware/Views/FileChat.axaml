@@ -3,14 +3,28 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Fileware.ViewModels"
+             xmlns:models="clr-namespace:Fileware.Models"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Fileware.Views.FileChat">
+             x:Class="Fileware.Views.FileChatPage"
+             x:DataType="viewModels:FileChatPageViewModel">
     <Panel>
         <Grid RowDefinitions="Auto, *,Auto" IsVisible="True">
             <DockPanel LastChildFill="False" Height="35" Margin="10, 3, 10, 0">
-                <StackPanel Orientation="Horizontal" Classes="Centred" DockPanel.Dock="Left" VerticalAlignment="Center" Spacing="10">
+                <StackPanel Orientation="Horizontal" Classes="Centred" DockPanel.Dock="Left" VerticalAlignment="Center"
+                            Spacing="10">
                     <TextBlock VerticalAlignment="Center">Файловое пространство</TextBlock>
-                    <ComboBox Name="FileSpacesComboBox"></ComboBox>
+                    <ComboBox Name="FileSpacesComboBox">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="models:FileSpace">
+                                <TextBlock Text="{Binding Display}"></TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Name="AddSpaceButton" Click="AddFileSpace" VerticalAlignment="Stretch"
+                            Width="{Binding #AddSpaceButton.Height}">
+                        +
+                    </Button>
+
                 </StackPanel>
             </DockPanel>
             <ScrollViewer Grid.Row="1" x:Name="Viewer" CornerRadius="15" HorizontalScrollBarVisibility="Disabled"
@@ -77,7 +91,7 @@
             </StackPanel>
             <ColorPicker Margin="10" Width="120" Name="RecolorColorPicker"></ColorPicker>
         </DockPanel>
-        
+
         <StackPanel IsVisible="False" Name="TagManagerPanel" HorizontalAlignment="Center" VerticalAlignment="Center"
                     Spacing="5" x:DataType="viewModels:TagEditorViewModel">
             <StackPanel.DataContext>
@@ -86,17 +100,22 @@
             <TextBlock HorizontalAlignment="Center">Добавление тега</TextBlock>
             <StackPanel Orientation="Horizontal">
                 <AutoCompleteBox TextChanged="UpdateTagAddFieldColor" FilterMode="ContainsOrdinal"
-                                 ItemsSource="{Binding AllTags}" Text="{Binding CurrentTagName}" HorizontalAlignment="Center"
+                                 ItemsSource="{Binding AllTags}" Text="{Binding CurrentTagName}"
+                                 HorizontalAlignment="Center"
                                  Watermark="#" Width="200">
                 </AutoCompleteBox>
-                <Border  Name="TagColorIndicator" Width="16" Height="16" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10" />
+                <Border Name="TagColorIndicator" Width="16" Height="16" VerticalAlignment="Center"
+                        HorizontalAlignment="Center" Margin="10" />
             </StackPanel>
             <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Click="OnCancelTagAdd" HorizontalAlignment="Right" Margin="10, 0,0, 10" Background="OrangeRed"
                         Foreground="White">
                     Отменить
                 </Button>
-                <Button Name="ApplyTagAddButton" Click="OnApplyTagAdd" HorizontalAlignment="Right" Margin="10, 0, 10, 10" Foreground="White">Добавить тег</Button>
+                <Button Name="ApplyTagAddButton" Click="OnApplyTagAdd" HorizontalAlignment="Right"
+                        Margin="10, 0, 10, 10" Foreground="White">
+                    Добавить тег
+                </Button>
             </StackPanel>
         </StackPanel>
     </Panel>

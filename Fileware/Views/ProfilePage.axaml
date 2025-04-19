@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Fileware.ViewModels"
              xmlns:models="clr-namespace:Fileware.Models"
+             xmlns:fileware="clr-namespace:Fileware"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Fileware.Views.ProfilePage" x:DataType="viewModels:ProfileViewModel">
     <Design.DataContext>
@@ -11,7 +12,7 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <viewModels:ProfileViewModel>
             <viewModels:ProfileViewModel.User>
-                <models:User Id="123" Username="@mmm_fileware" ShowName="Митрованов Михаил" />
+                <fileware:UserData Id="123" Username="@mmm_fileware" ShowName="Митрованов Михаил" />
             </viewModels:ProfileViewModel.User>
         </viewModels:ProfileViewModel>
     </Design.DataContext>
@@ -19,14 +20,19 @@
         <Image Height="35" Width="35" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10"
                Tapped="EditProfile" Source="{SvgImage /Assets/Edit.svg}" />
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="7">
-            <Border ClipToBounds="True" BorderBrush="{StaticResource MainColorBrush}" BorderThickness="3"
-                    CornerRadius="16">
-                <Image Source="{Binding User.AvatarImage^}" Height="75" Width="75" />
+            <Border CornerRadius="18" BorderBrush="{StaticResource MainColorBrush}" BorderThickness="3" HorizontalAlignment="Center">
+                <Border ClipToBounds="True" HorizontalAlignment="Center" Margin="2"
+                        CornerRadius="16">
+                    <Image Source="{Binding User.AvatarImage^}" Height="100" Width="100" />
+                </Border>
             </Border>
+
             <TextBlock FontSize="20" Text="{Binding User.ShowName}" />
             <TextBlock Text="{Binding User.Username}" HorizontalAlignment="Center" FontWeight="SemiBold" />
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <TextBlock Text="{Binding User.FileCount, StringFormat='{}У вас хранится {0} файлов.'}" />
+                <HyperlinkButton Command="{Binding GoManage}">
+                    <TextBlock Text="{Binding User.FileCount, StringFormat='{}У вас хранится {0} файлов.'}" />
+                </HyperlinkButton>
             </StackPanel>
         </StackPanel>
     </Panel>

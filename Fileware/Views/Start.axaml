@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Fileware.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Fileware.Views.Start" Background="Transparent"
-             x:DataType="viewModels:StartViewModel">
+             x:Class="Fileware.Views.StartPage" Background="Transparent"
+             x:DataType="viewModels:StartPageViewModel">
     <StackPanel VerticalAlignment="Center" Classes="Centred" Spacing="10">
         <TextBlock FontSize="40">Fileware</TextBlock>
         <StackPanel Classes="Centred" HorizontalAlignment="Center" Spacing="5">

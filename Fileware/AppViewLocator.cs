@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection;
+using Avalonia;
 using Fileware.ViewModels;
 using Fileware.Views;
 using ReactiveUI;
@@ -11,15 +14,59 @@ public class AppViewLocator : IViewLocator
     {
         return viewModel switch
         {
-            StartViewModel startViewModel => new Start { DataContext = startViewModel },
-            FileChatViewModel fileChatViewModel => new FileChat { DataContext = fileChatViewModel },
+            StartPageViewModel startViewModel => new StartPage { DataContext = startViewModel },
+            FileChatPageViewModel fileChatViewModel => new FileChatPage { DataContext = fileChatViewModel },
             LoginPageViewModel loginPageViewModel => new LoginPage { DataContext = loginPageViewModel },
             RegisterPageViewModel registerPageViewModel => new RegisterPage { DataContext = registerPageViewModel },
             BasePageViewModel basePageViewModel => new BasePage { DataContext = basePageViewModel },
             TilesViewModel tilesViewModel => new TilesPage { DataContext = tilesViewModel },
             ProfileViewModel profileViewModel => new ProfilePage { DataContext = profileViewModel },
             EditProfileViewModel editProfileViewModel => new EditProfilePage { DataContext = editProfileViewModel },
+            FileSpaceViewModel fileSpaceViewModel => new FileSpacePage() { DataContext = fileSpaceViewModel },
             _ => throw new ArgumentOutOfRangeException()
         };
+    }
+}
+
+public class ReflectionViewLocator : IViewLocator
+{
+    private static Dictionary<Type, Type> _routeTypes;
+    public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
+    {
+        var type = typeof(T);
+        if (!_routeTypes.TryGetValue(type, out var pageType))
+        {
+            var findPageType = FindPageType(type);
+            _routeTypes[type] = findPageType;
+            pageType = findPageType;
+        }
+
+        var pageInstance = Activator.CreateInstance(pageType) as StyledElement;
+        pageInstance.DataContext = viewModel;
+        return pageInstance as IViewFor;
+    }
+
+    private Type FindPageType(Type type)
+    {
+        var name = type.Name;
+        if (name.EndsWith("ViewModel"))
+        {
+            name = name[..^9];
+        }else if( name.EndsWith("VM"))
+        {
+            name = name[..^2];
+        }
+
+        var assembly = Assembly.GetAssembly(GetType());
+        var pageType = assembly.GetType(name + "Page");
+        if (pageType is not null)
+            return pageType;
+        if (assembly.GetType(name) is {} justType)
+        {
+            return justType;
+        }
+
+        return null;
+
     }
 }

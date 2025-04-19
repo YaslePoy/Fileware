@@ -10,6 +10,7 @@
         <entry key="Fileware/Controls/Chat/MessageBlock.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Controls/DateLine.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Controls/FileBlock.axaml" value="Fileware/Fileware.csproj" />
+        <entry key="Fileware/Controls/GoBack.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Controls/ImageBlock.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Controls/MessageBlock.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Controls/TagPoint.axaml" value="Fileware/Fileware.csproj" />
@@ -17,6 +18,7 @@
         <entry key="Fileware/Views/BasePage.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Views/EditProfilePage.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Views/FileChat.axaml" value="Fileware/Fileware.csproj" />
+        <entry key="Fileware/Views/FileSpacePage.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Views/LoginPage.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Views/MainWindow.axaml" value="Fileware/Fileware.csproj" />
         <entry key="Fileware/Views/ProfilePage.axaml" value="Fileware/Fileware.csproj" />

@@ -13,6 +13,7 @@ public interface IUserService
     User? Get(int id);
     Task SetupAvatar(int id, byte[] avatar);
     byte[] GetAvatar(int id);
+    int GetFileCount(int userId);
 }
 
 public class UserService(FilewareDbContext db) : IUserService
@@ -44,8 +45,10 @@ public class UserService(FilewareDbContext db) : IUserService
         }
         else
             user.TotpKey = null;
-
         db.Users.Add(user);
+
+        await db.SaveChangesAsync();
+        user.AttachedFilespaces = [$"user_{user.Id}:master"];
         await db.SaveChangesAsync();
 
         return user.Id;
@@ -65,7 +68,7 @@ public class UserService(FilewareDbContext db) : IUserService
         if (user.Password == security)
             return user;
 
-        if (new Totp(user.TotpKey).VerifyTotp(security, out _))
+        if (user.TotpKey is not null && new Totp(user.TotpKey).VerifyTotp(security, out _))
         {
             return user;
         }
@@ -95,5 +98,10 @@ public class UserService(FilewareDbContext db) : IUserService
         }
 
         return user.Avatar;
+    }
+
+    public int GetFileCount(int userId)
+    {
+        return db.HistoryPoints.Count(i => i.FileSpaceKey.StartsWith($"user_{userId}:"));
     }
 }

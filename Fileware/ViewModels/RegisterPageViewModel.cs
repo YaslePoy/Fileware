@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Windows.Input;
+using Fileware.Models;
 using ReactiveUI;
 
 namespace Fileware.ViewModels;
@@ -23,7 +25,7 @@ public class RegisterPageViewModel : ReactiveObject, IRoutableViewModel
                 Username,
                 ShowName,
                 Password,
-                BirthDate = DateOnly.Parse(BirthDate).ToString("yyyy-MM-dd")
+                BirthDate = DateOnly.Parse(BirthDate).ToString("yyyy-MM-dd"),
             }).ContinueWith(_ =>
         {
             // var user = Api.Http.GetFromJsonAsync<GetUserResponse>($"api/User/{}");

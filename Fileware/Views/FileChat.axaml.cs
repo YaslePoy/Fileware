@@ -6,8 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Web;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -24,21 +26,29 @@ using ReactiveUI;
 
 namespace Fileware.Views;
 
-public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLevelView
+public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, IMultiLevelView
 {
-    private static FileChat Instance;
+    private string _currentFilespace = FileSpace.OfUser(AppContext.CurrentUser.UserData).Id;
+    private static FileChatPage Instance;
     private static List<HistoryPoint> History;
 
     private KeyEventArgs? _firstEnter;
 
-    public FileChat()
+    public FileChatPage()
     {
         AppContext.CurrentMultiLevelView = this;
         Instance = this;
         InitializeComponent();
         this.WhenActivated(_ => { });
 
-        AppContext.ChatInstance = this;
+        foreach (var userDataAttachedFilespace in AppContext.CurrentUser.UserData.AttachedFilespaces)
+        {
+            FileSpacesComboBox.Items.Add(new FileSpace { Id = userDataAttachedFilespace });
+        }
+
+        FileSpacesComboBox.SelectedIndex = 0;
+
+        AppContext.ChatPageInstance = this;
         AddHandler(DragDrop.DragEnterEvent, DragOver);
         AddHandler(DragDrop.DragLeaveEvent, DragLeave);
         AddHandler(DragDrop.DropEvent, DragDropEvent);
@@ -50,7 +60,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
             ShowHistory();
         }
 
-        Api.Http.GetStringAsync("api/History?id=-1&count=100&key=test").ContinueWith(t =>
+        Api.Http.GetStringAsync($"api/History?id=-1&count=100&key={_currentFilespace}").ContinueWith(t =>
         {
             var history = t.Result;
             File.WriteAllText("./Cache/testHistory.json", t.Result);
@@ -98,7 +108,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
                             fileData.PreviewData = ms.ToArray();
                             Dispatcher.UIThread.Invoke(() => { fileData.OnPropertyChanged(nameof(fileData.Preview)); });
                         });
-                        adding = new ImageBlock { DataContext = fileData, Width = 350, Host = this};
+                        adding = new ImageBlock { DataContext = fileData, Width = 350, Host = this };
                     }
                     else
                     {
@@ -122,7 +132,6 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
                 PointsPanel.Children.Insert(0, adding);
                 (adding.DataContext as ITagContainer).Tags = point.Tags.Select(ViewModels.Tag.FromName).ToList();
                 (adding.DataContext as ITagContainer).PointId = point.Id;
-
             }
 
             lastPoint = point;
@@ -134,8 +143,9 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
             if (lastPoint != null)
             {
                 var dateLine = new DateLine { DataContext = lastPoint.Time };
-                PointsPanel.Children.Insert(0, dateLine);   
+                PointsPanel.Children.Insert(0, dateLine);
             }
+
             Viewer.ScrollToEnd();
         });
     }
@@ -187,7 +197,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
 
             addedBlock = data.FileType.StartsWith("image/png") || data.FileType.StartsWith("image/jpeg") ||
                          data.FileType.StartsWith("image/webp")
-                ? new ImageBlock { DataContext = data, Width = 350, Host = this}
+                ? new ImageBlock { DataContext = data, Width = 350, Host = this }
                 : new FileBlock(fileStream, data) { Host = this };
             addedBlock.StartVersionCheckerTimer();
             PointsPanel.Children.Add(addedBlock);
@@ -196,7 +206,9 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
         try
         {
             using var response = await Api.Http.PostAsync(
-                info.Length > 30 * 1024 * 1024 ? "api/File/large" : "api/File",
+                info.Length > 30 * 1024 * 1024
+                    ? $"api/File/large?filespace={HttpUtility.UrlEncode(_currentFilespace)}"
+                    : $"api/File?filespace={HttpUtility.UrlEncode(_currentFilespace)}",
                 multipartFormContent);
             var id = int.Parse(await response.Content.ReadAsStringAsync());
             AppContext.LocalStoredFiles.Add(id,
@@ -220,7 +232,7 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
 
         var savedText = MsgBox.Text;
 
-        Api.Http.PostAsync("api/Messaging",
+        Api.Http.PostAsync($"api/Messaging?filespace={HttpUtility.UrlEncode(_currentFilespace)}",
                 new StringContent("\"" + MsgBox.Text + "\"", MediaTypeWithQualityHeaderValue.Parse("application/json")))
             .ContinueWith(
                 async t =>
@@ -403,5 +415,11 @@ public partial class FileChat : ReactiveUserControl<FileChatViewModel>, IMultiLe
             TagColorIndicator.Background = (IBrush?)Application.Current.Resources["MainColorBrush"];
             ApplyTagAddButton.IsEnabled = false;
         }
+    }
+
+    private void AddFileSpace(object? sender, RoutedEventArgs e)
+    {
+        var vm = DataContext as FileChatPageViewModel;
+        vm.HostScreen.Router.Navigate.Execute(new FileSpaceViewModel(vm.HostScreen));
     }
 }
