@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Avalonia;
 using Fileware.ViewModels;
@@ -30,10 +31,10 @@ public class AppViewLocator : IViewLocator
 
 public class ReflectionViewLocator : IViewLocator
 {
-    private static Dictionary<Type, Type> _routeTypes;
+    private static Dictionary<Type, Type> _routeTypes = new();
     public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
     {
-        var type = typeof(T);
+        var type = viewModel.GetType();
         if (!_routeTypes.TryGetValue(type, out var pageType))
         {
             var findPageType = FindPageType(type);
@@ -46,8 +47,17 @@ public class ReflectionViewLocator : IViewLocator
         return pageInstance as IViewFor;
     }
 
+    private List<Type>? _cachedTypes = null;
+    
     private Type FindPageType(Type type)
     {
+        if (_cachedTypes is null)
+        {
+            var assembly = Assembly.GetAssembly(GetType());
+
+            _cachedTypes = assembly.GetTypes().ToList();
+        }
+        
         var name = type.Name;
         if (name.EndsWith("ViewModel"))
         {
@@ -57,11 +67,10 @@ public class ReflectionViewLocator : IViewLocator
             name = name[..^2];
         }
 
-        var assembly = Assembly.GetAssembly(GetType());
-        var pageType = assembly.GetType(name + "Page");
+        var pageType = _cachedTypes.Find(i => i.Name == name + "Page");
         if (pageType is not null)
             return pageType;
-        if (assembly.GetType(name) is {} justType)
+        if (_cachedTypes.Find(i => i.Name == name) is {} justType)
         {
             return justType;
         }

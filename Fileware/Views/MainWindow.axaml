@@ -28,7 +28,7 @@
             </reactiveUi:RoutedViewHost.PageTransition>
             <reactiveUi:RoutedViewHost.ViewLocator>
                 <!-- See AppViewLocator.cs section below -->
-                <fileware:AppViewLocator />
+                <fileware:ReflectionViewLocator />
             </reactiveUi:RoutedViewHost.ViewLocator>
         </reactiveUi:RoutedViewHost>
     </Grid>

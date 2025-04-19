@@ -47,7 +47,7 @@
                 <CrossFade Duration="0:00:00.500" />
             </reactiveUi:RoutedViewHost.PageTransition>
             <reactiveUi:RoutedViewHost.ViewLocator>
-                <fileware:AppViewLocator />
+                <fileware:ReflectionViewLocator />
             </reactiveUi:RoutedViewHost.ViewLocator>
         </reactiveUi:RoutedViewHost>
         <Panel Background="Transparent" VerticalAlignment="Top" HorizontalAlignment="Center" PointerEntered="OpenDock"
