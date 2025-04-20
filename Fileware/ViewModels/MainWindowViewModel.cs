@@ -16,6 +16,14 @@ public class MainWindowViewModel : ReactiveObject, IScreen
         {
             AppContext.CurrentUser =
                 JsonSerializer.Deserialize<LoginResponse>(File.ReadAllText("./UserData/user.json"), Api.JsonOptions);
+
+            Api.Http.GetStringAsync($"api/User/{AppContext.CurrentUser.UserData.Id}").ContinueWith(t =>
+            {
+                var data = JsonSerializer.Deserialize<UserData>(t.Result, Api.JsonOptions);
+                Utils.TransferData(AppContext.CurrentUser.UserData, data);
+                AppContext.CurrentUser.Save(api:false);
+            });
+            
             Router.Navigate.Execute(
                 new BasePageViewModel(this));
         }

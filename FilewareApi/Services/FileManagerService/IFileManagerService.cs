@@ -4,8 +4,8 @@ namespace FilewareApi.Services.FileManagerService;
 
 public interface IFileManagerService
 {
-    int RegisterNewFile(IFormFile file, string filespace);
-    int RegisterBigFile(byte[] data, string name, string type, string filespace);
+    int RegisterNewFile(IFormFile file, string fileSpace);
+    int RegisterBigFile(byte[] data, string name, string type, string fileSpace);
     long GetFileSize(int id);
     void UpdateFile(int id, IFormFile form);
     void UpdateBigFile(int id, byte[] data);

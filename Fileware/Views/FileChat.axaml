@@ -13,15 +13,16 @@
                 <StackPanel Orientation="Horizontal" Classes="Centred" DockPanel.Dock="Left" VerticalAlignment="Center"
                             Spacing="10">
                     <TextBlock VerticalAlignment="Center">Файловое пространство</TextBlock>
-                    <ComboBox Name="FileSpacesComboBox">
+                    <ComboBox SelectionChanged="UpdateFileSpace" Name="FileSpacesComboBox">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="models:FileSpace">
-                                <TextBlock Text="{Binding Display}"></TextBlock>
+                                <TextBlock Text="{Binding Display}" ContextMenu="{Binding Menu}">
+                                </TextBlock>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <Button Name="AddSpaceButton" Click="AddFileSpace" VerticalAlignment="Stretch"
-                            Width="{Binding #AddSpaceButton.Height}">
+                            Width="{Binding Height, ElementName=AddSpaceButton}">
                         +
                     </Button>
 
@@ -46,7 +47,7 @@
                 <Button Click="AttachFile" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                         CornerRadius="5, 0, 0, 5"
                         VerticalContentAlignment="Center" DockPanel.Dock="Left">
-                    <Image Source="{SvgImage ../../Assets/attach.svg}"
+                    <Image Source="{SvgImage ../../Assets/attachFile.svg}"
                            Height="20" />
                 </Button>
                 <TextBox CornerRadius="0" Background="Transparent" x:Name="MsgBox" MaxLines="10"

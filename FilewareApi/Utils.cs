@@ -19,6 +19,8 @@ public static class Utils
         {
             var value = property.GetValue(from);
             var curr = entityProps.FirstOrDefault(i => i.Name == property.Name);
+            if (!property.CanRead || !property.CanWrite) continue;
+
             if (curr == null)
                 continue;
 

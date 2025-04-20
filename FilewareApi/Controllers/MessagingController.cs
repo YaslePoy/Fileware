@@ -15,9 +15,9 @@ public class MessagingController(IMessagingService messagingService) : Controlle
     }
 
     [HttpPost]
-    public ActionResult<int> PostMessage([FromBody] string text, string filespace)
+    public ActionResult<int> PostMessage([FromBody] string text, string fileSpace)
     {
-        return messagingService.PostMessage(text, filespace);
+        return messagingService.PostMessage(text, fileSpace);
     }
 
     [HttpPatch("{id}")]

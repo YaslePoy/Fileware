@@ -66,7 +66,7 @@ public class ReflectionViewLocator : IViewLocator
         {
             name = name[..^2];
         }
-
+        
         var pageType = _cachedTypes.Find(i => i.Name == name + "Page");
         if (pageType is not null)
             return pageType;

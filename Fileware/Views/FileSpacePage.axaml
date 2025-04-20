@@ -6,6 +6,82 @@
              xmlns:controls="clr-namespace:Fileware.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Fileware.Views.FileSpacePage" x:DataType="viewModels:FileSpaceViewModel">
-    <controls:GoBack DataContext="{Binding GoBackVM}">
-    </controls:GoBack>
+    <UserControl.Styles>
+        <Styles>
+            
+            <Style Selector="Border.EdgeBorder">
+                <Setter Property="BorderBrush" Value="{StaticResource  DisableBrush}"></Setter>
+                <Setter Property="CornerRadius" Value="10"></Setter>
+                <Setter Property="BorderThickness" Value="3"></Setter>
+                <Setter Property="Padding" Value="10"></Setter>
+                <Setter Property="Background" Value="Transparent"></Setter>
+            </Style>
+            <Style Selector="Border.Edge:pointerover">
+                <Setter Property="BorderBrush" Value="{StaticResource  AdditionalBrush}"></Setter>
+            </Style>
+            <Style Selector="Border.EdgePressed">
+                <Setter Property="BorderBrush" Value="{StaticResource  MainColorBrush}"></Setter>
+            </Style>
+            <Style Selector="Border.EdgeBorder > StackPanel > Image">
+                <Setter Property="Height" Value="100"></Setter>
+                <Setter Property="Width" Value="100"></Setter>
+            </Style>
+            <Style Selector="Border.EdgeBorder > StackPanel">
+                <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="Spacing" Value="5"></Setter>
+            </Style>
+            <Style Selector="Border.EdgeBorder > StackPanel > TextBlock">
+                <Setter Property="FontSize" Value="18"></Setter>
+                <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                <Setter Property="TextAlignment" Value="Center"></Setter>
+            </Style>
+        </Styles>
+    </UserControl.Styles>
+    <Grid RowDefinitions="Auto *" Margin="5">
+        <controls:GoBack DataContext="{Binding GoBackVM}">
+        </controls:GoBack>
+        <Grid Grid.Row="1" ColumnDefinitions="* * *" Name="StagesGrid">
+            <Grid Name="FSWays" RowDefinitions="* *" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Border Tag="attach" Classes="Edge EdgeBorder" Tapped="SelectWay" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" Padding="10">
+                    <StackPanel>
+                        <TextBlock TextWrapping="Wrap" TextAlignment="Center">Присоединиться к существующему пространству</TextBlock>
+                        <Image Source="{SvgImage ../../Assets/attach.svg}"></Image>
+
+                    </StackPanel>
+                </Border>
+                <Border Tag="create" Tapped="SelectWay" Grid.Row="1" Classes="Edge  EdgeBorder" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" Padding="10">
+                    <StackPanel>
+                        <TextBlock TextWrapping="Wrap" TextAlignment="Center">Создать новое</TextBlock>
+                        <Image Source="{SvgImage ../../Assets/add.svg}"></Image>
+                    </StackPanel>
+                </Border>
+            </Grid>
+            <Border Name="CreateSpaceForm" IsVisible="False" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" Classes="EdgeBorder">
+                <StackPanel>
+                    <TextBlock>Дайте название новому файловому пространству</TextBlock>
+                    <TextBox Text="{Binding FileSpaceName}" HorizontalAlignment="Stretch"></TextBox>
+                    <CheckBox IsChecked="{Binding IsPrivate}">Личное пространство</CheckBox>
+                    <Button Command="{Binding OnTryCreateFileSpace}" Classes="Long">Далее</Button>
+                    <TextBlock FontSize="12" Foreground="Red" Text="{Binding AlertText}"></TextBlock>
+                </StackPanel>
+            </Border>
+            <Border Name="AttachSpace" IsVisible="False" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" Classes="EdgeBorder">
+                <StackPanel>
+                    <TextBlock ToolTip.Tip="Этот идентификатор можно получить, выбрав пункт Поделиться в графе смены файлового пространства">Введите секретный идентификатор пространства</TextBlock>
+                    <TextBox TextWrapping="Wrap" Text="{Binding FileSpaceName}" HorizontalAlignment="Stretch"></TextBox>
+                    <Button Command="{Binding OnTryAttachFileSpace}" Classes="Long">Далее</Button>
+                    <TextBlock FontSize="12" Foreground="Red" Text="{Binding AlertText}"></TextBlock>
+                </StackPanel>
+            </Border>
+            <Border Grid.Column="2" IsVisible="{Binding ConfirmVisibility}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" Classes="EdgeBorder">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                    <TextBlock>Подтвердите действие</TextBlock>
+                    <TextBlock Text="{Binding ConfirmActionText}"></TextBlock>
+                    <Button Command="{Binding ConfirmFileSpaceAction}" Classes="Long">Подтвердить</Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+
 </UserControl>

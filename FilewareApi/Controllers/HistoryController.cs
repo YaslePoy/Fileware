@@ -55,7 +55,7 @@ public class HistoryController(FilewareDbContext db) : Controller
         return Ok();
     } 
 
-    [HttpPatch("filespace")]
+    [HttpPatch("fileSpace")]
     public async Task<ActionResult> SetupPointSpace(int source, int type, string key)
     {
         var point = db.HistoryPoints.FirstOrDefault(i => i.LinkedId == source && i.Type == type);

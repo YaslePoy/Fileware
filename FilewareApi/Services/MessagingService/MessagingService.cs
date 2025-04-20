@@ -4,7 +4,7 @@ namespace FilewareApi.Services.MessagingService;
 
 public class MessagingService(FilewareDbContext dbContext) : IMessagingService
 {
-    public int PostMessage(string text, string filespace)
+    public int PostMessage(string text, string fileSpace)
     {
         var msg = new Message { Text = text, Time = FileManagerService.FileManagerService.NowWithoutTimezone };
         dbContext.Messages.Add(msg);
@@ -13,7 +13,7 @@ public class MessagingService(FilewareDbContext dbContext) : IMessagingService
         dbContext.HistoryPoints.Add(new HistoryPoint
         {
             Time = FileManagerService.FileManagerService.NowWithoutTimezone, Type = (int)HistoryPointType.Message,
-            LinkedId = msg.Id, FileSpaceKey = filespace
+            LinkedId = msg.Id, FileSpaceKey = fileSpace
         });
         dbContext.SaveChanges();
 

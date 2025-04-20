@@ -1,3 +1,4 @@
+using System.IO;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using Fileware.ViewModels;
@@ -17,5 +18,13 @@ public partial class ProfilePage : ReactiveUserControl<ProfileViewModel>
     {
         var vm = DataContext as ProfileViewModel;
         vm.HostScreen.Router.Navigate.Execute(new EditProfileViewModel(vm.HostScreen, vm.User));
+    }
+
+    private void Exit(object? sender, TappedEventArgs e)
+    {
+        Directory.Delete("./UserData",recursive:true);
+        AppContext.CurrentUser = null;
+        (AppContext.WindowInstance.DataContext as MainWindowViewModel).Router.Navigate
+            .Execute(new StartPageViewModel(AppContext.WindowInstance.DataContext as MainWindowViewModel));
     }
 }

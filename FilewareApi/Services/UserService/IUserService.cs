@@ -14,6 +14,7 @@ public interface IUserService
     Task SetupAvatar(int id, byte[] avatar);
     byte[] GetAvatar(int id);
     int GetFileCount(int userId);
+    Task Update(CommonUserData user);
 }
 
 public class UserService(FilewareDbContext db) : IUserService
@@ -48,7 +49,7 @@ public class UserService(FilewareDbContext db) : IUserService
         db.Users.Add(user);
 
         await db.SaveChangesAsync();
-        user.AttachedFilespaces = [$"user_{user.Id}:master"];
+        user.AttachedFileSpaces = [$"user_{user.Id}:master"];
         await db.SaveChangesAsync();
 
         return user.Id;
@@ -103,5 +104,13 @@ public class UserService(FilewareDbContext db) : IUserService
     public int GetFileCount(int userId)
     {
         return db.HistoryPoints.Count(i => i.FileSpaceKey.StartsWith($"user_{userId}:"));
+    }
+
+    public async Task Update(CommonUserData user)
+    {
+        var fromDb = Get(user.Id);
+        Utils.TransferData(fromDb, user);
+        db.Users.Update(fromDb);
+        await db.SaveChangesAsync();
     }
 }

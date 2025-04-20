@@ -17,8 +17,10 @@
         </viewModels:ProfileViewModel>
     </Design.DataContext>
     <Panel>
+        <Image Height="35" Width="35" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10"
+               Tapped="Exit" Source="{SvgImage ../../Assets/Exit.svg}" />
         <Image Height="35" Width="35" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10"
-               Tapped="EditProfile" Source="{SvgImage /Assets/Edit.svg}" />
+               Tapped="EditProfile" Source="{SvgImage ../../Assets/Edit.svg}" />
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="7">
             <Border CornerRadius="18" BorderBrush="{StaticResource MainColorBrush}" BorderThickness="3" HorizontalAlignment="Center">
                 <Border ClipToBounds="True" HorizontalAlignment="Center" Margin="2"

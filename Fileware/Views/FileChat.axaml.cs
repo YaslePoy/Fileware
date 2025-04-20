@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -28,11 +29,17 @@ namespace Fileware.Views;
 
 public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, IMultiLevelView
 {
-    private string _currentFilespace = FileSpace.OfUser(AppContext.CurrentUser.UserData).Id;
+    private string _currentFileSpace => (FileSpacesComboBox.SelectedItem as FileSpace).Id;
     private static FileChatPage Instance;
     private static List<HistoryPoint> History;
 
     private KeyEventArgs? _firstEnter;
+
+    protected override void OnUnloaded(RoutedEventArgs e)
+    {
+        base.OnUnloaded(e);
+        AppContext.CurrentUser.UserData.PropertyChanged -= OnUserDataOnPropertyChanged;
+    }
 
     public FileChatPage()
     {
@@ -41,10 +48,9 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
         InitializeComponent();
         this.WhenActivated(_ => { });
 
-        foreach (var userDataAttachedFilespace in AppContext.CurrentUser.UserData.AttachedFilespaces)
-        {
-            FileSpacesComboBox.Items.Add(new FileSpace { Id = userDataAttachedFilespace });
-        }
+        AppContext.CurrentUser.UserData.PropertyChanged += OnUserDataOnPropertyChanged;
+
+        UpdateFileSpaceSelector();
 
         FileSpacesComboBox.SelectedIndex = 0;
 
@@ -59,18 +65,25 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
                       new List<HistoryPoint>();
             ShowHistory();
         }
-
-        Api.Http.GetStringAsync($"api/History?id=-1&count=100&key={_currentFilespace}").ContinueWith(t =>
-        {
-            var history = t.Result;
-            File.WriteAllText("./Cache/testHistory.json", t.Result);
-            History = JsonSerializer.Deserialize<List<HistoryPoint>>(history, Api.JsonOptions) ??
-                      new List<HistoryPoint>();
-
-            Dispatcher.UIThread.Invoke(ShowHistory);
-        });
     }
 
+    private void OnUserDataOnPropertyChanged(object? sender, PropertyChangedEventArgs args)
+    {
+        if (args.PropertyName != "AttachedFileSpaces") return;
+        UpdateFileSpaceSelector();
+    }
+
+
+    private void UpdateFileSpaceSelector()
+    {
+        FileSpacesComboBox.Items.Clear();
+        foreach (var userDataAttachedFileSpace in AppContext.CurrentUser.UserData.AttachedFileSpaces)
+        {
+            FileSpacesComboBox.Items.Add(new FileSpace { Id = userDataAttachedFileSpace });
+        }
+
+        FileSpacesComboBox.SelectedIndex = 0;
+    }
     private void ShowHistory()
     {
         var lastDate = DateTime.Today;
@@ -207,8 +220,8 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
         {
             using var response = await Api.Http.PostAsync(
                 info.Length > 30 * 1024 * 1024
-                    ? $"api/File/large?filespace={HttpUtility.UrlEncode(_currentFilespace)}"
-                    : $"api/File?filespace={HttpUtility.UrlEncode(_currentFilespace)}",
+                    ? $"api/File/large?fileSpace={HttpUtility.UrlEncode(_currentFileSpace)}"
+                    : $"api/File?fileSpace={HttpUtility.UrlEncode(_currentFileSpace)}",
                 multipartFormContent);
             var id = int.Parse(await response.Content.ReadAsStringAsync());
             AppContext.LocalStoredFiles.Add(id,
@@ -232,7 +245,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
 
         var savedText = MsgBox.Text;
 
-        Api.Http.PostAsync($"api/Messaging?filespace={HttpUtility.UrlEncode(_currentFilespace)}",
+        Api.Http.PostAsync($"api/Messaging?fileSpace={HttpUtility.UrlEncode(_currentFileSpace)}",
                 new StringContent("\"" + MsgBox.Text + "\"", MediaTypeWithQualityHeaderValue.Parse("application/json")))
             .ContinueWith(
                 async t =>
@@ -421,5 +434,20 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
     {
         var vm = DataContext as FileChatPageViewModel;
         vm.HostScreen.Router.Navigate.Execute(new FileSpaceViewModel(vm.HostScreen));
+    }
+
+    private void UpdateFileSpace(object? sender, SelectionChangedEventArgs e)
+    {
+        if (FileSpacesComboBox.SelectedValue is null)
+            return;
+        Api.Http.GetStringAsync($"api/History?id=-1&count=100&key={_currentFileSpace}").ContinueWith(t =>
+        {
+            var history = t.Result;
+            File.WriteAllText("./Cache/testHistory.json", t.Result);
+            History = JsonSerializer.Deserialize<List<HistoryPoint>>(history, Api.JsonOptions) ??
+                      new List<HistoryPoint>();
+
+            Dispatcher.UIThread.Invoke(ShowHistory);
+        });
     }
 }

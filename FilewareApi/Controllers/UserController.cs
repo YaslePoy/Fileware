@@ -93,6 +93,19 @@ public class UserController(IUserService userService) : Controller
         await userService.SetupAvatar(id, ms.ToArray());
         return Ok();
     }
+
+    [HttpPatch]
+    public async Task<ActionResult> UpdateUser(CommonUserData patching)
+    {
+        var user = userService.Get(patching.Id);
+        if (user is null)
+        {
+            return NotFound();
+        }
+
+        await userService.Update(patching);
+        return Ok();
+    }
 }
 
 public class LoginResponse

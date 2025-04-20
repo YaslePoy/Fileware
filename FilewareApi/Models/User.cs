@@ -17,7 +17,7 @@ public class User
     [JsonIgnore]
     public byte[]? Avatar { get; set; }
 
-    public List<string> AttachedFilespaces { get; set; } = [];
+    public List<string> AttachedFileSpaces { get; set; } = [];
 }
 
 public class CommonUserData
@@ -26,7 +26,7 @@ public class CommonUserData
     public string Username { get; set; }
     public string ShowName { get; set; }
     public DateOnly BirthDate { get; set; }
-    public List<string> AttachedFilespaces { get; set; }
+    public List<string> AttachedFileSpaces { get; set; }
     public int FileCount { get; set; }
 
 }
