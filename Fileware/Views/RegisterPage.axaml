@@ -46,7 +46,7 @@
     </UserControl.Styles>
     <DockPanel LastChildFill="True">
         <controls:GoBack DockPanel.Dock="Top" DataContext="{Binding GoBackVM}" />
-        <TextBlock Foreground="Red" Text="{Binding GlobalAlertText}"></TextBlock>
+        <TextBlock DockPanel.Dock="Right" Foreground="Red" Text="{Binding GlobalAlertText}"></TextBlock>
         <Grid DockPanel.Dock="Bottom" ColumnDefinitions="* * *">
 
             <DockPanel IsEnabled="{Binding !PasswordStage}" Margin="5" HorizontalAlignment="Stretch"

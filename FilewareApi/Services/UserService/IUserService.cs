@@ -40,7 +40,7 @@ public class UserService(FilewareDbContext db) : IUserService
             return -1;
         }
 
-        if (user.TotpKey is { Length: 1 })
+        if (user.TotpKey is not null)
         {
             user.TotpKey = TotpKeys[user.Username];
             TotpKeys.Remove(user.Username);

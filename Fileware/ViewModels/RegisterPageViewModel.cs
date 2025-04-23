@@ -1,7 +1,11 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using System.Web;
 using System.Windows.Input;
 using Avalonia.Media.Imaging;
@@ -223,19 +227,19 @@ public class RegisterPageViewModel : ReactiveObject, IRoutableViewModel
 
     public ICommand RegisterFinal => ReactiveCommand.Create(() =>
     {
-        Api.Http.PostAsJsonAsync("api/User/reg",
-            new
-            {
-                Username,
-                ShowName,
-                Password,
-                TotpKey = _useTotpAuth ? new[] { 0 } : null,
-                BirthDate = DateOnly.Parse(BirthDate).ToString("yyyy-MM-dd")
-            }).ContinueWith(t =>
+        var req = JsonSerializer.Serialize(new
         {
-            if (!t.IsCompletedSuccessfully)
+            Username,
+            ShowName,
+            Password,
+            TotpKey = _useTotpAuth ?  Convert.ToBase64String(Encoding.Default.GetBytes(Password)) : null,
+            BirthDate = DateOnly.Parse(BirthDate).ToString("yyyy-MM-dd")
+        }, Api.JsonOptions);
+        Api.Http.PostAsync("api/User/reg", new StringContent(req, Api.JsonMediaType)).ContinueWith(t =>
+        {
+            if (!t.Result.IsSuccessStatusCode)
             {
-                GlobalAlertText = "Упс. Что то пошло не так";
+                GlobalAlertText = "Упс. Что-жто пошло не так";
                 return;
             }
 
@@ -243,7 +247,6 @@ public class RegisterPageViewModel : ReactiveObject, IRoutableViewModel
             {
                 HostScreen.Router.Navigate.Execute(new LoginPageViewModel(HostScreen));
             });
-
         });
     });
 

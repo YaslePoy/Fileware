@@ -53,6 +53,8 @@ public static class Api
 
         return null;
     }
+    public static MediaTypeWithQualityHeaderValue JsonMediaType =>
+        MediaTypeWithQualityHeaderValue.Parse("application/json");
 }
 
 public class LoginResponse
@@ -79,11 +81,10 @@ public class LoginResponse
     {
         Api.Http.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse("Bearer " + Token);
         return Api.Http.PatchAsync("api/User",
-            new StringContent(JsonSerializer.Serialize(UserData, Api.JsonOptions), JsonMediaType));
+            new StringContent(JsonSerializer.Serialize(UserData, Api.JsonOptions), Api.JsonMediaType));
     }
 
-    public static MediaTypeWithQualityHeaderValue JsonMediaType =>
-        MediaTypeWithQualityHeaderValue.Parse("application/json");
+   
 }
 
 public class UserData : INotifyPropertyChanged
