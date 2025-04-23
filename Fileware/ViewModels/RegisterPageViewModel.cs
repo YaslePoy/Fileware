@@ -106,7 +106,7 @@ public class RegisterPageViewModel : ReactiveObject, IRoutableViewModel
         {
             _useTotpAuth = value;
 
-            if (_useTotpAuth && !string.IsNullOrWhiteSpace(Username))
+            if (_useTotpAuth && TotpBitmap is null && !string.IsNullOrWhiteSpace(Username))
             {
                 Api.Http.GetStringAsync("api/User/totp?username=" + HttpUtility.UrlEncode(Username)).ContinueWith(t =>
                 {
@@ -132,7 +132,7 @@ public class RegisterPageViewModel : ReactiveObject, IRoutableViewModel
             }
             else
             {
-                ShowQr = false;
+                ShowQr = value;
             }
         }
     }

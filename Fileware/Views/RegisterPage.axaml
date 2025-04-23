@@ -47,43 +47,53 @@
     <DockPanel LastChildFill="True">
         <controls:GoBack DockPanel.Dock="Top" DataContext="{Binding GoBackVM}" />
         <TextBlock DockPanel.Dock="Right" Foreground="Red" Text="{Binding GlobalAlertText}"></TextBlock>
-        <Grid DockPanel.Dock="Bottom" ColumnDefinitions="* * *">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <StackPanel DockPanel.Dock="Bottom" Width="350" VerticalAlignment="Center">
+                <DockPanel  IsEnabled="{Binding !PasswordStage}" Margin="5" HorizontalAlignment="Stretch"
+                           VerticalAlignment="Stretch" LastChildFill="True">
+                    <TextBlock FontSize="24" DockPanel.Dock="Top" TextWrapping="Wrap" TextAlignment="Center">Личная информация</TextBlock>
+                    <StackPanel IsVisible="{Binding !PasswordStage}" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Width="250"
+                                Spacing="10">
+                        <TextBlock TextWrapping="Wrap" FontSize="16" TextAlignment="Center">Заполните информацию о себе. Её смогут видеть другие пользователи</TextBlock>
+                        <TextBlock TextWrapping="Wrap" Text="{Binding AlertText}" Foreground="Red"></TextBlock>
+                        <TextBox Text="{Binding Username}" HorizontalAlignment="Stretch"
+                                 Watermark="Введите желаемый логин" />
 
-            <DockPanel IsEnabled="{Binding !PasswordStage}" Margin="5" HorizontalAlignment="Stretch"
-                       VerticalAlignment="Stretch" LastChildFill="True">
-                <TextBlock FontSize="24" DockPanel.Dock="Top" TextWrapping="Wrap" TextAlignment="Center">Личная информация</TextBlock>
-                <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250"
-                            Spacing="10">
-                    <TextBlock TextWrapping="Wrap" FontSize="16" TextAlignment="Center">Заполните информацию о себе. Её смогут видеть другие пользователи</TextBlock>
-                    <TextBlock TextWrapping="Wrap" Text="{Binding AlertText}" Foreground="Red"></TextBlock>
-                    <TextBox Text="{Binding Username}" HorizontalAlignment="Stretch" Watermark="Введите желаемый логин" />
-
-                    <TextBox HorizontalAlignment="Stretch" Text="{Binding ShowName}" Watermark="Как к вам обращаться" />
-                    <TextBox Text="{Binding BirthDate}" Watermark="День рождения" HorizontalAlignment="Stretch" />
-                    <Button Command="{Binding TryGotoPassword}">Далее</Button>
-                </StackPanel>
-            </DockPanel>
-            <DockPanel Opacity="{Binding PasswordOpacity}" IsEnabled="{Binding PasswordStage}"
-                       IsVisible="{Binding PasswordStage}" Grid.Column="1" Margin="5"
-                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
-                <TextBlock FontSize="24" DockPanel.Dock="Top" TextWrapping="Wrap" TextAlignment="Center">Настройки входа</TextBlock>
-                <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250"
-                            Spacing="10" IsEnabled="{Binding !FinalStage}">
-                    <TextBlock Foreground="Red" Text="{Binding PassAlertText}" TextWrapping="Wrap"></TextBlock>
-                    <TextBox Watermark="Пароль" HorizontalAlignment="Stretch" PasswordChar="~" Text="{Binding Password}"/>
-                    <CheckBox IsChecked="{Binding UseTotpAuth}">Использовать авторизацию по временному паролю</CheckBox>
-                    <StackPanel Spacing="10" IsVisible="{Binding ShowQr}">
-                        <Image Name="QR" Source="{Binding TotpBitmap}" Width="200" Height="170" />
-                        <TextBlock FontSize="12" TextWrapping="Wrap" Width="{Binding Width, ElementName=QR}"
-                                   TextAlignment="Center">
-                            Для того чтобы использовать одноразовый пароль отсканируйте код выше через приложение-аутентификатор, например Яндекс.Ключ и введите появившеюся число в поле пароля
-                        </TextBlock>
+                        <TextBox HorizontalAlignment="Stretch" Text="{Binding ShowName}"
+                                 Watermark="Как к вам обращаться" />
+                        <TextBox Text="{Binding BirthDate}" Watermark="День рождения" HorizontalAlignment="Stretch" />
+                        <Button IsVisible="{Binding !PasswordStage}" Command="{Binding TryGotoPassword}">Далее</Button>
                     </StackPanel>
-                    <Button IsEnabled="{Binding !FinalStage}" Command="{Binding ConfirmPassword}">Далее</Button>
+                </DockPanel>
+                <StackPanel Opacity="{Binding PasswordOpacity}" IsEnabled="{Binding PasswordStage}"
+                            IsVisible="{Binding PasswordStage}" Grid.Column="1" Margin="5"
+                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Width="250"
+                                Spacing="10" IsEnabled="{Binding !FinalStage}">
+                        <TextBlock Foreground="Red" Text="{Binding PassAlertText}" TextWrapping="Wrap"></TextBlock>
+                        <TextBox Watermark="Пароль" HorizontalAlignment="Stretch" PasswordChar="~"
+                                 Text="{Binding Password}" />
+                        <CheckBox IsChecked="{Binding UseTotpAuth}">Использовать авторизацию по временному паролю</CheckBox>
+                        <Button IsEnabled="{Binding !FinalStage}" Command="{Binding ConfirmPassword}">Далее</Button>
+                    </StackPanel>
                 </StackPanel>
-            </DockPanel>
-            <Button HorizontalContentAlignment="Center" Grid.Column="2" Command="{Binding RegisterFinal}" HorizontalAlignment="Stretch" IsVisible="{Binding FinalStage}" IsEnabled="{Binding FinalStage}" Margin="10" Padding="10">Зарегистрироваться</Button>
-        </Grid>
+                <Button HorizontalContentAlignment="Center" Grid.Column="2" Command="{Binding RegisterFinal}"
+                        HorizontalAlignment="Stretch" IsVisible="{Binding FinalStage}" IsEnabled="{Binding FinalStage}"
+                        Margin="10" Padding="10">
+                    Зарегистрироваться
+                </Button>
+            </StackPanel>
+            <StackPanel VerticalAlignment="Center" Spacing="10" IsVisible="{Binding ShowQr}">
+                <Image Name="QR" Source="{Binding TotpBitmap}" Width="250" Height="250" />
+                <TextBlock FontSize="12" TextWrapping="Wrap" Width="{Binding Width, ElementName=QR}"
+                           TextAlignment="Center">
+                    Для того чтобы использовать одноразовый пароль отсканируйте код выше через приложение-аутентификатор, например Яндекс.Ключ и введите появившеюся число в поле пароля
+                </TextBlock>
+            </StackPanel>
+        </StackPanel>
+
     </DockPanel>
 
 </UserControl>
