@@ -199,7 +199,7 @@ public class RegisterPageViewModel : ReactiveObject, IRoutableViewModel
 
     public ICommand ConfirmPassword => ReactiveCommand.Create(() =>
     {
-        if (Password.Length < 6)
+        if (Password is null or { Length: < 6})
         {
             PassAlertText = "Пароль не может быть меньше 6 символов";
             return;
