@@ -106,6 +106,12 @@ public class UserController(IUserService userService) : Controller
         await userService.Update(patching);
         return Ok();
     }
+
+    [HttpGet("totp/{username}/verify")]
+    public ActionResult VerifyUser(string username, string totpKey)
+    {
+        return Ok(userService.VerifyTotp(username, totpKey));
+    }
 }
 
 public class LoginResponse

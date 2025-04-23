@@ -8,7 +8,7 @@
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <DefineConstants>TRACE;LOCALHOST;</DefineConstants>
+        <DefineConstants>TRACE;LOCALHOST</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
@@ -38,6 +38,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="QRCoder" Version="1.6.0" />
     </ItemGroup>
 
 

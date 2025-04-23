@@ -78,7 +78,7 @@
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Stretch">
                     <TextBlock>Подтвердите действие</TextBlock>
                     <TextBlock Text="{Binding ConfirmActionText}"></TextBlock>
-                    <Button Command="{Binding ConfirmFileSpaceAction}" Classes="Long">Подтвердить</Button>
+                    <Button Command="{Binding ConfirmFileSpaceAction}" Name="ButtonTest" Classes="Long">Подтвердить</Button>
                 </StackPanel>
             </Border>
         </Grid>

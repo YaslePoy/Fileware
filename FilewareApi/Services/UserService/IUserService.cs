@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using FilewareApi.Models;
+using Microsoft.AspNetCore.Mvc;
 using OtpNet;
 
 namespace FilewareApi.Services.UserService;
@@ -15,6 +16,7 @@ public interface IUserService
     byte[] GetAvatar(int id);
     int GetFileCount(int userId);
     Task Update(CommonUserData user);
+    bool VerifyTotp(string username, string totpKey);
 }
 
 public class UserService(FilewareDbContext db) : IUserService
@@ -23,7 +25,7 @@ public class UserService(FilewareDbContext db) : IUserService
 
     public string GenerateTotpKey(string username)
     {
-        var key = RandomNumberGenerator.GetBytes(48);
+        var key = RandomNumberGenerator.GetBytes(32);
         if (!TotpKeys.TryAdd(username, key))
             TotpKeys[username] = key;
 
@@ -112,5 +114,15 @@ public class UserService(FilewareDbContext db) : IUserService
         Utils.TransferData(fromDb, user);
         db.Users.Update(fromDb);
         await db.SaveChangesAsync();
+    }
+
+    public bool VerifyTotp(string username, string totpKey)
+    {
+        if (TotpKeys.TryGetValue(username, out var key))
+        {
+            return  new Totp(key).VerifyTotp(totpKey, out _);
+        }
+
+        return false;
     }
 }

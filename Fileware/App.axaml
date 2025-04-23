@@ -9,6 +9,7 @@
         <local:ViewLocator />
     </Application.DataTemplates>
     <Application.Resources>
+        <FontFamily x:Key="Inter">avares://Fileware/Assets/Fonts#Inter</FontFamily>
         <SolidColorBrush x:Key="MainColorBrush" Color="#59A96A" />
         <Color x:Key="MainColor">#999999</Color>
         <SolidColorBrush x:Key="AdditionalBrush" Color="#59CC6A" />
@@ -31,6 +32,10 @@
                 </Setter>
             </Style>
 
+            <Style Selector="TextBlock">
+                <Setter Property="FontFamily" Value="{StaticResource Inter}"></Setter>
+            </Style>
+            
             <Style Selector="Button">
                 <Setter Property="Background" Value="{StaticResource MainColorBrush}" />
             </Style>

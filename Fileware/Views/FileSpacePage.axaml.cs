@@ -17,6 +17,7 @@ public partial class FileSpacePage : ReactiveUserControl<FileSpaceViewModel>
 
     private void SelectWay(object? sender, TappedEventArgs e)
     {
+        var x = ButtonTest;
         foreach (var way in FSWays.Children)
         {
             if (way == sender)

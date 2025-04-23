@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using System.Windows.Input;
+using ReactiveUI;
 
 namespace Fileware;
 
@@ -9,6 +11,11 @@ public static class BasincExtentions
     {
         operation(value);
         return value;
+    }
+
+    public static ICommand ToCommand(this Action action)
+    {
+        return ReactiveCommand.Create(action);
     }
 }
 
