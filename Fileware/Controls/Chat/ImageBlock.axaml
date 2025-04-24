@@ -6,7 +6,8 @@
              xmlns:viewModels="clr-namespace:Fileware.ViewModels"
              mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="300"
              x:DataType="models:FileData" HorizontalContentAlignment="Stretch"
-             x:Class="Fileware.Controls.ImageBlock" VerticalContentAlignment="Center" HorizontalAlignment="Left">
+             x:Class="Fileware.Controls.ImageBlock" VerticalContentAlignment="Center" HorizontalAlignment="Left"
+             DoubleTapped="OnDoubleTap" Tapped="InputElement_OnTapped">
     <UserControl.ContextMenu>
         <ContextMenu>
             <MenuItem Header="Переименовать" Click="OnRename" />

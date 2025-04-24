@@ -12,7 +12,6 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
-using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 using Fileware.Controls;
@@ -140,7 +139,7 @@ public partial class TilesPage : ReactiveUserControl<TilesViewModel>, IMultiLeve
                         });
                         adding = new ImageBlock
                         {
-                            MaxHeight = 300, DataContext = fileData, Width = 350, Host = this,
+                            DataContext = fileData, MaxHeight = 350, MaxWidth = 350, Host = this,
                             Margin = new Thickness(10)
                         };
                     }
@@ -161,62 +160,11 @@ public partial class TilesPage : ReactiveUserControl<TilesViewModel>, IMultiLeve
                     break;
             }
 
-            if (adding != null)
-            {
-                PointsPanel.Children.Insert(0, adding);
-                (adding.DataContext as ITagContainer).Tags = point.Tags.Select(ViewModels.Tag.FromName).ToList();
-                (adding.DataContext as ITagContainer).PointId = point.Id;
-            }
+            if (adding == null) continue;
+            PointsPanel.Children.Insert(0, adding);
+            (adding.DataContext as ITagContainer)!.Tags = point.Tags.Select(ViewModels.Tag.FromName).ToList();
+            (adding.DataContext as ITagContainer)!.PointId = point.Id;
         }
-    }
-
-    private void DragOver(object? sender, DragEventArgs e)
-    {
-        Viewer.Effect = new ImmutableBlurEffect(15);
-        LoadPanel.IsVisible = true;
-    }
-
-    private void DragLeave(object? sender, DragEventArgs e)
-    {
-        Viewer.Effect = null;
-        LoadPanel.IsVisible = false;
-    }
-
-    private async void DragDropEvent(object? sender, DragEventArgs e)
-    {
-        Viewer.Effect = null;
-        LoadPanel.IsVisible = false;
-        if (e.Data.GetFiles() is { } fileNames)
-            foreach (var file in fileNames)
-                await SendFile(new FileInfo(file.Path.LocalPath));
-    }
-
-    private void Viewer_OnScrollChanged(object? sender, ScrollChangedEventArgs e)
-    {
-        if (Viewer.Offset.Y != 0)
-            return;
-    }
-
-    private FileInfo SaveImageToCache(byte[] pngData)
-    {
-        if (!Directory.Exists("./Cache")) Directory.CreateDirectory("./Cache");
-
-        var now = DateTime.Now;
-        var name = $"clipboard_{now:MM_dd_yyyy_hh_mm_ss}.png";
-        var path = "./Cache/" + name;
-        File.WriteAllBytes(path, pngData);
-        // return path;
-        return new FileInfo(path);
-    }
-
-    private void AttachFile(object? sender, RoutedEventArgs e)
-    {
-        var topLevel = TopLevel.GetTopLevel(this);
-        topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-            { Title = "Выберите файл", AllowMultiple = false }).ContinueWith(async t =>
-        {
-            foreach (var file in t.Result) await SendFile(new FileInfo(file.Path.LocalPath));
-        });
     }
 
     private void OnCancelRename(object? sender, RoutedEventArgs e)

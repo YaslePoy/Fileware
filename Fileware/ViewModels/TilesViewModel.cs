@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Input;
+using Avalonia.Controls;
 using ReactiveUI;
 
 namespace Fileware.ViewModels;
@@ -21,7 +22,10 @@ public class TilesViewModel : ReactiveObject, IRoutableViewModel
         set => this.RaiseAndSetIfChanged(ref _filterVisibility, value);
     }
 
-    public ICommand FilteringSwitch => ReactiveCommand.Create(() => { FilterVisibility = !FilterVisibility; });
+    public ICommand FilteringSwitch => ReactiveCommand.Create(() =>
+    {
+        FilterVisibility = !FilterVisibility;
+    });
 
     public string? UrlPathSegment { get; } = Guid.NewGuid().ToString()[..5];
     public IScreen HostScreen { get; }
