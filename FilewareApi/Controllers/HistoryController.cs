@@ -1,5 +1,6 @@
-﻿using FilewareApi.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using System.Security.Claims;
+using FilewareApi.Models;
+using FilewareApi.Services.UserService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,11 +8,18 @@ namespace FilewareApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class HistoryController(FilewareDbContext db) : Controller
+public class HistoryController(FilewareDbContext db, IUserService userService) : Controller
 {
     [HttpGet]
     public ActionResult<IReadOnlyList<HistoryPoint>> GetHistoryAfterId(int id, int count, string key)
     {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.Authentication).Value);
+        var user = userService.Get(userId);
+        if (user is null || !user.AttachedFileSpaces.Contains(key))
+        {
+            return Unauthorized();
+        }
+        
         List<HistoryPoint> mapLinked(List<HistoryPoint> list)
         {
             foreach (var point in list)
@@ -54,17 +62,4 @@ public class HistoryController(FilewareDbContext db) : Controller
         await db.SaveChangesAsync();
         return Ok();
     } 
-
-    [HttpPatch("fileSpace")]
-    public async Task<ActionResult> SetupPointSpace(int source, int type, string key)
-    {
-        var point = db.HistoryPoints.FirstOrDefault(i => i.LinkedId == source && i.Type == type);
-        if (point == null)
-            return NotFound();
-
-        point.FileSpaceKey = key;
-        db.HistoryPoints.Update(point);
-        await db.SaveChangesAsync();
-        return Ok();
-    }
 }

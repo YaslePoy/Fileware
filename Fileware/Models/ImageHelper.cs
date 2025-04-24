@@ -14,9 +14,9 @@ public static class ImageHelper
         return new Bitmap(AssetLoader.Open(resourceUri));
     }
 
-    public static async Task<Bitmap?> LoadFromWeb(Uri url)
+    public static async Task<Bitmap?> LoadFromWeb(string url)
     {
-        using var httpClient = new HttpClient();
+        var httpClient = Api.Http;
         try
         {
             var response = await httpClient.GetAsync(url);

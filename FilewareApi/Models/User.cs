@@ -31,6 +31,7 @@ public class CommonUserData
     public List<string> AttachedFileSpaces { get; set; }
     public int FileCount { get; set; }
     public string Preferences { get; set; }
+    
 }
 
 public static class BasincExtentions

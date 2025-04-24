@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using ReactiveUI;
 
@@ -17,6 +18,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
             AppContext.CurrentUser =
                 JsonSerializer.Deserialize<LoginResponse>(File.ReadAllText("./UserData/user.json"), Api.JsonOptions);
 
+            Api.Http.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse("Bearer " + AppContext.CurrentUser.Token);
             Api.Http.GetStringAsync($"api/User/{AppContext.CurrentUser.UserData.Id}").ContinueWith(t =>
             {
                 var data = JsonSerializer.Deserialize<CommonUserData>(t.Result, Api.JsonOptions);

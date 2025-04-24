@@ -410,7 +410,6 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
     {
         TagManagerPanel.IsVisible = false;
         Viewer.Effect = null;
-
     }
 
     private void OnApplyTagAdd(object? sender, RoutedEventArgs e)
@@ -421,7 +420,6 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
         currentContext.CurrentTagsOwner.Tags = nextTags;
         TagManagerPanel.IsVisible = false;
         Viewer.Effect = null;
-
     }
 
     private void UpdateTagAddFieldColor(object? sender, TextChangedEventArgs e)
@@ -438,8 +436,8 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
             TagColorIndicator.Background = (IBrush?)Application.Current.Resources["MainColorBrush"];
             ApplyTagAddButton.IsEnabled = false;
         }
-        Viewer.Effect = null;
 
+        Viewer.Effect = null;
     }
 
     private void AddFileSpace(object? sender, RoutedEventArgs e)

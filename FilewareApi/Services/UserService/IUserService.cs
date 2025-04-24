@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using FilewareApi.Models;
 using OtpNet;
+using SixLabors.ImageSharp;
 
 namespace FilewareApi.Services.UserService;
 
@@ -11,8 +12,7 @@ public interface IUserService
     bool IsExists(string username);
     User? Auth(string login, string security);
     User? Get(int id);
-    Task SetupAvatar(int id, byte[] avatar);
-    byte[] GetAvatar(int id);
+    Task SetupAvatar(int id, byte[] avatar, string type);
     int GetFileCount(int userId);
     Task Update(CommonUserData user);
     bool VerifyTotp(string username, string totpKey);
@@ -47,6 +47,7 @@ public class UserService(FilewareDbContext db) : IUserService
         }
         else
             user.TotpKey = null;
+
         db.Users.Add(user);
 
         await db.SaveChangesAsync();
@@ -78,23 +79,22 @@ public class UserService(FilewareDbContext db) : IUserService
         return db.Users.FirstOrDefault(i => i.Id == id);
     }
 
-    public async Task SetupAvatar(int id, byte[] avatar)
+    public async Task SetupAvatar(int id, byte[] avatar, string type)
     {
+        if (type != "image/webp")
+        {
+            using var stream = new MemoryStream();
+
+            using var image = Image.Load(avatar);
+            
+            await image.SaveAsWebpAsync(stream);
+            avatar = stream.ToArray();
+        }
+
         var user = db.Users.FirstOrDefault(i => i.Id == id);
         user.Avatar = avatar;
         db.Users.Update(user);
         await db.SaveChangesAsync();
-    }
-
-    public byte[] GetAvatar(int id)
-    {
-        var user = db.Users.FirstOrDefault(i => i.Id == id);
-        if (user.Avatar is null)
-        {
-            return File.ReadAllBytes("");
-        }
-
-        return user.Avatar;
     }
 
     public int GetFileCount(int userId)
@@ -115,7 +115,7 @@ public class UserService(FilewareDbContext db) : IUserService
     {
         if (TotpKeys.TryGetValue(username, out var key))
         {
-            return  new Totp(key).VerifyTotp(totpKey, out _);
+            return new Totp(key).VerifyTotp(totpKey, out _);
         }
 
         return false;

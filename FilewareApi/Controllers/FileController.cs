@@ -1,6 +1,8 @@
 ﻿using System.Net;
+using System.Security.Claims;
 using System.Text;
 using FilewareApi.Services.FileManagerService;
+using FilewareApi.Services.UserService;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -12,13 +14,20 @@ namespace FilewareApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class FileController(IFileManagerService fileService) : Controller
+public class FileController(IFileManagerService fileService, IUserService userService) : Controller
 {
     private FormOptions _defaultFormOptions = new();
 
     [HttpPost("large")]
     public async Task<IActionResult> UploadBigFile(string fileSpace)
     {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.Authentication).Value);
+        var user = userService.Get(userId);
+        if (user is null || !user.AttachedFileSpaces.Contains(fileSpace))
+        {
+            return Unauthorized();
+        }
+        
         if (!MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
         {
             ModelState.AddModelError("File",
@@ -119,6 +128,13 @@ public class FileController(IFileManagerService fileService) : Controller
     [HttpPost]
     public async Task<ActionResult> RegisterNewFile(IFormFile file, string fileSpace)
     {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.Authentication).Value);
+        var user = userService.Get(userId);
+        if (user is null || !user.AttachedFileSpaces.Contains(fileSpace))
+        {
+            return Unauthorized();
+        }
+
         var id = fileService.RegisterNewFile(file, fileSpace);
         return Ok(id);
     }

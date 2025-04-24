@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using System.Reflection;
+using System.Text.Json.Serialization;
 using System.Windows.Input;
 using ReactiveUI;
 
@@ -33,6 +35,7 @@ public static class Utils
         var entityProps = entityType.GetProperties();
         foreach (var property in from.GetType().GetProperties())
         {
+
             var value = property.GetValue(from);
             var curr = entityProps.FirstOrDefault(i => i.Name == property.Name);
             if (!property.CanRead || !property.CanWrite) continue;

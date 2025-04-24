@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using FilewareApi.Models;
 using FilewareApi.Services.UserService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -11,7 +12,7 @@ namespace FilewareApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UserController(IUserService userService) : Controller
+public class UserController(IUserService userService, ILogger<UserController> logger) : Controller
 {
     [HttpGet("totp")]
     public ActionResult<byte[]> GetTotp(string username)
@@ -39,7 +40,7 @@ public class UserController(IUserService userService) : Controller
                 issuer: AuthOptions.ISSUER,
                 audience: AuthOptions.AUDIENCE,
                 claims: claims,
-                expires: DateTime.UtcNow.Add(TimeSpan.FromHours(1)), // время действия 6 часов
+                expires: DateTime.UtcNow.Add(TimeSpan.FromDays(30)),
                 signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(),
                     SecurityAlgorithms.HmacSha256));
 
@@ -64,10 +65,13 @@ public class UserController(IUserService userService) : Controller
         var id = await userService.Register(user);
         return Ok(id);
     }
-
+    
     [HttpGet("{id}")]
     public ActionResult<CommonUserData> GetUser(int id)
     {
+        var claims = HttpContext.User.Claims.ToList();
+        var identity = HttpContext.User.Identity as ClaimsIdentity;
+        logger.LogInformation("Try to get data of user " + id);
         var user = userService.Get(id);
         if (user is null)
         {
@@ -82,7 +86,12 @@ public class UserController(IUserService userService) : Controller
     public ActionResult GetAvatar(int id)
     {
         var user = userService.Get(id);
-        return File(userService.GetAvatar(id), "image/webp", $"{user.Username}_avatar.webp");
+        if (user?.Avatar is null)
+        {
+            return NotFound();
+        }
+
+        return File(user.Avatar, "image/webp", $"{user.Username}_avatar.webp");
     }
 
     [HttpPost("{id}/avatar")]
@@ -90,13 +99,18 @@ public class UserController(IUserService userService) : Controller
     {
         using var ms = new MemoryStream();
         await avatar.OpenReadStream().CopyToAsync(ms);
-        await userService.SetupAvatar(id, ms.ToArray());
+        await userService.SetupAvatar(id, ms.ToArray(), avatar.ContentType);
         return Ok();
     }
 
     [HttpPatch]
+    [Authorize]
     public async Task<ActionResult> UpdateUser(CommonUserData patching)
     {
+        if (int.Parse(User.FindFirst(ClaimTypes.Authentication)?.Value) != patching.Id)
+        {
+            return Unauthorized();
+        }
         var user = userService.Get(patching.Id);
         if (user is null)
         {

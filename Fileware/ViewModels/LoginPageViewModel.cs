@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Windows.Input;
 using ReactiveUI;
@@ -32,7 +33,7 @@ public class LoginPageViewModel : ReactiveObject, IRoutableViewModel
             if (!Directory.Exists("./UserData")) Directory.CreateDirectory("./UserData");
 
             var saving = JsonSerializer.Serialize(loginResponse, Api.JsonOptions);
-
+            Api.Http.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse("Bearer " + AppContext.CurrentUser!.Token);
             File.WriteAllText("./UserData/user.json", saving);
             AppContext.CurrentUser = loginResponse;
             HostScreen.Router.Navigate.Execute(new BasePageViewModel(HostScreen));

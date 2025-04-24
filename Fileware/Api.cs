@@ -134,14 +134,16 @@ public class CommonUserData : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+
     public string Preferences { get; set; }
+
     [JsonIgnore]
-    public Task<Bitmap?> AvatarImage { get; } =
-        ImageHelper.LoadFromWeb(new Uri("https://upload.wikimedia.org/wikipedia/commons/4/41/NewtonsPrincipia.jpg"));
+    public Task<Bitmap?> AvatarImage =>
+        ImageHelper.LoadFromWeb($"api/User/{Id}/avatar");
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    public virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }

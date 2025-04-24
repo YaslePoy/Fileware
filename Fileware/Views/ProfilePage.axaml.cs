@@ -1,9 +1,15 @@
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
+using Avalonia.Threading;
 using Fileware.ViewModels;
 using ReactiveUI;
 
@@ -49,6 +55,27 @@ public partial class ProfilePage : ReactiveUserControl<ProfileViewModel>
 
     private void EditAvatar(object? sender, RoutedEventArgs e)
     {
+        TopLevel.GetTopLevel(this)
+            ?.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            AllowMultiple = false, FileTypeFilter = [FilePickerFileTypes.ImageAll],
+            Title = "Выберите вашу новую аватарку"
+        }).ContinueWith(async t =>
+        {
+            var file = t.Result[0];
+            var stream = await file.OpenReadAsync();
+            using var multipartFormContent = new MultipartFormDataContent();
+            var fileStreamContent = new StreamContent(stream);
+            var mimeType = MimeTypes.GetMimeType(file.Name);
+            fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
+            multipartFormContent.Add(fileStreamContent, "avatar",file.Name);
+            var result = await Api.Http.PostAsync($"api/User/{AppContext.CurrentUser.UserData.Id}/avatar", multipartFormContent);
+            Debug.Print(result.IsSuccessStatusCode.ToString());
+            Dispatcher.UIThread.Invoke((() =>
+            {
+                AppContext.CurrentUser.UserData.OnPropertyChanged("AvatarImage");
+            }));
+        });
     }
 
     private void OnCancelRename(object? sender, RoutedEventArgs e)
