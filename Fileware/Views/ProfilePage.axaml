@@ -16,7 +16,7 @@
         </viewModels:ProfileViewModel>
     </Design.DataContext>
     <Panel>
-        <Panel>
+        <Panel Name="MainPanel">
             <Image Height="35" Width="35" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10"
                    Tapped="Exit" Source="{SvgImage ../../Assets/Exit.svg}" />
             <Image Height="35" Width="35" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10"
@@ -57,6 +57,7 @@
                 </StackPanel>
             </StackPanel>
         </Panel>
+
         <DockPanel Name="RenamingPanel" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center"
                    x:DataType="viewModels:RenameViewModel">
             <DockPanel.DataContext>
@@ -70,10 +71,10 @@
                 <Button Click="OnApplyRename" HorizontalAlignment="Right" Margin="10, 0, 10, 10" Foreground="White">Переименовать</Button>
             </StackPanel>
             <TextBox Name="Redactor" DockPanel.Dock="Top" Text="{Binding AnyName}" TextWrapping="Wrap"
-                     BorderThickness="0"
                      Margin="10" Background="Transparent" />
         </DockPanel>
-        <DockPanel Name="RedatePanel" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center"
+        
+        <DockPanel  Name="RedatePanel" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center"
                    x:DataType="viewModels:RenameViewModel">
             <DockPanel.DataContext>
                 <viewModels:RenameViewModel />
@@ -87,7 +88,6 @@
             </StackPanel>
             <TextBlock Foreground="Red" Text="{Binding AlertText}"></TextBlock>
             <TextBox DockPanel.Dock="Top" Text="{Binding AnyName}" TextWrapping="Wrap"
-                     BorderThickness="0"
                      Margin="10" Background="Transparent" />
 
         </DockPanel>

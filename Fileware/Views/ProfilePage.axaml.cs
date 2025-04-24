@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using Fileware.ViewModels;
 using ReactiveUI;
@@ -35,6 +36,7 @@ public partial class ProfilePage : ReactiveUserControl<ProfileViewModel>
         var dc = DataContext as ProfileViewModel;
         RenamingPanel.DataContext = new RenameViewModel { AnyName = dc.CommonUser.ShowName };
         RenamingPanel.IsVisible = true;
+        MainPanel.Effect = new ImmutableBlurEffect(15);
     }
 
     private void EditDate(object? sender, RoutedEventArgs e)
@@ -42,17 +44,19 @@ public partial class ProfilePage : ReactiveUserControl<ProfileViewModel>
         var dc = DataContext as ProfileViewModel;
         RedatePanel.DataContext = new RenameViewModel { AnyName = dc.CommonUser.BirthDate.ToString("MM.dd.yyyy") };
         RedatePanel.IsVisible = true;
+        MainPanel.Effect = new ImmutableBlurEffect(15);
     }
 
     private void EditAvatar(object? sender, RoutedEventArgs e)
     {
-        
     }
 
     private void OnCancelRename(object? sender, RoutedEventArgs e)
     {
         RenamingPanel.IsVisible = false;
         RedatePanel.IsVisible = false;
+        MainPanel.Effect = null;
+
     }
 
     private void OnApplyRename(object? sender, RoutedEventArgs e)
@@ -64,8 +68,9 @@ public partial class ProfilePage : ReactiveUserControl<ProfileViewModel>
             var curvm = DataContext as ProfileViewModel;
             curvm.CommonUser.ShowName = vm.AnyName;
             AppContext.CurrentUser.Save();
-            RenamingPanel.IsVisible = false;    
-        }else if (RedatePanel.IsVisible)
+            RenamingPanel.IsVisible = false;
+        }
+        else if (RedatePanel.IsVisible)
         {
             var vm = RedatePanel.DataContext as RenameViewModel;
 
@@ -75,10 +80,12 @@ public partial class ProfilePage : ReactiveUserControl<ProfileViewModel>
                 vm.AlertText = "Введите корректную дату";
                 return;
             }
+
             curvm.CommonUser.BirthDate = dateOnly;
             AppContext.CurrentUser.Save();
-            RedatePanel.IsVisible = false; 
+            RedatePanel.IsVisible = false;
         }
-        
+
+        MainPanel.Effect = null;
     }
 }

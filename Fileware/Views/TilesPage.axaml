@@ -60,13 +60,6 @@
                            Margin="5" Orientation="Vertical" />
             </ScrollViewer>
         </Grid>
-        <Panel IsVisible="False" x:Name="LoadPanel" VerticalAlignment="Stretch">
-            <Rectangle Effect="blur(20)" Fill="Gray" RadiusX="30" RadiusY="30" Opacity="0.2" />
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Image Source="../../Assets/upload_200dp_E8EAED_FILL0_wght400_GRAD0_opsz48.png" Height="150" />
-                <TextBlock>Загрузить новый файл</TextBlock>
-            </StackPanel>
-        </Panel>
         <DockPanel Name="RenamingPanel" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center"
                    x:DataType="viewModels:RenameViewModel">
             <DockPanel.DataContext>
@@ -80,7 +73,6 @@
                 <Button Click="OnApplyRename" HorizontalAlignment="Right" Margin="10, 0, 10, 10" Foreground="White">Переименовать</Button>
             </StackPanel>
             <TextBox Name="Redactor" DockPanel.Dock="Top" Text="{Binding AnyName}" TextWrapping="Wrap"
-                     BorderThickness="0"
                      Margin="10" Background="Transparent" />
         </DockPanel>
         <DockPanel Name="RecolorPanel" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center"

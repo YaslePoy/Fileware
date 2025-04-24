@@ -41,6 +41,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
             {
                 "FileRename", s =>
                 {
+                    Instance.Viewer.Effect = new ImmutableBlurEffect(15);
                     Instance.RenamingPanel.IsVisible = true;
                     vm = s as FileData;
                     var winVm = new RenameViewModel { AnyName = vm.Name };
@@ -50,6 +51,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
             {
                 "RecolorTag", s =>
                 {
+                    Instance.Viewer.Effect = new ImmutableBlurEffect(15);
                     Instance.RecolorPanel.IsVisible = true;
                     ColoringTag = s as Tag;
                 }
@@ -57,6 +59,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
             {
                 "TagManager", s =>
                 {
+                    Instance.Viewer.Effect = new ImmutableBlurEffect(15);
                     Instance.TagManagerPanel.IsVisible = true;
                     Instance.TagManagerPanel.DataContext = new TagEditorViewModel
                         { CurrentTagsOwner = s as ITagContainer, AllTags = ["Избранное", "Секретное"] };
@@ -374,6 +377,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
     private void OnCancelRename(object? sender, RoutedEventArgs e)
     {
         RenamingPanel.IsVisible = false;
+        Viewer.Effect = null;
     }
 
     private void OnApplyRename(object? sender, RoutedEventArgs e)
@@ -381,6 +385,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
         vm.Name = (Instance.RenamingPanel.DataContext as RenameViewModel).AnyName;
         vm.OnPropertyChanged("Name");
         RenamingPanel.IsVisible = false;
+        Viewer.Effect = null;
 
         Api.Http.PatchAsync($"api/File/{vm.Id}/rename",
             new StringContent("\"" + vm.Name + "\"",
@@ -390,11 +395,13 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
     private void OnCancelRecolor(object? sender, RoutedEventArgs e)
     {
         RecolorPanel.IsVisible = false;
+        Viewer.Effect = null;
     }
 
     private void OnApplyRecolor(object? sender, RoutedEventArgs e)
     {
         RecolorPanel.IsVisible = false;
+        Viewer.Effect = null;
         ColoringTag.Color = new SolidColorBrush(RecolorColorPicker.Color);
     }
 
@@ -402,6 +409,8 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
     private void OnCancelTagAdd(object? sender, RoutedEventArgs e)
     {
         TagManagerPanel.IsVisible = false;
+        Viewer.Effect = null;
+
     }
 
     private void OnApplyTagAdd(object? sender, RoutedEventArgs e)
@@ -411,6 +420,8 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
         nextTags.Add(ViewModels.Tag.FromName(currentContext.CurrentTagName));
         currentContext.CurrentTagsOwner.Tags = nextTags;
         TagManagerPanel.IsVisible = false;
+        Viewer.Effect = null;
+
     }
 
     private void UpdateTagAddFieldColor(object? sender, TextChangedEventArgs e)
@@ -427,6 +438,8 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
             TagColorIndicator.Background = (IBrush?)Application.Current.Resources["MainColorBrush"];
             ApplyTagAddButton.IsEnabled = false;
         }
+        Viewer.Effect = null;
+
     }
 
     private void AddFileSpace(object? sender, RoutedEventArgs e)
