@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -20,6 +21,7 @@ using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
+using DynamicData;
 using Fileware.Controls;
 using Fileware.Models;
 using Fileware.ViewModels;
@@ -32,7 +34,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
     private string _currentFileSpace => (FileSpacesComboBox.SelectedItem as FileSpace).Id;
     private static FileChatPage Instance;
     private static List<HistoryPoint> History;
-
+    private Avalonia.Controls.Controls _historyBackup;
     private KeyEventArgs? _firstEnter;
 
     protected override void OnUnloaded(RoutedEventArgs e)
@@ -84,6 +86,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
 
         FileSpacesComboBox.SelectedIndex = 0;
     }
+
     private void ShowHistory()
     {
         var lastDate = DateTime.Today;
@@ -247,20 +250,19 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
 
         Api.Http.PostAsync($"api/Messaging?fileSpace={HttpUtility.UrlEncode(_currentFileSpace)}",
                 new StringContent("\"" + MsgBox.Text + "\"", MediaTypeWithQualityHeaderValue.Parse("application/json")))
-            .ContinueWith(
-                async t =>
-                {
-                    var id = int.Parse(await t.Result.Content.ReadAsStringAsync());
-                    History.Add(new HistoryPoint
-                        { LinkedId = id, Time = DateTime.Now, Type = (int)HistoryPointType.Message });
+            .ContinueWith(async t =>
+            {
+                var id = int.Parse(await t.Result.Content.ReadAsStringAsync());
+                History.Add(new HistoryPoint
+                    { LinkedId = id, Time = DateTime.Now, Type = (int)HistoryPointType.Message });
 
-                    Dispatcher.UIThread.Invoke(() =>
-                    {
-                        PointsPanel.Children.Add(new MessageBlock
-                            { DataContext = new Message { Text = savedText, Time = DateTime.Now, Id = id } });
-                        Viewer.ScrollToEnd();
-                    });
+                Dispatcher.UIThread.Invoke(() =>
+                {
+                    PointsPanel.Children.Add(new MessageBlock
+                        { DataContext = new Message { Text = savedText, Time = DateTime.Now, Id = id } });
+                    Viewer.ScrollToEnd();
                 });
+            });
         MsgBox.Text = string.Empty;
         Viewer.ScrollToEnd();
     }
@@ -449,5 +451,43 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
 
             Dispatcher.UIThread.Invoke(ShowHistory);
         });
+    }
+
+    private void SearchText(object? sender, TextChangedEventArgs e)
+    {
+        var text = (sender as TextBox)!.Text;
+
+        if (_historyBackup is null)
+        {
+            _historyBackup = new Avalonia.Controls.Controls(PointsPanel.Children);
+        }
+
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            PointsPanel.Children.Clear();
+            PointsPanel.Children.AddRange(_historyBackup);
+            _historyBackup = null;
+            return;
+        }
+
+        IEnumerable<Control> finalQuery;
+
+        if (text.StartsWith("tag="))
+        {
+            var tag = text.Substring("tag=".Length);
+            if (tag.Length == 0)
+                finalQuery = [];
+            else
+                finalQuery = _historyBackup.Where(i =>
+                    i.DataContext is ITagContainer tagContainer && tagContainer.Tags.Any(t =>
+                        t.Name.Contains(tag, StringComparison.InvariantCultureIgnoreCase)));
+        }
+        else
+        {
+            finalQuery = _historyBackup.Where(i => i.DataContext is ISearchable searchable && searchable.IsSuits(text));
+        }
+
+        PointsPanel.Children.Clear();
+        PointsPanel.Children.AddRange(finalQuery);
     }
 }

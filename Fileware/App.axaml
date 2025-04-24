@@ -54,6 +54,11 @@
             <Style Selector="CheckBox">
                 <Setter Property="Foreground" Value="{StaticResource MainColorBrush}"></Setter>
             </Style>
+            <Style Selector="ComboBox">
+                <Setter Property="BorderBrush" Value="{StaticResource MainColorBrush}"></Setter>
+                <Setter Property="BorderThickness" Value="1.75" />
+
+            </Style>
         </Styles>
 
         <FluentTheme />

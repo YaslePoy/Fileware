@@ -16,7 +16,7 @@ using Fileware.ViewModels;
 
 namespace Fileware.Models;
 
-public class FileData : INotifyPropertyChanged, ITagContainer
+public class FileData : INotifyPropertyChanged, ITagContainer, ISearchable
 {
     private string _name;
     private IImage? _preview;
@@ -187,5 +187,10 @@ public class FileData : INotifyPropertyChanged, ITagContainer
             return Math.Round(bytesPerSecond / 1024d, 1) + " KB/s";
 
         return Math.Round(bytesPerSecond / 1024d / 1024d, 1) + " MB/s";
+    }
+
+    public bool IsSuits(string template)
+    {
+        return _name.Contains(template, StringComparison.CurrentCultureIgnoreCase);
     }
 }

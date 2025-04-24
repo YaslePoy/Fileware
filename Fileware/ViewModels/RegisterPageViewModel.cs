@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Web;
 using System.Windows.Input;
+using Avalonia.Collections;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using QRCoder;
@@ -105,7 +106,6 @@ public class RegisterPageViewModel : ReactiveObject, IRoutableViewModel
         set
         {
             _useTotpAuth = value;
-
             if (_useTotpAuth && TotpBitmap is null && !string.IsNullOrWhiteSpace(Username))
             {
                 Api.Http.GetStringAsync("api/User/totp?username=" + HttpUtility.UrlEncode(Username)).ContinueWith(t =>

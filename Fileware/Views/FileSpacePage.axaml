@@ -61,7 +61,7 @@
                 <StackPanel>
                     <TextBlock>Дайте название новому файловому пространству</TextBlock>
                     <TextBox Text="{Binding FileSpaceName}" HorizontalAlignment="Stretch"></TextBox>
-                    <CheckBox IsChecked="{Binding IsPrivate}">Личное пространство</CheckBox>
+                    <CheckBox IsChecked="{Binding IsPrivate}" ToolTip.Tip="Личное пространство будет доступно только вам и никто не сможет в него вступить на ровне с вами">Личное пространство</CheckBox>
                     <Button Command="{Binding OnTryCreateFileSpace}" Classes="Long">Далее</Button>
                     <TextBlock FontSize="12" Foreground="Red" Text="{Binding AlertText}"></TextBlock>
                 </StackPanel>

@@ -25,7 +25,17 @@
                             Width="{Binding Height, ElementName=AddSpaceButton}">
                         +
                     </Button>
-
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="10">
+                    <StackPanel IsVisible="{Binding FilterVisibility}" ClipToBounds="True" Orientation="Horizontal"
+                                HorizontalAlignment="Left" VerticalAlignment="Stretch" Spacing="10">
+                        <TextBox TextChanged="SearchText" VerticalAlignment="Center" Text="{Binding StringFilter}"
+                                 Watermark="Поиск по тексту и тегам" MaxWidth="500">
+                        </TextBox>
+                    </StackPanel>
+                    <Button Command="{Binding FilteringSwitch}" Padding="2" VerticalAlignment="Center">
+                        <Image VerticalAlignment="Stretch" Source="{SvgImage ../../Assets/filter.svg}"></Image>
+                    </Button>
                 </StackPanel>
             </DockPanel>
             <ScrollViewer Grid.Row="1" x:Name="Viewer" CornerRadius="15" HorizontalScrollBarVisibility="Disabled"

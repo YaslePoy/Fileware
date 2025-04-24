@@ -11,7 +11,7 @@ using Fileware.ViewModels;
 
 namespace Fileware.Models;
 
-public sealed class Message : INotifyPropertyChanged, ITagContainer
+public sealed class Message : INotifyPropertyChanged, ITagContainer, ISearchable
 {
     public int Id { get; set; }
 
@@ -66,5 +66,10 @@ public sealed class Message : INotifyPropertyChanged, ITagContainer
             OnPropertyChanged(nameof(Tags));
             OnPropertyChanged(nameof(HasTags));
         }
+    }
+
+    public bool IsSuits(string template)
+    {
+        return Text.Contains(template, StringComparison.CurrentCultureIgnoreCase);
     }
 }
