@@ -1,16 +1,15 @@
 using System.Diagnostics;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Threading;
 using Fileware.Models;
-using Fileware.Windows;
+using Fileware.Views;
 
 namespace Fileware.Controls;
 
-public partial class ImageBlock : FileBlock
+public partial class ImageBlock : IFileBlock
 {
+    public IMultiLevelView Host;
+
     public ImageBlock()
     {
         InitializeComponent();
@@ -30,10 +29,23 @@ public partial class ImageBlock : FileBlock
         data.TagsPreviewPanel = TagsPanel;
         data.UpdateTagPanel();
     }
-    
+
     protected override void OnSizeChanged(SizeChangedEventArgs e)
     {
         base.OnSizeChanged(e);
         Debug.Print("Changed size of image block");
+
+        if (DesiredSize.Height == BasePanel.DesiredSize.Height) return;
+        Height = BasePanel.DesiredSize.Height;
+    }
+
+    public void AddTag(object? sender, RoutedEventArgs e)
+    {
+        AppContext.CurrentMultiLevelView.MakeTopLevel("TagManager", DataContext);
+    }
+
+    protected void OnRename(object? sender, RoutedEventArgs e)
+    {
+        Host.MakeTopLevel("FileRename", DataContext);
     }
 }

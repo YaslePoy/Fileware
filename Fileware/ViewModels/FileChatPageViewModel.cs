@@ -15,11 +15,8 @@ public class FileChatPageViewModel : ReactiveObject, IRoutableViewModel
 
     public FileChatPageViewModel()
     {
-        
     }
-    
-    public string? UrlPathSegment { get; } = Guid.NewGuid().ToString()[..5];
-    public IScreen HostScreen { get; }
+
     public string StringFilter { get; set; }
 
     public bool FilterVisibility
@@ -28,8 +25,8 @@ public class FileChatPageViewModel : ReactiveObject, IRoutableViewModel
         set => this.RaiseAndSetIfChanged(ref _filterVisibility, value);
     }
 
-    public ICommand FilteringSwitch => ReactiveCommand.Create(() =>
-    {
-        FilterVisibility = !FilterVisibility;
-    });
+    public ICommand FilteringSwitch => ReactiveCommand.Create(() => { FilterVisibility = !FilterVisibility; });
+
+    public string? UrlPathSegment { get; } = Guid.NewGuid().ToString()[..5];
+    public IScreen HostScreen { get; }
 }

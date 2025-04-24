@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -47,12 +46,11 @@ public static class Api
             $"api/User/auth?login={HttpUtility.UrlEncode(login)}&password={HttpUtility.UrlEncode(password)}",
             new StringContent(""));
         if (auth.IsSuccessStatusCode)
-        {
             return JsonSerializer.Deserialize<LoginResponse>(await auth.Content.ReadAsStringAsync(), JsonOptions);
-        }
 
         return null;
     }
+
     public static MediaTypeWithQualityHeaderValue JsonMediaType =>
         MediaTypeWithQualityHeaderValue.Parse("application/json");
 }
@@ -64,10 +62,7 @@ public class LoginResponse
 
     public void Save(string path = "./UserData/user.json", bool api = true)
     {
-        if (!Directory.Exists("./UserData"))
-        {
-            Directory.CreateDirectory("./UserData");
-        }
+        if (!Directory.Exists("./UserData")) Directory.CreateDirectory("./UserData");
 
         var saving = JsonSerializer.Serialize(this, Api.JsonOptions);
 
@@ -83,15 +78,13 @@ public class LoginResponse
         return Api.Http.PatchAsync("api/User",
             new StringContent(JsonSerializer.Serialize(UserData, Api.JsonOptions), Api.JsonMediaType));
     }
-
-   
 }
 
 public class UserData : INotifyPropertyChanged
 {
     private List<string> _attachedFileSpaces;
-    private int _fileCount;
     private DateOnly _birthDate;
+    private int _fileCount;
     private string _showName;
     public int Id { get; set; }
     public string Username { get; set; }

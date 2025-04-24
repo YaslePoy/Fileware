@@ -2,12 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text.Json;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -18,48 +13,12 @@ namespace Fileware.Models;
 
 public class FileData : INotifyPropertyChanged, ITagContainer, ISearchable
 {
+    private int _lastTagCount = -1;
     private string _name;
     private IImage? _preview;
     private byte[]? _previewData;
-    public int Id { get; set; }
     private List<Tag> _tags = [];
-
-    public int PointId { get; set; } = -1;
-    public WrapPanel? TagsPreviewPanel { get; set; }
-
-    private int _lastTagCount = -1;
-    
-    public void UpdateTagPanel()
-    {
-        if (_lastTagCount == _tags.Count) 
-            return;
-        _lastTagCount = _tags.Count;
-        
-        if (TagsPreviewPanel is null) return;
-        
-        TagsPreviewPanel.Children.Clear();
-        foreach (var tag in _tags)
-        {
-            TagsPreviewPanel.Children.Add(new TagPoint { DataContext = tag });
-        }
-
-        Api.UpdateTags(PointId, _tags);
-
-    }
-
-    public List<Tag> Tags
-    {
-        get => _tags;
-        set
-        {
-            if (Equals(value, _tags)) return;
-            _tags = value;
-            UpdateTagPanel();
-
-            OnPropertyChanged(nameof(Tags));
-            OnPropertyChanged(nameof(HasTags));
-        }
-    }
+    public int Id { get; set; }
 
     public string Name
     {
@@ -77,8 +36,6 @@ public class FileData : INotifyPropertyChanged, ITagContainer, ISearchable
             OnPropertyChanged(nameof(Name));
         }
     }
-
-    public bool HasTags => Tags.Count > 0;
 
     public int Version { get; set; }
     public DateTime LastChange { get; set; }
@@ -155,6 +112,44 @@ public class FileData : INotifyPropertyChanged, ITagContainer, ISearchable
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    public bool IsSuits(string template)
+    {
+        return _name.Contains(template, StringComparison.CurrentCultureIgnoreCase);
+    }
+
+    public int PointId { get; set; } = -1;
+    public WrapPanel? TagsPreviewPanel { get; set; }
+
+    public void UpdateTagPanel()
+    {
+        if (_lastTagCount == _tags.Count)
+            return;
+        _lastTagCount = _tags.Count;
+
+        if (TagsPreviewPanel is null) return;
+
+        TagsPreviewPanel.Children.Clear();
+        foreach (var tag in _tags) TagsPreviewPanel.Children.Add(new TagPoint { DataContext = tag });
+
+        Api.UpdateTags(PointId, _tags);
+    }
+
+    public List<Tag> Tags
+    {
+        get => _tags;
+        set
+        {
+            if (Equals(value, _tags)) return;
+            _tags = value;
+            UpdateTagPanel();
+
+            OnPropertyChanged(nameof(Tags));
+            OnPropertyChanged(nameof(HasTags));
+        }
+    }
+
+    public bool HasTags => Tags.Count > 0;
+
     public void UpdateSyncState()
     {
         if (AppContext.LocalStoredFiles.TryGetValue(Id, out var path))
@@ -187,10 +182,5 @@ public class FileData : INotifyPropertyChanged, ITagContainer, ISearchable
             return Math.Round(bytesPerSecond / 1024d, 1) + " KB/s";
 
         return Math.Round(bytesPerSecond / 1024d / 1024d, 1) + " MB/s";
-    }
-
-    public bool IsSuits(string template)
-    {
-        return _name.Contains(template, StringComparison.CurrentCultureIgnoreCase);
     }
 }

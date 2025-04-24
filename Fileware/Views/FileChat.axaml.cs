@@ -28,17 +28,45 @@ namespace Fileware.Views;
 
 public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, IMultiLevelView
 {
-    private string _currentFileSpace => (FileSpacesComboBox.SelectedItem as FileSpace).Id;
     private static FileChatPage Instance;
     private static List<HistoryPoint> History;
-    private Avalonia.Controls.Controls _historyBackup;
-    private KeyEventArgs? _firstEnter;
 
-    protected override void OnUnloaded(RoutedEventArgs e)
-    {
-        base.OnUnloaded(e);
-        AppContext.CurrentUser.UserData.PropertyChanged -= OnUserDataOnPropertyChanged;
-    }
+
+    private static FileData vm;
+    private static Tag ColoringTag;
+
+    private readonly FrozenDictionary<string, Action<object>> TopLevelActions =
+        new Dictionary<string, Action<object>>
+        {
+            {
+                "FileRename", s =>
+                {
+                    Instance.RenamingPanel.IsVisible = true;
+                    vm = s as FileData;
+                    var winVm = new RenameViewModel { FileName = vm.Name };
+                    Instance.RenamingPanel.DataContext = winVm;
+                }
+            },
+            {
+                "RecolorTag", s =>
+                {
+                    Instance.RecolorPanel.IsVisible = true;
+                    ColoringTag = s as Tag;
+                }
+            },
+            {
+                "TagManager", s =>
+                {
+                    Instance.TagManagerPanel.IsVisible = true;
+                    Instance.TagManagerPanel.DataContext = new TagEditorViewModel
+                        { CurrentTagsOwner = s as ITagContainer, AllTags = ["Избранное", "Секретное"] };
+                }
+            }
+        }.ToFrozenDictionary();
+
+    private IBrush _defaultBrush;
+    private KeyEventArgs? _firstEnter;
+    private Avalonia.Controls.Controls _historyBackup;
 
     public FileChatPage()
     {
@@ -66,6 +94,19 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
         }
     }
 
+    private string _currentFileSpace => (FileSpacesComboBox.SelectedItem as FileSpace).Id;
+
+    public void MakeTopLevel(string key, object sender)
+    {
+        TopLevelActions[key](sender);
+    }
+
+    protected override void OnUnloaded(RoutedEventArgs e)
+    {
+        base.OnUnloaded(e);
+        AppContext.CurrentUser.UserData.PropertyChanged -= OnUserDataOnPropertyChanged;
+    }
+
     private void OnUserDataOnPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
         if (args.PropertyName != "AttachedFileSpaces") return;
@@ -77,9 +118,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
     {
         FileSpacesComboBox.Items.Clear();
         foreach (var userDataAttachedFileSpace in AppContext.CurrentUser.UserData.AttachedFileSpaces)
-        {
             FileSpacesComboBox.Items.Add(new FileSpace { Id = userDataAttachedFileSpace });
-        }
 
         FileSpacesComboBox.SelectedIndex = 0;
     }
@@ -121,7 +160,8 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
                             fileData.PreviewData = ms.ToArray();
                             Dispatcher.UIThread.Invoke(() => { fileData.OnPropertyChanged(nameof(fileData.Preview)); });
                         });
-                        adding = new ImageBlock { DataContext = fileData, Width = 350, Host = this };
+                        adding = new ImageBlock
+                            { MaxWidth = 400, DataContext = fileData, MaxHeight = 300.0, Host = this };
                     }
                     else
                     {
@@ -130,7 +170,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
                     }
 
                     if (AppContext.LocalStoredFiles.ContainsKey(fileData.Id))
-                        (adding as FileBlock).StartVersionCheckerTimer();
+                        (adding as IFileBlock).StartVersionCheckerTimer();
 
                     break;
 
@@ -195,7 +235,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
         fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
         multipartFormContent.Add(fileStreamContent, "file", name);
 
-        FileBlock addedBlock = null;
+        IFileBlock addedBlock = null;
 
         Dispatcher.UIThread.Invoke(() =>
         {
@@ -210,7 +250,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
 
             addedBlock = data.FileType.StartsWith("image/png") || data.FileType.StartsWith("image/jpeg") ||
                          data.FileType.StartsWith("image/webp")
-                ? new ImageBlock { DataContext = data, Host = this }
+                ? new ImageBlock { DataContext = data, Host = this, MaxHeight = 300.0, MaxWidth = 400 }
                 : new FileBlock(fileStream, data) { Host = this };
             addedBlock.StartVersionCheckerTimer();
             PointsPanel.Children.Add(addedBlock);
@@ -331,46 +371,6 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
         });
     }
 
-    public void MakeTopLevel(string key, object sender)
-    {
-        TopLevelActions[key](sender);
-    }
-
-
-    private static FileData vm;
-    private static Tag ColoringTag;
-
-    private FrozenDictionary<string, Action<object>> TopLevelActions =
-        new Dictionary<string, Action<object>>
-        {
-            {
-                "FileRename", s =>
-                {
-                    Instance.RenamingPanel.IsVisible = true;
-                    vm = s as FileData;
-                    var winVm = new RenameViewModel { FileName = vm.Name };
-                    Instance.RenamingPanel.DataContext = winVm;
-                }
-            },
-            {
-                "RecolorTag", s =>
-                {
-                    Instance.RecolorPanel.IsVisible = true;
-                    ColoringTag = s as Tag;
-                }
-            },
-            {
-                "TagManager", s =>
-                {
-                    Instance.TagManagerPanel.IsVisible = true;
-                    Instance.TagManagerPanel.DataContext = new TagEditorViewModel
-                        { CurrentTagsOwner = s as ITagContainer, AllTags = ["Избранное", "Секретное"] };
-                }
-            }
-        }.ToFrozenDictionary();
-
-    private IBrush _defaultBrush;
-
     private void OnCancelRename(object? sender, RoutedEventArgs e)
     {
         RenamingPanel.IsVisible = false;
@@ -454,10 +454,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
     {
         var text = (sender as TextBox)!.Text;
 
-        if (_historyBackup is null)
-        {
-            _historyBackup = new Avalonia.Controls.Controls(PointsPanel.Children);
-        }
+        if (_historyBackup is null) _historyBackup = new Avalonia.Controls.Controls(PointsPanel.Children);
 
         if (string.IsNullOrWhiteSpace(text))
         {

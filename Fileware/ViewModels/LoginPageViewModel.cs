@@ -10,14 +10,14 @@ namespace Fileware.ViewModels;
 
 public class LoginPageViewModel : ReactiveObject, IRoutableViewModel
 {
+    private readonly List<string> _incorrectAuth = new();
+    private bool _invalidData;
+
     public LoginPageViewModel(IScreen hostScreen)
     {
         HostScreen = hostScreen;
     }
 
-
-    private List<string> _incorrectAuth = new();
-    private bool _invalidData;
     public string Login { get; set; }
     public string Password { get; set; }
 
@@ -29,13 +29,10 @@ public class LoginPageViewModel : ReactiveObject, IRoutableViewModel
         Debug.WriteLine($"Login: {Login}, password: {Password}");
         if (await Api.Auth(Login, Password) is { } loginResponse)
         {
-            if (!Directory.Exists("./UserData"))
-            {
-                Directory.CreateDirectory("./UserData");
-            }
+            if (!Directory.Exists("./UserData")) Directory.CreateDirectory("./UserData");
 
             var saving = JsonSerializer.Serialize(loginResponse, Api.JsonOptions);
-            
+
             File.WriteAllText("./UserData/user.json", saving);
             AppContext.CurrentUser = loginResponse;
             HostScreen.Router.Navigate.Execute(new BasePageViewModel(HostScreen));
@@ -45,15 +42,14 @@ public class LoginPageViewModel : ReactiveObject, IRoutableViewModel
             _incorrectAuth.Add(Login + "+" + Password);
             this.RaiseAndSetIfChanged(ref _invalidData, true, nameof(InvalidData));
         }
-
     });
-
-    public string? UrlPathSegment { get; } = Guid.NewGuid().ToString()[..5];
-    public IScreen HostScreen { get; }
 
     public bool InvalidData
     {
         get => _invalidData;
         set => _invalidData = value;
     }
+
+    public string? UrlPathSegment { get; } = Guid.NewGuid().ToString()[..5];
+    public IScreen HostScreen { get; }
 }

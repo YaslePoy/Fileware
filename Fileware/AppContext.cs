@@ -15,6 +15,7 @@ public static class AppContext
     public static IMultiLevelView CurrentMultiLevelView;
     public static Dictionary<int, StoredFileMeta> LocalStoredFiles;
     public static LoginResponse? CurrentUser;
+
     static AppContext()
     {
         try
@@ -36,7 +37,7 @@ public static class AppContext
             LocalStoredFiles = new Dictionary<int, StoredFileMeta>();
         }
     }
-    
+
     public static void Save()
     {
         File.WriteAllText("storedFiles.json", JsonSerializer.Serialize(LocalStoredFiles));

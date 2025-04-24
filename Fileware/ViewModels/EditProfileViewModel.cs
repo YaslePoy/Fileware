@@ -1,5 +1,4 @@
 using System;
-using Fileware.Models;
 using ReactiveUI;
 
 namespace Fileware.ViewModels;

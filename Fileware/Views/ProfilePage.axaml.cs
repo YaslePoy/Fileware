@@ -22,7 +22,7 @@ public partial class ProfilePage : ReactiveUserControl<ProfileViewModel>
 
     private void Exit(object? sender, TappedEventArgs e)
     {
-        Directory.Delete("./UserData",recursive:true);
+        Directory.Delete("./UserData", true);
         AppContext.CurrentUser = null;
         (AppContext.WindowInstance.DataContext as MainWindowViewModel).Router.Navigate
             .Execute(new StartPageViewModel(AppContext.WindowInstance.DataContext as MainWindowViewModel));

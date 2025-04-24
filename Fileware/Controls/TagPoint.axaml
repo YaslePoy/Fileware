@@ -9,11 +9,10 @@
              x:Class="Fileware.Controls.TagPoint" x:DataType="viewModels:Tag" ToolTip.Tip="{Binding Name}">
     <UserControl.ContextMenu>
         <ContextMenu>
-            <MenuItem Command="{Binding ChangeColor}" Header="Изменить цвет тега"></MenuItem>
-            <MenuItem Click="RemoveTag" Header="Убрать тег"></MenuItem>
+            <MenuItem Command="{Binding ChangeColor}" Header="Изменить цвет тега" />
+            <MenuItem Click="RemoveTag" Header="Убрать тег" />
         </ContextMenu>
     </UserControl.ContextMenu>
     <Border HorizontalAlignment="Center" VerticalAlignment="Center"
-            Background="{Binding Color}" Width="10" Height="10" CornerRadius="10">
-    </Border>
+            Background="{Binding Color}" Width="10" Height="10" CornerRadius="10" />
 </UserControl>

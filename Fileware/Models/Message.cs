@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Net.Http;
-using System.Text.Json;
 using Avalonia.Controls;
 using Fileware.Controls;
 using Fileware.ViewModels;
@@ -13,6 +10,9 @@ namespace Fileware.Models;
 
 public sealed class Message : INotifyPropertyChanged, ITagContainer, ISearchable
 {
+    private int _lastTagCount = -1;
+
+    private List<Tag> _tags = [];
     public int Id { get; set; }
 
     public string Text { get; set; }
@@ -24,19 +24,15 @@ public sealed class Message : INotifyPropertyChanged, ITagContainer, ISearchable
     public int User { get; set; }
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public void OnPropertyChanged(string propertyName)
+    public bool IsSuits(string template)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        return Text.Contains(template, StringComparison.CurrentCultureIgnoreCase);
     }
 
     public bool HasTags => Tags.Count > 0;
 
-    private List<Tag> _tags = [];
-
     public int PointId { get; set; } = -1;
     public WrapPanel? TagsPreviewPanel { get; set; }
-
-    private int _lastTagCount = -1;
 
     public void UpdateTagPanel()
     {
@@ -46,10 +42,7 @@ public sealed class Message : INotifyPropertyChanged, ITagContainer, ISearchable
         if (TagsPreviewPanel is null) return;
 
         TagsPreviewPanel.Children.Clear();
-        foreach (var tag in _tags)
-        {
-            TagsPreviewPanel.Children.Add(new TagPoint { DataContext = tag });
-        }
+        foreach (var tag in _tags) TagsPreviewPanel.Children.Add(new TagPoint { DataContext = tag });
 
         Api.UpdateTags(PointId, _tags);
     }
@@ -68,8 +61,8 @@ public sealed class Message : INotifyPropertyChanged, ITagContainer, ISearchable
         }
     }
 
-    public bool IsSuits(string template)
+    public void OnPropertyChanged(string propertyName)
     {
-        return Text.Contains(template, StringComparison.CurrentCultureIgnoreCase);
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

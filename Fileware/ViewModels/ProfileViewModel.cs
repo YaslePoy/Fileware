@@ -1,7 +1,5 @@
 using System;
-using System.Reactive;
 using System.Windows.Input;
-using Fileware.Models;
 using ReactiveUI;
 
 namespace Fileware.ViewModels;
@@ -18,10 +16,11 @@ public class ProfileViewModel : ReactiveObject, IRoutableViewModel
     }
 
     public UserData User { get; set; } = AppContext.CurrentUser.UserData;
-    public string? UrlPathSegment { get; } = Guid.NewGuid().ToString()[..5];
-    public IScreen HostScreen { get; }
 
     public ICommand GoManage =>
-        ReactiveCommand.CreateFromObservable(() => 
+        ReactiveCommand.CreateFromObservable(() =>
             HostScreen.Router.Navigate.Execute(new TilesViewModel(HostScreen)));
+
+    public string? UrlPathSegment { get; } = Guid.NewGuid().ToString()[..5];
+    public IScreen HostScreen { get; }
 }

@@ -2,13 +2,11 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Web;
 using System.Windows.Input;
-using Avalonia.Collections;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using QRCoder;
@@ -18,34 +16,28 @@ namespace Fileware.ViewModels;
 
 public class RegisterPageViewModel : ReactiveObject, IRoutableViewModel
 {
-    private bool _loginActive;
-    private bool _useTotpAuth;
-    private Bitmap? _totpBitmap;
-    private double _imageSize;
-    private double _spacing;
-    private string _username;
-    private string _showName;
-    private string _password;
-    private string _birthDate;
-    private readonly string? _urlPathSegment = Guid.NewGuid().ToString()[..5];
-    private readonly IScreen _hostScreen;
-    private bool _showQr;
-    private bool _passwordStage;
-    private double _passwordOpacity;
     private string _alertText;
-    private string _passAlertText;
     private bool _finalStage;
     private string _globalAlertText;
+    private double _imageSize;
+    private bool _loginActive;
+    private string _passAlertText;
+    private double _passwordOpacity;
+    private bool _passwordStage;
+    private bool _showQr;
+    private double _spacing;
+    private Bitmap? _totpBitmap;
+    private bool _useTotpAuth;
+
+    public RegisterPageViewModel(IScreen hostScreen)
+    {
+        HostScreen = hostScreen;
+    }
 
     public Bitmap? TotpBitmap
     {
         get => _totpBitmap;
         set => this.RaiseAndSetIfChanged(ref _totpBitmap, value);
-    }
-
-    public RegisterPageViewModel(IScreen hostScreen)
-    {
-        _hostScreen = hostScreen;
     }
 
     public ICommand Register => ReactiveCommand.Create(() =>
@@ -71,33 +63,13 @@ public class RegisterPageViewModel : ReactiveObject, IRoutableViewModel
         set => _loginActive = value;
     }
 
-    public string Username
-    {
-        get => _username;
-        set => _username = value;
-    }
+    public string Username { get; set; }
 
-    public string ShowName
-    {
-        get => _showName;
-        set => _showName = value;
-    }
+    public string ShowName { get; set; }
 
-    public string Password
-    {
-        get => _password;
-        set => _password = value;
-    }
+    public string Password { get; set; }
 
-    public string BirthDate
-    {
-        get => _birthDate;
-        set => _birthDate = value;
-    }
-
-    public string? UrlPathSegment => _urlPathSegment;
-
-    public IScreen HostScreen => _hostScreen;
+    public string BirthDate { get; set; }
 
     public bool UseTotpAuth
     {
@@ -107,7 +79,6 @@ public class RegisterPageViewModel : ReactiveObject, IRoutableViewModel
         {
             _useTotpAuth = value;
             if (_useTotpAuth && TotpBitmap is null && !string.IsNullOrWhiteSpace(Username))
-            {
                 Api.Http.GetStringAsync("api/User/totp?username=" + HttpUtility.UrlEncode(Username)).ContinueWith(t =>
                 {
                     Bitmap newTotp;
@@ -129,11 +100,8 @@ public class RegisterPageViewModel : ReactiveObject, IRoutableViewModel
                         Debug.Print("Show image");
                     });
                 });
-            }
             else
-            {
                 ShowQr = value;
-            }
         }
     }
 
@@ -199,21 +167,19 @@ public class RegisterPageViewModel : ReactiveObject, IRoutableViewModel
 
     public ICommand ConfirmPassword => ReactiveCommand.Create(() =>
     {
-        if (Password is null or { Length: < 6})
+        if (Password is null or { Length: < 6 })
         {
             PassAlertText = "Пароль не может быть меньше 6 символов";
             return;
         }
 
         if (UseTotpAuth)
-        {
             if (!bool.Parse(Api.Http.GetStringAsync($"api/User/totp/{Username}/verify?totpKey=" + Password).GetAwaiter()
                     .GetResult()))
             {
                 PassAlertText = "Введенный пароль устарел. Попробуйте снова";
                 return;
             }
-        }
 
 
         FinalStage = true;
@@ -232,7 +198,7 @@ public class RegisterPageViewModel : ReactiveObject, IRoutableViewModel
             Username,
             ShowName,
             Password,
-            TotpKey = _useTotpAuth ?  Convert.ToBase64String(Encoding.Default.GetBytes(Password)) : null,
+            TotpKey = _useTotpAuth ? Convert.ToBase64String(Encoding.Default.GetBytes(Password)) : null,
             BirthDate = DateOnly.Parse(BirthDate).ToString("yyyy-MM-dd")
         }, Api.JsonOptions);
         Api.Http.PostAsync("api/User/reg", new StringContent(req, Api.JsonMediaType)).ContinueWith(t =>
@@ -255,4 +221,8 @@ public class RegisterPageViewModel : ReactiveObject, IRoutableViewModel
         get => _globalAlertText;
         set => this.RaiseAndSetIfChanged(ref _globalAlertText, value);
     }
+
+    public string? UrlPathSegment { get; } = Guid.NewGuid().ToString()[..5];
+
+    public IScreen HostScreen { get; }
 }

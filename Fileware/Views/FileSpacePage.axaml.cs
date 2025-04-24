@@ -1,8 +1,5 @@
-using Avalonia;
-using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using Fileware.ViewModels;
 
@@ -19,25 +16,17 @@ public partial class FileSpacePage : ReactiveUserControl<FileSpaceViewModel>
     {
         var x = ButtonTest;
         foreach (var way in FSWays.Children)
-        {
             if (way == sender)
-            {
                 way.Classes.Add("EdgePressed");
-            }
             else
                 way.Classes.Remove("EdgePressed");
-        }
 
         foreach (var stages in StagesGrid.Children)
-        {
-            if (Grid.GetColumn(stages) > 0 )
-            {
+            if (Grid.GetColumn(stages) > 0)
                 stages.IsVisible = false;
-            }
-        }
 
         var vm = DataContext as FileSpaceViewModel;
-        
+
         switch ((sender as Control).Tag)
         {
             case "create":

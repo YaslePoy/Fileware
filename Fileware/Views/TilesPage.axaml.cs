@@ -7,8 +7,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Threading.Tasks;
-using System.Web;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -26,17 +24,46 @@ namespace Fileware.Views;
 
 public partial class TilesPage : ReactiveUserControl<TilesViewModel>, IMultiLevelView
 {
-    private string _currentFileSpace => (FileSpacesComboBox.SelectedItem as FileSpace).Id;
     private static TilesPage Instance;
     private static List<HistoryPoint> History;
-    private Avalonia.Controls.Controls _historyBackup;
-    private KeyEventArgs? _firstEnter;
 
-    protected override void OnUnloaded(RoutedEventArgs e)
-    {
-        base.OnUnloaded(e);
-        AppContext.CurrentUser.UserData.PropertyChanged -= OnUserDataOnPropertyChanged;
-    }
+
+    private static FileData vm;
+    private static Tag ColoringTag;
+
+    private readonly FrozenDictionary<string, Action<object>> TopLevelActions =
+        new Dictionary<string, Action<object>>
+        {
+            {
+                "FileRename", s =>
+                {
+                    Instance.RenamingPanel.IsVisible = true;
+                    vm = s as FileData;
+                    var winVm = new RenameViewModel { FileName = vm.Name };
+                    Instance.RenamingPanel.DataContext = winVm;
+                }
+            },
+            {
+                "RecolorTag", s =>
+                {
+                    Instance.RecolorPanel.IsVisible = true;
+                    ColoringTag = s as Tag;
+                }
+            },
+            {
+                "TagManager", s =>
+                {
+                    Instance.TagManagerPanel.IsVisible = true;
+                    Instance.TagManagerPanel.DataContext = new TagEditorViewModel
+                        { CurrentTagsOwner = s as ITagContainer, AllTags = ["Избранное", "Секретное"] };
+                }
+            }
+        }.ToFrozenDictionary();
+
+    private IBrush _defaultBrush;
+    private KeyEventArgs? _firstEnter;
+    private Avalonia.Controls.Controls _historyBackup;
+
     public TilesPage()
     {
         Instance = this;
@@ -57,6 +84,20 @@ public partial class TilesPage : ReactiveUserControl<TilesViewModel>, IMultiLeve
         //     ShowHistory();
         // }
     }
+
+    private string _currentFileSpace => (FileSpacesComboBox.SelectedItem as FileSpace).Id;
+
+    public void MakeTopLevel(string key, object sender)
+    {
+        TopLevelActions[key](sender);
+    }
+
+    protected override void OnUnloaded(RoutedEventArgs e)
+    {
+        base.OnUnloaded(e);
+        AppContext.CurrentUser.UserData.PropertyChanged -= OnUserDataOnPropertyChanged;
+    }
+
     private void OnUserDataOnPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
         if (args.PropertyName != "AttachedFileSpaces") return;
@@ -68,9 +109,7 @@ public partial class TilesPage : ReactiveUserControl<TilesViewModel>, IMultiLeve
     {
         FileSpacesComboBox.Items.Clear();
         foreach (var userDataAttachedFileSpace in AppContext.CurrentUser.UserData.AttachedFileSpaces)
-        {
             FileSpacesComboBox.Items.Add(new FileSpace { Id = userDataAttachedFileSpace });
-        }
 
         FileSpacesComboBox.SelectedIndex = 0;
     }
@@ -99,16 +138,20 @@ public partial class TilesPage : ReactiveUserControl<TilesViewModel>, IMultiLeve
                             fileData.PreviewData = ms.ToArray();
                             Dispatcher.UIThread.Invoke(() => { fileData.OnPropertyChanged(nameof(fileData.Preview)); });
                         });
-                        adding = new ImageBlock { MaxHeight = 300, DataContext = fileData, Width = 350, Host = this, Margin = new Thickness(10) };
+                        adding = new ImageBlock
+                        {
+                            MaxHeight = 300, DataContext = fileData, Width = 350, Host = this,
+                            Margin = new Thickness(10)
+                        };
                     }
                     else
                     {
                         adding = new FileBlock
-                            { DataContext = fileData, Width = 350, Host = this, Margin = new Thickness(10)};
+                            { DataContext = fileData, Width = 350, Host = this, Margin = new Thickness(10) };
                     }
 
                     if (AppContext.LocalStoredFiles.ContainsKey(fileData.Id))
-                        (adding as FileBlock).StartVersionCheckerTimer();
+                        (adding as IFileBlock).StartVersionCheckerTimer();
 
                     break;
 
@@ -148,61 +191,6 @@ public partial class TilesPage : ReactiveUserControl<TilesViewModel>, IMultiLeve
                 await SendFile(new FileInfo(file.Path.LocalPath));
     }
 
-    private async Task SendFile(FileInfo info)
-    {
-        var name = info.Name;
-        using var multipartFormContent = new MultipartFormDataContent();
-        var fileStream = new FileStream(info.FullName, FileMode.Open, FileAccess.Read,
-            FileShare.ReadWrite);
-        var fileStreamContent = new StreamContent(fileStream);
-        var mimeType = MimeTypes.GetMimeType(name);
-        fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
-        multipartFormContent.Add(fileStreamContent, "file", name);
-
-        FileBlock addedBlock = null;
-
-        Dispatcher.UIThread.Invoke(() =>
-        {
-            var data = new FileData
-            {
-                FileType = mimeType, Version = 1, LoadTime = DateTime.Now,
-                Size = info.Length, LastChange = DateTime.Now, Id = 0,
-                Name = name
-            };
-
-            if (data.FileType.StartsWith("image")) data.PreviewData = File.ReadAllBytes(info.FullName);
-
-            addedBlock = data.FileType.StartsWith("image/png") || data.FileType.StartsWith("image/jpeg") ||
-                         data.FileType.StartsWith("image/webp")
-                ? new ImageBlock {MaxHeight = 300,  DataContext = data, Width = 350, Host = this, Margin = new Thickness(10) }
-                : new FileBlock(fileStream, data) { Host = this, Margin = new Thickness(10) };
-            addedBlock.StartVersionCheckerTimer();
-            PointsPanel.Children.Add(addedBlock);
-            Viewer.ScrollToEnd();
-        });
-        try
-        {
-            using var response = await Api.Http.PostAsync(
-                info.Length > 30 * 1024 * 1024
-                    ? $"api/File/large?fileSpace={HttpUtility.UrlEncode(_currentFileSpace)}"
-                    : $"api/File?fileSpace={HttpUtility.UrlEncode(_currentFileSpace)}",
-                multipartFormContent);
-            var id = int.Parse(await response.Content.ReadAsStringAsync());
-            AppContext.LocalStoredFiles.Add(id,
-                new StoredFileMeta
-                    { Path = info.FullName, LastChangeTime = info.LastWriteTime, Version = 1 });
-            AppContext.Save();
-            (addedBlock.DataContext as FileData).Id = id;
-
-            History.Add(new HistoryPoint
-                { LinkedId = id, Time = DateTime.Now, Type = (int)HistoryPointType.File });
-        }
-        catch (Exception)
-        {
-        }
-    }
-    
-
     private void Viewer_OnScrollChanged(object? sender, ScrollChangedEventArgs e)
     {
         if (Viewer.Offset.Y != 0)
@@ -230,46 +218,6 @@ public partial class TilesPage : ReactiveUserControl<TilesViewModel>, IMultiLeve
             foreach (var file in t.Result) await SendFile(new FileInfo(file.Path.LocalPath));
         });
     }
-
-    public void MakeTopLevel(string key, object sender)
-    {
-        TopLevelActions[key](sender);
-    }
-
-
-    private static FileData vm;
-    private static Tag ColoringTag;
-
-    private FrozenDictionary<string, Action<object>> TopLevelActions =
-        new Dictionary<string, Action<object>>
-        {
-            {
-                "FileRename", s =>
-                {
-                    Instance.RenamingPanel.IsVisible = true;
-                    vm = s as FileData;
-                    var winVm = new RenameViewModel { FileName = vm.Name };
-                    Instance.RenamingPanel.DataContext = winVm;
-                }
-            },
-            {
-                "RecolorTag", s =>
-                {
-                    Instance.RecolorPanel.IsVisible = true;
-                    ColoringTag = s as Tag;
-                }
-            },
-            {
-                "TagManager", s =>
-                {
-                    Instance.TagManagerPanel.IsVisible = true;
-                    Instance.TagManagerPanel.DataContext = new TagEditorViewModel
-                        { CurrentTagsOwner = s as ITagContainer, AllTags = ["Избранное", "Секретное"] };
-                }
-            }
-        }.ToFrozenDictionary();
-
-    private IBrush _defaultBrush;
 
     private void OnCancelRename(object? sender, RoutedEventArgs e)
     {
@@ -354,10 +302,7 @@ public partial class TilesPage : ReactiveUserControl<TilesViewModel>, IMultiLeve
     {
         var text = (sender as TextBox)!.Text;
 
-        if (_historyBackup is null)
-        {
-            _historyBackup = new Avalonia.Controls.Controls(PointsPanel.Children);
-        }
+        if (_historyBackup is null) _historyBackup = new Avalonia.Controls.Controls(PointsPanel.Children);
 
         if (string.IsNullOrWhiteSpace(text))
         {
@@ -386,5 +331,12 @@ public partial class TilesPage : ReactiveUserControl<TilesViewModel>, IMultiLeve
 
         PointsPanel.Children.Clear();
         PointsPanel.Children.AddRange(finalQuery);
+    }
+}
+
+public abstract class IFileBlock : UserControl
+{
+    public void StartVersionCheckerTimer()
+    {
     }
 }

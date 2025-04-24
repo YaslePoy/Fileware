@@ -7,7 +7,27 @@ namespace Fileware.ViewModels;
 
 public class Tag : ReactiveObject
 {
-    private static Dictionary<string, Tag> ReleasedTags = new Dictionary<string, Tag>();
+    private static readonly Dictionary<string, Tag> ReleasedTags = new();
+
+    public string Name { get; set; }
+
+    public IBrush Color
+    {
+        get => new SolidColorBrush(TagColorService.GetColorByString(Name));
+        set
+        {
+            if (TagColorService.ColorPreferences.ContainsKey(Name))
+                TagColorService.ColorPreferences[Name] = (value as SolidColorBrush).Color;
+            else
+                TagColorService.ColorPreferences.Add(Name, (value as SolidColorBrush).Color);
+            this.RaisePropertyChanged();
+        }
+    }
+
+    public ICommand ChangeColor => ReactiveCommand.Create(() =>
+    {
+        AppContext.CurrentMultiLevelView.MakeTopLevel("RecolorTag", this);
+    });
 
     public static Tag FromName(string name)
     {
@@ -18,33 +38,8 @@ public class Tag : ReactiveObject
         ReleasedTags.Add(name, creating);
         return creating;
     }
-
-    public string Name { get; set; }
-
-    public IBrush Color
-    {
-        get => new SolidColorBrush(TagColorService.GetColorByString(Name));
-        set
-        {
-            if (TagColorService.ColorPreferences.ContainsKey(Name))
-            {
-                TagColorService.ColorPreferences[Name] = (value as SolidColorBrush).Color;
-            }
-            else
-            {
-                TagColorService.ColorPreferences.Add(Name, (value as SolidColorBrush).Color);
-            }
-            this.RaisePropertyChanged();
-        }
-    }
-
-    public ICommand ChangeColor => ReactiveCommand.Create(() =>
-    {
-        AppContext.CurrentMultiLevelView.MakeTopLevel("RecolorTag", this);
-    });
 }
 
 public class SkipTag : Tag
 {
-    
 }

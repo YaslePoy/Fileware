@@ -11,15 +11,14 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Fileware.Models;
-using Fileware.ViewModels;
-using Fileware.Windows;
+using Fileware.Views;
 
 namespace Fileware.Controls;
 
-public partial class FileBlock : UserControl
+public partial class FileBlock : IFileBlock
 {
-    public bool IsCheckUpdates;
     public IMultiLevelView Host;
+    public bool IsCheckUpdates;
     private bool IsTransfering;
 
     public FileBlock()
@@ -36,7 +35,6 @@ public partial class FileBlock : UserControl
     protected void OnRename(object? sender, RoutedEventArgs e)
     {
         Host.MakeTopLevel("FileRename", DataContext);
-        
     }
 
     protected override void OnDataContextEndUpdate()

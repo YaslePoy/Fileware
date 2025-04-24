@@ -16,8 +16,7 @@
                     <ComboBox SelectionChanged="UpdateFileSpace" Name="FileSpacesComboBox">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="models:FileSpace">
-                                <TextBlock Text="{Binding Display}" ContextMenu="{Binding Menu}">
-                                </TextBlock>
+                                <TextBlock Text="{Binding Display}" ContextMenu="{Binding Menu}" />
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
@@ -30,11 +29,10 @@
                     <StackPanel IsVisible="{Binding FilterVisibility}" ClipToBounds="True" Orientation="Horizontal"
                                 HorizontalAlignment="Left" VerticalAlignment="Stretch" Spacing="10">
                         <TextBox TextChanged="SearchText" VerticalAlignment="Center" Text="{Binding StringFilter}"
-                                 Watermark="Поиск по тексту и тегам" MaxWidth="500">
-                        </TextBox>
+                                 Watermark="Поиск по тексту и тегам" MaxWidth="500" />
                     </StackPanel>
                     <Button Command="{Binding FilteringSwitch}" Padding="2" VerticalAlignment="Center">
-                        <Image VerticalAlignment="Stretch" Source="{SvgImage ../../Assets/filter.svg}"></Image>
+                        <Image VerticalAlignment="Stretch" Source="{SvgImage ../../Assets/filter.svg}" />
                     </Button>
                 </StackPanel>
             </DockPanel>
@@ -75,7 +73,7 @@
         <DockPanel Name="RenamingPanel" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center"
                    x:DataType="viewModels:RenameViewModel">
             <DockPanel.DataContext>
-                <viewModels:RenameViewModel></viewModels:RenameViewModel>
+                <viewModels:RenameViewModel />
             </DockPanel.DataContext>
             <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Click="OnCancelRename" HorizontalAlignment="Right" Margin="10, 0,0, 10" Background="OrangeRed"
@@ -91,7 +89,7 @@
         <DockPanel Name="RecolorPanel" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center"
                    x:DataType="viewModels:RenameViewModel">
             <DockPanel.DataContext>
-                <viewModels:RenameViewModel></viewModels:RenameViewModel>
+                <viewModels:RenameViewModel />
             </DockPanel.DataContext>
             <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Click="OnCancelRecolor" HorizontalAlignment="Right" Margin="10, 0,0, 10" Background="OrangeRed"
@@ -100,21 +98,20 @@
                 </Button>
                 <Button Click="OnApplyRecolor" HorizontalAlignment="Right" Margin="10, 0, 10, 10" Foreground="White">Изменить цвет</Button>
             </StackPanel>
-            <ColorPicker Margin="10" Width="120" Name="RecolorColorPicker"></ColorPicker>
+            <ColorPicker Margin="10" Width="120" Name="RecolorColorPicker" />
         </DockPanel>
 
         <StackPanel IsVisible="False" Name="TagManagerPanel" HorizontalAlignment="Center" VerticalAlignment="Center"
                     Spacing="5" x:DataType="viewModels:TagEditorViewModel">
             <StackPanel.DataContext>
-                <viewModels:TagEditorViewModel></viewModels:TagEditorViewModel>
+                <viewModels:TagEditorViewModel />
             </StackPanel.DataContext>
             <TextBlock HorizontalAlignment="Center">Добавление тега</TextBlock>
             <StackPanel Orientation="Horizontal">
                 <AutoCompleteBox TextChanged="UpdateTagAddFieldColor" FilterMode="ContainsOrdinal"
                                  ItemsSource="{Binding AllTags}" Text="{Binding CurrentTagName}"
                                  HorizontalAlignment="Center"
-                                 Watermark="#" Width="200">
-                </AutoCompleteBox>
+                                 Watermark="#" Width="200" />
                 <Border Name="TagColorIndicator" Width="16" Height="16" VerticalAlignment="Center"
                         HorizontalAlignment="Center" Margin="10" />
             </StackPanel>

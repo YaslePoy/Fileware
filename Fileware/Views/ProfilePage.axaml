@@ -3,7 +3,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Fileware.ViewModels"
-             xmlns:models="clr-namespace:Fileware.Models"
              xmlns:fileware="clr-namespace:Fileware"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Fileware.Views.ProfilePage" x:DataType="viewModels:ProfileViewModel">
@@ -22,7 +21,8 @@
         <Image Height="35" Width="35" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10"
                Tapped="EditProfile" Source="{SvgImage ../../Assets/Edit.svg}" />
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="7">
-            <Border CornerRadius="18" BorderBrush="{StaticResource MainColorBrush}" BorderThickness="3" HorizontalAlignment="Center">
+            <Border CornerRadius="18" BorderBrush="{StaticResource MainColorBrush}" BorderThickness="3"
+                    HorizontalAlignment="Center">
                 <Border ClipToBounds="True" HorizontalAlignment="Center" Margin="2"
                         CornerRadius="16">
                     <Image Source="{Binding User.AvatarImage^}" Height="100" Width="100" />

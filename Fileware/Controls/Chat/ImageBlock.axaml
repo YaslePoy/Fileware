@@ -4,11 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:models="clr-namespace:Fileware.Models"
              xmlns:viewModels="clr-namespace:Fileware.ViewModels"
-             MinHeight="300"
              mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="300"
              x:DataType="models:FileData" HorizontalContentAlignment="Stretch"
-             x:Class="Fileware.Controls.ImageBlock" VerticalContentAlignment="Center" HorizontalAlignment="Left"
-             VerticalAlignment="Bottom">
+             x:Class="Fileware.Controls.ImageBlock" VerticalContentAlignment="Center" HorizontalAlignment="Left">
     <UserControl.ContextMenu>
         <ContextMenu>
             <MenuItem Header="Переименовать" Click="OnRename" />
@@ -27,14 +25,14 @@
                     </DataTemplate>
                 </MenuItem.ItemTemplate>
             </MenuItem>
-            <MenuItem Header="Добавить тег" Click="AddTag"></MenuItem>
+            <MenuItem Header="Добавить тег" Click="AddTag" />
         </ContextMenu>
 
     </UserControl.ContextMenu>
     <Design.DataContext>
         <models:FileData Name="FileData file name qwer.json" Size="410552" Version="13" />
     </Design.DataContext>
-    <DockPanel HorizontalAlignment="Left" VerticalAlignment="Center" LastChildFill="True">
+    <DockPanel Name="BasePanel" HorizontalAlignment="Left" VerticalAlignment="Center" LastChildFill="True">
         <WrapPanel Name="TagsPanel" MaxHeight="{Binding #ViewImage.Bounds.Height}" Orientation="Vertical"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    DockPanel.Dock="Right" Margin="5, 0" />

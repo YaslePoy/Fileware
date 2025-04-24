@@ -33,9 +33,9 @@
             </Style>
 
             <Style Selector="TextBlock">
-                <Setter Property="FontFamily" Value="{StaticResource Inter}"></Setter>
+                <Setter Property="FontFamily" Value="{StaticResource Inter}" />
             </Style>
-            
+
             <Style Selector="Button">
                 <Setter Property="Background" Value="{StaticResource MainColorBrush}" />
             </Style>
@@ -52,10 +52,10 @@
                 <Setter Property="HorizontalAlignment" Value="Center" />
             </Style>
             <Style Selector="CheckBox">
-                <Setter Property="Foreground" Value="{StaticResource MainColorBrush}"></Setter>
+                <Setter Property="Foreground" Value="{StaticResource MainColorBrush}" />
             </Style>
             <Style Selector="ComboBox">
-                <Setter Property="BorderBrush" Value="{StaticResource MainColorBrush}"></Setter>
+                <Setter Property="BorderBrush" Value="{StaticResource MainColorBrush}" />
                 <Setter Property="BorderThickness" Value="1.75" />
 
             </Style>

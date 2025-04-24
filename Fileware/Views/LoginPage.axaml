@@ -14,7 +14,7 @@
                 </Transitions>
             </Setter>
         </Style>
-        
+
         <Style Selector="TextBlock.AnimateHeight">
             <Setter Property="Transitions">
                 <Transitions>
@@ -27,8 +27,10 @@
         <TextBlock FontSize="24">Авторизация</TextBlock>
         <TextBlock>Введите ваш логин или пароль</TextBlock>
         <TextBlock Classes="AnimateHeight" Foreground="Red" IsVisible="{Binding InvalidData}">Логин или пароль неверны</TextBlock>
-        <TextBox TextChanged="UpdateLoginVisibility" Text="{Binding Login}" Name="LoginText" Watermark="Логин" HorizontalAlignment="Stretch" />
-        <TextBox TextChanged="UpdateLoginVisibility" Text="{Binding Password}" Name="PasswordText" HorizontalAlignment="Stretch" PasswordChar="~"
+        <TextBox TextChanged="UpdateLoginVisibility" Text="{Binding Login}" Name="LoginText" Watermark="Логин"
+                 HorizontalAlignment="Stretch" />
+        <TextBox TextChanged="UpdateLoginVisibility" Text="{Binding Password}" Name="PasswordText"
+                 HorizontalAlignment="Stretch" PasswordChar="~"
                  Watermark="Пароль" />
         <Button Height="0" Name="LoginButton" VerticalAlignment="Top" Command="{Binding TryAuth}"
                 Classes="Long LoginButton">

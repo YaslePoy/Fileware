@@ -21,9 +21,9 @@ public class MainWindowViewModel : ReactiveObject, IScreen
             {
                 var data = JsonSerializer.Deserialize<UserData>(t.Result, Api.JsonOptions);
                 Utils.TransferData(AppContext.CurrentUser.UserData, data);
-                AppContext.CurrentUser.Save(api:false);
+                AppContext.CurrentUser.Save(api: false);
             });
-            
+
             Router.Navigate.Execute(
                 new BasePageViewModel(this));
         }

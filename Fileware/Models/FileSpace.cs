@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Windows.Input;
 using Avalonia.Controls;
-using Avalonia.Input;
-using DynamicData;
 using ReactiveUI;
 
 namespace Fileware.Models;
@@ -18,12 +15,9 @@ public class FileSpace
     {
         get
         {
-            var extracted = Id[(Id.IndexOf(':')+1)..];
-            
-            if (extracted == "master")
-            {
-                extracted = "Мастер пространство";
-            }
+            var extracted = Id[(Id.IndexOf(':') + 1)..];
+
+            if (extracted == "master") extracted = "Мастер пространство";
 
             return extracted;
         }
@@ -38,7 +32,8 @@ public class FileSpace
 
     public ICommand Share => ReactiveCommand.Create(() =>
     {
-        TopLevel.GetTopLevel(AppContext.WindowInstance)!.Clipboard!.SetTextAsync(Convert.ToBase64String(Encoding.Default.GetBytes(this.Id)));
+        TopLevel.GetTopLevel(AppContext.WindowInstance)!.Clipboard!.SetTextAsync(
+            Convert.ToBase64String(Encoding.Default.GetBytes(Id)));
     });
 
     public ContextMenu Menu
@@ -46,23 +41,24 @@ public class FileSpace
         get
         {
             var menu = new ContextMenu();
-            if (this.Id.EndsWith(":master"))
-            {
-                return menu;
-            }
+            if (Id.EndsWith(":master")) return menu;
 
-            if (!this.Id.StartsWith("user_"))
+            if (!Id.StartsWith("user_"))
             {
-                var share = new MenuItem { Header = "Поделиться", Command = this.Share };
+                var share = new MenuItem { Header = "Поделиться", Command = Share };
                 menu.Items.Add(share);
             }
 
-            menu.Items.Add(new MenuItem {
-                Header = "Выйти", Command = this.Exit
+            menu.Items.Add(new MenuItem
+            {
+                Header = "Выйти", Command = Exit
             });
             return menu;
         }
     }
 
-    public static FileSpace OfUser(UserData user) => new() { Id = $"user_{user.Id}:master" };
+    public static FileSpace OfUser(UserData user)
+    {
+        return new FileSpace { Id = $"user_{user.Id}:master" };
+    }
 }

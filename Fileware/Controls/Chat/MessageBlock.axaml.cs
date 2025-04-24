@@ -36,7 +36,7 @@ public partial class MessageBlock : UserControl
         });
     }
 
-    
+
     protected override void OnDataContextEndUpdate()
     {
         base.OnDataContextEndUpdate();
@@ -44,7 +44,7 @@ public partial class MessageBlock : UserControl
         data.TagsPreviewPanel = TagsPanel;
         data.UpdateTagPanel();
     }
-    
+
     private void OnDelete(object? sender, RoutedEventArgs e)
     {
         var current = DataContext as Message;

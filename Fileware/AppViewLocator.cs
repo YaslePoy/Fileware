@@ -23,7 +23,7 @@ public class AppViewLocator : IViewLocator
             TilesViewModel tilesViewModel => new TilesPage { DataContext = tilesViewModel },
             ProfileViewModel profileViewModel => new ProfilePage { DataContext = profileViewModel },
             EditProfileViewModel editProfileViewModel => new EditProfilePage { DataContext = editProfileViewModel },
-            FileSpaceViewModel fileSpaceViewModel => new FileSpacePage() { DataContext = fileSpaceViewModel },
+            FileSpaceViewModel fileSpaceViewModel => new FileSpacePage { DataContext = fileSpaceViewModel },
             _ => throw new ArgumentOutOfRangeException()
         };
     }
@@ -31,7 +31,10 @@ public class AppViewLocator : IViewLocator
 
 public class ReflectionViewLocator : IViewLocator
 {
-    private static Dictionary<Type, Type> _routeTypes = new();
+    private static readonly Dictionary<Type, Type> _routeTypes = new();
+
+    private List<Type>? _cachedTypes;
+
     public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
     {
         var type = viewModel.GetType();
@@ -47,8 +50,6 @@ public class ReflectionViewLocator : IViewLocator
         return pageInstance as IViewFor;
     }
 
-    private List<Type>? _cachedTypes = null;
-    
     private Type FindPageType(Type type)
     {
         if (_cachedTypes is null)
@@ -57,25 +58,17 @@ public class ReflectionViewLocator : IViewLocator
 
             _cachedTypes = assembly.GetTypes().ToList();
         }
-        
+
         var name = type.Name;
         if (name.EndsWith("ViewModel"))
-        {
             name = name[..^9];
-        }else if( name.EndsWith("VM"))
-        {
-            name = name[..^2];
-        }
-        
+        else if (name.EndsWith("VM")) name = name[..^2];
+
         var pageType = _cachedTypes.Find(i => i.Name == name + "Page");
         if (pageType is not null)
             return pageType;
-        if (_cachedTypes.Find(i => i.Name == name) is {} justType)
-        {
-            return justType;
-        }
+        if (_cachedTypes.Find(i => i.Name == name) is { } justType) return justType;
 
         return null;
-
     }
 }

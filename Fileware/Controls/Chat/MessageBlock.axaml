@@ -2,7 +2,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:fileware="clr-namespace:Fileware"
              xmlns:models="clr-namespace:Fileware.Models"
              xmlns:viewModels="clr-namespace:Fileware.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -26,7 +25,7 @@
                     </DataTemplate>
                 </MenuItem.ItemTemplate>
             </MenuItem>
-            <MenuItem Header="Добавить тег" Click="AddTag"></MenuItem>
+            <MenuItem Header="Добавить тег" Click="AddTag" />
         </ContextMenu>
     </UserControl.ContextMenu>
     <Design.DataContext>
@@ -44,7 +43,7 @@
         <WrapPanel Name="TagsPanel" MaxWidth="{Binding #ViewText.Bounds.Width}" Orientation="Horizontal"
                    VerticalAlignment="Top"
                    HorizontalAlignment="Center"
-                   DockPanel.Dock="Bottom" Margin="5, 0"  />
+                   DockPanel.Dock="Bottom" Margin="5, 0" />
         <Border DockPanel.Dock="Top" VerticalAlignment="Center" HorizontalAlignment="Center"
                 Background="{StaticResource MainColorBrush}"
                 CornerRadius="10" MaxWidth="700">
@@ -52,7 +51,7 @@
                 <TextBlock Foreground="White" Margin="10, 0, 0, 0" DockPanel.Dock="Right"
                            VerticalAlignment="Bottom"
                            Text="{Binding Time, StringFormat=t}" ToolTip.Tip="{Binding Time, StringFormat=U}" />
-                <SelectableTextBlock   Name="ViewText" Foreground="White" Text="{Binding Text}" TextWrapping="Wrap" />
+                <SelectableTextBlock Name="ViewText" Foreground="White" Text="{Binding Text}" TextWrapping="Wrap" />
             </DockPanel>
         </Border>
     </DockPanel>

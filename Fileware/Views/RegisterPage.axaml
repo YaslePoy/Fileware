@@ -3,7 +3,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Fileware.ViewModels"
-             xmlns:qrCoder="clr-namespace:QRCoder;assembly=QRCoder"
              xmlns:controls="clr-namespace:Fileware.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Fileware.Views.RegisterPage" x:DataType="viewModels:RegisterPageViewModel">
@@ -39,24 +38,25 @@
         <Style Selector="DockPanel">
             <Setter Property="Transitions">
                 <Transitions>
-                    <DoubleTransition Property="Opacity" Duration="0:0:0.5"></DoubleTransition>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.5" />
                 </Transitions>
             </Setter>
         </Style>
     </UserControl.Styles>
     <DockPanel LastChildFill="True">
         <controls:GoBack DockPanel.Dock="Top" DataContext="{Binding GoBackVM}" />
-        <TextBlock DockPanel.Dock="Right" Foreground="Red" Text="{Binding GlobalAlertText}"></TextBlock>
+        <TextBlock DockPanel.Dock="Right" Foreground="Red" Text="{Binding GlobalAlertText}" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
             <StackPanel DockPanel.Dock="Bottom" Width="350" VerticalAlignment="Center">
-                <DockPanel  IsEnabled="{Binding !PasswordStage}" Margin="5" HorizontalAlignment="Stretch"
+                <DockPanel IsEnabled="{Binding !PasswordStage}" Margin="5" HorizontalAlignment="Stretch"
                            VerticalAlignment="Stretch" LastChildFill="True">
                     <TextBlock FontSize="24" DockPanel.Dock="Top" TextWrapping="Wrap" TextAlignment="Center">Личная информация</TextBlock>
-                    <StackPanel IsVisible="{Binding !PasswordStage}" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    <StackPanel IsVisible="{Binding !PasswordStage}" DockPanel.Dock="Bottom"
+                                HorizontalAlignment="Center" VerticalAlignment="Center"
                                 Width="250"
                                 Spacing="10">
                         <TextBlock TextWrapping="Wrap" FontSize="16" TextAlignment="Center">Заполните информацию о себе. Её смогут видеть другие пользователи</TextBlock>
-                        <TextBlock TextWrapping="Wrap" Text="{Binding AlertText}" Foreground="Red"></TextBlock>
+                        <TextBlock TextWrapping="Wrap" Text="{Binding AlertText}" Foreground="Red" />
                         <TextBox Text="{Binding Username}" HorizontalAlignment="Stretch"
                                  Watermark="Введите желаемый логин" />
 
@@ -67,19 +67,19 @@
                     </StackPanel>
                 </DockPanel>
                 <StackPanel Opacity="{Binding PasswordOpacity}" IsEnabled="{Binding PasswordStage}"
-                            IsVisible="{Binding PasswordStage}" Grid.Column="1" Margin="5"
+                            IsVisible="{Binding PasswordStage}" Margin="5"
                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center"
                                 Width="250"
                                 Spacing="10" IsEnabled="{Binding !FinalStage}">
-                        <TextBlock Foreground="Red" Text="{Binding PassAlertText}" TextWrapping="Wrap"></TextBlock>
+                        <TextBlock Foreground="Red" Text="{Binding PassAlertText}" TextWrapping="Wrap" />
                         <TextBox Watermark="Пароль" HorizontalAlignment="Stretch" PasswordChar="~"
                                  Text="{Binding Password}" />
                         <CheckBox IsChecked="{Binding UseTotpAuth}">Использовать авторизацию по временному паролю</CheckBox>
                         <Button IsEnabled="{Binding !FinalStage}" Command="{Binding ConfirmPassword}">Далее</Button>
                     </StackPanel>
                 </StackPanel>
-                <Button HorizontalContentAlignment="Center" Grid.Column="2" Command="{Binding RegisterFinal}"
+                <Button HorizontalContentAlignment="Center" Command="{Binding RegisterFinal}"
                         HorizontalAlignment="Stretch" IsVisible="{Binding FinalStage}" IsEnabled="{Binding FinalStage}"
                         Margin="10" Padding="10">
                     Зарегистрироваться

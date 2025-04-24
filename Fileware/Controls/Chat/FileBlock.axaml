@@ -33,7 +33,7 @@
                         </DataTemplate>
                     </MenuItem.ItemTemplate>
                 </MenuItem>
-                <MenuItem Header="Добавить тег" Click="AddTag"></MenuItem>
+                <MenuItem Header="Добавить тег" Click="AddTag" />
             </ContextMenu>
         </Border.ContextMenu>
         <DockPanel LastChildFill="False">

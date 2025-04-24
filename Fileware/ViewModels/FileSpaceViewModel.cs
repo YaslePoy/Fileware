@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Input;
@@ -13,9 +12,16 @@ namespace Fileware.ViewModels;
 
 public class FileSpaceViewModel : ReactiveObject, IRoutableViewModel
 {
-    private bool _confirmVisibility;
-    private string _confirmActionText;
+    public enum FileSpacePageMode
+    {
+        Unknown,
+        Attach,
+        Create
+    }
+
     private string _alertText;
+    private string _confirmActionText;
+    private bool _confirmVisibility;
 
     public FileSpaceViewModel(IScreen hostScreen)
     {
@@ -24,9 +30,6 @@ public class FileSpaceViewModel : ReactiveObject, IRoutableViewModel
     }
 
     public GoBackViewModel GoBackVM { get; }
-
-    public string? UrlPathSegment { get; } = Guid.NewGuid().ToString()[..5];
-    public IScreen HostScreen { get; set; }
     public bool IsPrivate { get; set; }
     public string FileSpaceName { get; set; }
 
@@ -79,7 +82,7 @@ public class FileSpaceViewModel : ReactiveObject, IRoutableViewModel
             return;
         }
 
-        ConfirmActionText = $"Вступление в файловое пространстно '{new FileSpace() { Id = name }.Display}'";
+        ConfirmActionText = $"Вступление в файловое пространстно '{new FileSpace { Id = name }.Display}'";
         ConfirmVisibility = true;
     });
 
@@ -100,7 +103,8 @@ public class FileSpaceViewModel : ReactiveObject, IRoutableViewModel
             case FileSpacePageMode.Attach:
                 var attachSpaceKey = Encoding.Default.GetString(Convert.FromBase64String(FileSpaceName));
                 AppContext.CurrentUser.UserData.AttachedFileSpaces =
-                    new List<string>(AppContext.CurrentUser.UserData.AttachedFileSpaces).Also(l => l.Add(attachSpaceKey));
+                    new List<string>(AppContext.CurrentUser.UserData.AttachedFileSpaces)
+                        .Also(l => l.Add(attachSpaceKey));
                 HostScreen.Router.NavigateBack.Execute();
                 break;
             case FileSpacePageMode.Create:
@@ -117,10 +121,6 @@ public class FileSpaceViewModel : ReactiveObject, IRoutableViewModel
         AppContext.CurrentUser.Save();
     });
 
-    public enum FileSpacePageMode
-    {
-        Unknown,
-        Attach,
-        Create
-    }
+    public string? UrlPathSegment { get; } = Guid.NewGuid().ToString()[..5];
+    public IScreen HostScreen { get; set; }
 }
