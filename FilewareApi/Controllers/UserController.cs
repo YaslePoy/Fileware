@@ -46,8 +46,7 @@ public class UserController(IUserService userService) : Controller
             return Ok(new LoginResponse
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(jwt), UserData = Utils
-                    .TransferData<CommonUserData>(loggedIn).Also(
-                        u => { u.FileCount = userService.GetFileCount(u.Id); })
+                    .TransferData<CommonUserData>(loggedIn).Also(u => { u.FileCount = userService.GetFileCount(u.Id); })
             });
         }
 
@@ -75,7 +74,8 @@ public class UserController(IUserService userService) : Controller
             return NotFound();
         }
 
-        return Ok(Utils.TransferData<CommonUserData>(user));
+        return Ok(Utils.TransferData<CommonUserData>(user)
+            .Also(u => { u.FileCount = userService.GetFileCount(u.Id); }));
     }
 
     [HttpGet("{id}/avatar")]

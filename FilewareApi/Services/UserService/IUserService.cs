@@ -1,6 +1,5 @@
 using System.Security.Cryptography;
 using FilewareApi.Models;
-using Microsoft.AspNetCore.Mvc;
 using OtpNet;
 
 namespace FilewareApi.Services.UserService;
@@ -68,13 +67,8 @@ public class UserService(FilewareDbContext db) : IUserService
         if (user is null)
             return null;
 
-        if (user.Password == security)
+        if (user.Password == security || user.TotpKey is not null && new Totp(user.TotpKey).VerifyTotp(security, out _))
             return user;
-
-        if (user.TotpKey is not null && new Totp(user.TotpKey).VerifyTotp(security, out _))
-        {
-            return user;
-        }
 
         return null;
     }
@@ -105,7 +99,8 @@ public class UserService(FilewareDbContext db) : IUserService
 
     public int GetFileCount(int userId)
     {
-        return db.HistoryPoints.Count(i => i.FileSpaceKey.StartsWith($"user_{userId}:"));
+        var startKey = $"user_{userId}:";
+        return db.HistoryPoints.Count(i => i.FileSpaceKey.StartsWith(startKey));
     }
 
     public async Task Update(CommonUserData user)

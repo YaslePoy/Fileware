@@ -2,85 +2,130 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:tile="clr-namespace:Fileware.Controls.Tile"
              xmlns:models="clr-namespace:Fileware.Models"
              xmlns:controls="clr-namespace:Fileware.Controls"
              xmlns:fileware="clr-namespace:Fileware"
+             xmlns:viewModels="clr-namespace:Fileware.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Fileware.Views.TilesPage">
+             x:Class="Fileware.Views.TilesPage" x:DataType="viewModels:TilesViewModel">
     <UserControl.Styles>
-        <Style Selector="WrapPanel > tile|FileTile">
+        <Style Selector="WrapPanel > controls|FileBlock">
             <Setter Property="Width" Value="190" />
             <Setter Property="Margin" Value="5" />
         </Style>
+        
         <Style Selector="WrapPanel > controls|MessageBlock">
             <Setter Property="Width" Value="190" />
             <Setter Property="Margin" Value="5" />
         </Style>
+        <Style Selector="WrapPanel > controls|ImageBlock">
+            <Setter Property="Width" Value="190" />
+            <Setter Property="Height" Value="100"></Setter>
+            <Setter Property="Margin" Value="5" />
+        </Style>
     </UserControl.Styles>
-    <ScrollViewer VerticalScrollBarVisibility="Disabled">
-        <WrapPanel Orientation="Vertical" Margin="5">
-            <tile:FileTile Height="100">
-                <tile:FileTile.DataContext>
-                    <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-                    <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
-                </tile:FileTile.DataContext>
-            </tile:FileTile>
-            <tile:FileTile Height="100" Margin="5">
-                <tile:FileTile.DataContext>
-                    <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-                    <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
-                </tile:FileTile.DataContext>
-            </tile:FileTile>
-            <tile:FileTile Height="100" Margin="5">
-                <tile:FileTile.DataContext>
-                    <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-                    <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
-                </tile:FileTile.DataContext>
-            </tile:FileTile>
-            <tile:FileTile Height="100" Margin="5">
-                <tile:FileTile.DataContext>
-                    <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-                    <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
-                </tile:FileTile.DataContext>
-            </tile:FileTile>
-            <tile:FileTile Height="100" Margin="5">
-                <tile:FileTile.DataContext>
-                    <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-                    <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
-                </tile:FileTile.DataContext>
-            </tile:FileTile>
-            <tile:FileTile Height="100" Margin="5">
-                <tile:FileTile.DataContext>
-                    <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-                    <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
-                </tile:FileTile.DataContext>
-            </tile:FileTile>
-            <tile:FileTile Height="100" Margin="5">
-                <tile:FileTile.DataContext>
-                    <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-                    <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
-                </tile:FileTile.DataContext>
-            </tile:FileTile>
-            <tile:FileTile Height="100" Margin="5">
-                <tile:FileTile.DataContext>
-                    <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-                    <models:FileData Name="FileData file name.json" Size="410552" Version="13" />
-                </tile:FileTile.DataContext>
-            </tile:FileTile>
-            <controls:MessageBlock>
-                <controls:MessageBlock.DataContext>
-                    <models:Message Text="qeasodasjndjasjfnaskjfnjkasdkasdjasnfaks" />
-                </controls:MessageBlock.DataContext>
-            </controls:MessageBlock>
-        </WrapPanel>
-    </ScrollViewer>
+    <Panel>
+        <Grid RowDefinitions="Auto, *,Auto" IsVisible="True">
+            <DockPanel LastChildFill="False" Height="35" Margin="10, 3, 10, 0">
+                <StackPanel Orientation="Horizontal" Classes="Centred" DockPanel.Dock="Left" VerticalAlignment="Center"
+                            Spacing="10">
+                    <TextBlock VerticalAlignment="Center">Файловое пространство</TextBlock>
+                    <ComboBox SelectionChanged="UpdateFileSpace" Name="FileSpacesComboBox">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="models:FileSpace">
+                                <TextBlock Text="{Binding Display}" ContextMenu="{Binding Menu}">
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Name="AddSpaceButton" Click="AddFileSpace" VerticalAlignment="Stretch"
+                            Width="{Binding Height, ElementName=AddSpaceButton}">
+                        +
+                    </Button>
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="10">
+                    <StackPanel IsVisible="{Binding FilterVisibility}" ClipToBounds="True" Orientation="Horizontal"
+                                HorizontalAlignment="Left" VerticalAlignment="Stretch" Spacing="10">
+                        <TextBox TextChanged="SearchText" VerticalAlignment="Center" Text="{Binding StringFilter}"
+                                 Watermark="Поиск по тексту и тегам" MaxWidth="500">
+                        </TextBox>
+                    </StackPanel>
+                    <Button Command="{Binding FilteringSwitch}" Padding="2" VerticalAlignment="Center">
+                        <Image VerticalAlignment="Stretch" Source="{SvgImage ../../Assets/filter.svg}"></Image>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+            <ScrollViewer Grid.Row="1" x:Name="Viewer" CornerRadius="15" VerticalScrollBarVisibility="Disabled"
+                          VerticalContentAlignment="Bottom"
+                          ScrollChanged="Viewer_OnScrollChanged" HorizontalScrollBarVisibility="Visible"
+                          Margin="50, 0, 50, 10" VerticalAlignment="Stretch" HorizontalAlignment="Center">
+                <WrapPanel x:Name="PointsPanel" HorizontalAlignment="Left" VerticalAlignment="Top"
+                            Margin="5" Orientation="Vertical"/>
+            </ScrollViewer>
+        </Grid>
+        <Panel IsVisible="False" x:Name="LoadPanel" VerticalAlignment="Stretch">
+            <Rectangle Effect="blur(20)" Fill="Gray" RadiusX="30" RadiusY="30" Opacity="0.2" />
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Image Source="../../Assets/upload_200dp_E8EAED_FILL0_wght400_GRAD0_opsz48.png" Height="150" />
+                <TextBlock>Загрузить новый файл</TextBlock>
+            </StackPanel>
+        </Panel>
+        <DockPanel Name="RenamingPanel" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   x:DataType="viewModels:RenameViewModel">
+            <DockPanel.DataContext>
+                <viewModels:RenameViewModel></viewModels:RenameViewModel>
+            </DockPanel.DataContext>
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Click="OnCancelRename" HorizontalAlignment="Right" Margin="10, 0,0, 10" Background="OrangeRed"
+                        Foreground="White">
+                    Отменить
+                </Button>
+                <Button Click="OnApplyRename" HorizontalAlignment="Right" Margin="10, 0, 10, 10" Foreground="White">Переименовать</Button>
+            </StackPanel>
+            <TextBox Name="Redactor" DockPanel.Dock="Top" Text="{Binding FileName}" TextWrapping="Wrap"
+                     BorderThickness="0"
+                     Margin="10" Background="Transparent" />
+        </DockPanel>
+        <DockPanel Name="RecolorPanel" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   x:DataType="viewModels:RenameViewModel">
+            <DockPanel.DataContext>
+                <viewModels:RenameViewModel></viewModels:RenameViewModel>
+            </DockPanel.DataContext>
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Click="OnCancelRecolor" HorizontalAlignment="Right" Margin="10, 0,0, 10" Background="OrangeRed"
+                        Foreground="White">
+                    Отменить
+                </Button>
+                <Button Click="OnApplyRecolor" HorizontalAlignment="Right" Margin="10, 0, 10, 10" Foreground="White">Изменить цвет</Button>
+            </StackPanel>
+            <ColorPicker Margin="10" Width="120" Name="RecolorColorPicker"></ColorPicker>
+        </DockPanel>
+
+        <StackPanel IsVisible="False" Name="TagManagerPanel" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Spacing="5" x:DataType="viewModels:TagEditorViewModel">
+            <StackPanel.DataContext>
+                <viewModels:TagEditorViewModel></viewModels:TagEditorViewModel>
+            </StackPanel.DataContext>
+            <TextBlock HorizontalAlignment="Center">Добавление тега</TextBlock>
+            <StackPanel Orientation="Horizontal">
+                <AutoCompleteBox TextChanged="UpdateTagAddFieldColor" FilterMode="ContainsOrdinal"
+                                 ItemsSource="{Binding AllTags}" Text="{Binding CurrentTagName}"
+                                 HorizontalAlignment="Center"
+                                 Watermark="#" Width="200">
+                </AutoCompleteBox>
+                <Border Name="TagColorIndicator" Width="16" Height="16" VerticalAlignment="Center"
+                        HorizontalAlignment="Center" Margin="10" />
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Click="OnCancelTagAdd" HorizontalAlignment="Right" Margin="10, 0,0, 10" Background="OrangeRed"
+                        Foreground="White">
+                    Отменить
+                </Button>
+                <Button Name="ApplyTagAddButton" Click="OnApplyTagAdd" HorizontalAlignment="Right"
+                        Margin="10, 0, 10, 10" Foreground="White">
+                    Добавить тег
+                </Button>
+            </StackPanel>
+        </StackPanel>
+    </Panel>
 </UserControl>

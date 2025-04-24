@@ -7,12 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
 using Avalonia;
-using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -21,7 +19,6 @@ using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
-using DynamicData;
 using Fileware.Controls;
 using Fileware.Models;
 using Fileware.ViewModels;
@@ -213,7 +210,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
 
             addedBlock = data.FileType.StartsWith("image/png") || data.FileType.StartsWith("image/jpeg") ||
                          data.FileType.StartsWith("image/webp")
-                ? new ImageBlock { DataContext = data, Width = 350, Host = this }
+                ? new ImageBlock { DataContext = data, Host = this }
                 : new FileBlock(fileStream, data) { Host = this };
             addedBlock.StartVersionCheckerTimer();
             PointsPanel.Children.Add(addedBlock);

@@ -1,6 +1,5 @@
 using System;
 using System.Windows.Input;
-using Avalonia.Collections;
 using ReactiveUI;
 
 namespace Fileware.ViewModels;
@@ -22,7 +21,6 @@ public class FileChatPageViewModel : ReactiveObject, IRoutableViewModel
     public string? UrlPathSegment { get; } = Guid.NewGuid().ToString()[..5];
     public IScreen HostScreen { get; }
     public string StringFilter { get; set; }
-    public AvaloniaList<Tag> FilterTags { get; set; } = [];
 
     public bool FilterVisibility
     {
@@ -34,6 +32,4 @@ public class FileChatPageViewModel : ReactiveObject, IRoutableViewModel
     {
         FilterVisibility = !FilterVisibility;
     });
-
-    public Tag CurrentFilterTag { get; set; }
 }

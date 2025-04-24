@@ -49,10 +49,10 @@
                 Background="{StaticResource MainColorBrush}"
                 CornerRadius="10" MaxWidth="700">
             <DockPanel Margin="10">
-                <TextBlock Name="ViewText" Foreground="White" Margin="10, 0, 0, 0" DockPanel.Dock="Right"
+                <TextBlock Foreground="White" Margin="10, 0, 0, 0" DockPanel.Dock="Right"
                            VerticalAlignment="Bottom"
                            Text="{Binding Time, StringFormat=t}" ToolTip.Tip="{Binding Time, StringFormat=U}" />
-                <SelectableTextBlock Foreground="White" Text="{Binding Text}" TextWrapping="Wrap" />
+                <SelectableTextBlock   Name="ViewText" Foreground="White" Text="{Binding Text}" TextWrapping="Wrap" />
             </DockPanel>
         </Border>
     </DockPanel>
