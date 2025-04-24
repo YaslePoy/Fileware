@@ -15,7 +15,7 @@ public class ProfileViewModel : ReactiveObject, IRoutableViewModel
     {
     }
 
-    public UserData User { get; set; } = AppContext.CurrentUser.UserData;
+    public CommonUserData CommonUser { get; set; } = AppContext.CurrentUser.UserData;
 
     public ICommand GoManage =>
         ReactiveCommand.CreateFromObservable(() =>

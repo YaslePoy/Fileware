@@ -5,17 +5,17 @@ namespace Fileware.ViewModels;
 
 public class EditProfileViewModel : ReactiveObject, IRoutableViewModel
 {
-    public EditProfileViewModel(IScreen hostScreen, UserData editingUser)
+    public EditProfileViewModel(IScreen hostScreen, CommonUserData editingCommonUser)
     {
         HostScreen = hostScreen;
-        User = editingUser;
+        CommonUser = editingCommonUser;
     }
 
     public EditProfileViewModel()
     {
     }
 
-    public UserData User { get; set; }
+    public CommonUserData CommonUser { get; set; }
     public string? UrlPathSegment { get; } = Guid.NewGuid().ToString()[..5];
     public IScreen HostScreen { get; }
 }

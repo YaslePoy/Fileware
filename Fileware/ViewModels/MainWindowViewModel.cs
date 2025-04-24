@@ -19,7 +19,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 
             Api.Http.GetStringAsync($"api/User/{AppContext.CurrentUser.UserData.Id}").ContinueWith(t =>
             {
-                var data = JsonSerializer.Deserialize<UserData>(t.Result, Api.JsonOptions);
+                var data = JsonSerializer.Deserialize<CommonUserData>(t.Result, Api.JsonOptions);
                 Utils.TransferData(AppContext.CurrentUser.UserData, data);
                 AppContext.CurrentUser.Save(api: false);
             });

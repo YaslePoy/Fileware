@@ -4,5 +4,12 @@ namespace Fileware.ViewModels;
 
 public class RenameViewModel : ReactiveObject
 {
-    public string FileName { get; set; }
+    private string _alertText;
+    public string AnyName { get; set; }
+
+    public string AlertText
+    {
+        get => _alertText;
+        set => this.RaiseAndSetIfChanged(ref _alertText, value);
+    }
 }

@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
 namespace FilewareApi.Models;
 
@@ -18,6 +19,7 @@ public class User
     public byte[]? Avatar { get; set; }
 
     public List<string> AttachedFileSpaces { get; set; } = [];
+    public string Preferences { get; set; }
 }
 
 public class CommonUserData
@@ -28,7 +30,7 @@ public class CommonUserData
     public DateOnly BirthDate { get; set; }
     public List<string> AttachedFileSpaces { get; set; }
     public int FileCount { get; set; }
-
+    public string Preferences { get; set; }
 }
 
 public static class BasincExtentions

@@ -58,7 +58,7 @@ public static class Api
 public class LoginResponse
 {
     public string Token { get; set; }
-    public UserData UserData { get; set; }
+    public CommonUserData UserData { get; set; }
 
     public void Save(string path = "./UserData/user.json", bool api = true)
     {
@@ -80,7 +80,7 @@ public class LoginResponse
     }
 }
 
-public class UserData : INotifyPropertyChanged
+public class CommonUserData : INotifyPropertyChanged
 {
     private List<string> _attachedFileSpaces;
     private DateOnly _birthDate;
@@ -134,7 +134,7 @@ public class UserData : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
-
+    public string Preferences { get; set; }
     [JsonIgnore]
     public Task<Bitmap?> AvatarImage { get; } =
         ImageHelper.LoadFromWeb(new Uri("https://upload.wikimedia.org/wikipedia/commons/4/41/NewtonsPrincipia.jpg"));

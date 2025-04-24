@@ -43,7 +43,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
                 {
                     Instance.RenamingPanel.IsVisible = true;
                     vm = s as FileData;
-                    var winVm = new RenameViewModel { FileName = vm.Name };
+                    var winVm = new RenameViewModel { AnyName = vm.Name };
                     Instance.RenamingPanel.DataContext = winVm;
                 }
             },
@@ -378,7 +378,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
 
     private void OnApplyRename(object? sender, RoutedEventArgs e)
     {
-        vm.Name = (Instance.RenamingPanel.DataContext as RenameViewModel).FileName;
+        vm.Name = (Instance.RenamingPanel.DataContext as RenameViewModel).AnyName;
         vm.OnPropertyChanged("Name");
         RenamingPanel.IsVisible = false;
 

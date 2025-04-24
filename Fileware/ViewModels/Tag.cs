@@ -16,10 +16,8 @@ public class Tag : ReactiveObject
         get => new SolidColorBrush(TagColorService.GetColorByString(Name));
         set
         {
-            if (TagColorService.ColorPreferences.ContainsKey(Name))
-                TagColorService.ColorPreferences[Name] = (value as SolidColorBrush).Color;
-            else
-                TagColorService.ColorPreferences.Add(Name, (value as SolidColorBrush).Color);
+            TagColorService.ColorPreferences[Name] = (value as SolidColorBrush).Color;
+            TagColorService.Save();
             this.RaisePropertyChanged();
         }
     }

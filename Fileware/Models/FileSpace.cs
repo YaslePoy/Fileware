@@ -57,8 +57,8 @@ public class FileSpace
         }
     }
 
-    public static FileSpace OfUser(UserData user)
+    public static FileSpace OfUser(CommonUserData commonUser)
     {
-        return new FileSpace { Id = $"user_{user.Id}:master" };
+        return new FileSpace { Id = $"user_{commonUser.Id}:master" };
     }
 }
