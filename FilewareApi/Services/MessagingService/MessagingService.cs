@@ -2,7 +2,7 @@
 
 namespace FilewareApi.Services.MessagingService;
 
-public class MessagingService(FilewareDbContext dbContext) : IMessagingService
+public class MessagingService(FilewareDbContext dbContext, ChangesHub hub) : IMessagingService
 {
     public int PostMessage(string text, string fileSpace)
     {
@@ -17,6 +17,7 @@ public class MessagingService(FilewareDbContext dbContext) : IMessagingService
         });
         dbContext.SaveChanges();
 
+        // _ = hub.NotifyMessageCreate(msg.Id, fileSpace);
         return msg.Id;
     }
 
@@ -28,8 +29,8 @@ public class MessagingService(FilewareDbContext dbContext) : IMessagingService
 
         dbContext.Messages.Remove(msg);
         dbContext.HistoryPoints.Remove(dbContext.HistoryPoints.FirstOrDefault(i => i.LinkedId == msg.Id));
-
         dbContext.SaveChanges();
+        // _ = hub.NotifyMessageDelete(id);
     }
 
     public void UpdateMessage(int id, string text)
@@ -40,6 +41,7 @@ public class MessagingService(FilewareDbContext dbContext) : IMessagingService
 
         msg.Text = text;
         dbContext.SaveChanges();
+        // _ = hub.NotifyMessageUpdate(id);
     }
 
     public Message? GetMessage(int id)

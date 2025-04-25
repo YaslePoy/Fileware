@@ -23,13 +23,13 @@ public static class BasincExtentions
 
 public static class Utils
 {
-    public static E TransferData<E>(object basic)
+    public static E TransferData<E>(object basic, bool insertNulls = true)
     {
         var e = Activator.CreateInstance<E>();
-        return TransferData(e, basic);
+        return TransferData(e, basic, insertNulls);
     }
 
-    public static E TransferData<E>(E to, object from)
+    public static E TransferData<E>(E to, object from, bool insertNulls = true)
     {
         var entityType = typeof(E);
         var entityProps = entityType.GetProperties();
@@ -42,7 +42,7 @@ public static class Utils
 
             if (curr == null)
                 continue;
-
+            if (value is null && !insertNulls) continue;
             curr.SetValue(to, value);
         }
 

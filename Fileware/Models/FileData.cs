@@ -18,7 +18,33 @@ public class FileData : INotifyPropertyChanged, ITagContainer, ISearchable
     private IImage? _preview;
     private byte[]? _previewData;
     private List<Tag> _tags = [];
-    public int Id { get; set; }
+    private int _id;
+    private int _version;
+    private DateTime _lastChange;
+    private long _size;
+    private DateTime _loadTime;
+    private string _fileType;
+    private bool _uploadVisibility;
+    private bool _downloadVisibility;
+    private bool _loadProgressEnable;
+    private bool _hasPreview;
+    private IEffect _previewEffect;
+    private byte[]? _superPreview;
+    private int _userId;
+    private int _user;
+    private int _pointId = -1;
+    private WrapPanel? _tagsPreviewPanel;
+
+    public int Id
+    {
+        get => _id;
+        set
+        {
+            if (value == _id) return;
+            _id = value;
+            OnPropertyChanged(nameof(Id));
+        }
+    }
 
     public string Name
     {
@@ -34,18 +60,109 @@ public class FileData : INotifyPropertyChanged, ITagContainer, ISearchable
 
             _name = value;
             OnPropertyChanged(nameof(Name));
+            OnPropertyChanged(nameof(Name));
         }
     }
 
-    public int Version { get; set; }
-    public DateTime LastChange { get; set; }
-    public long Size { get; set; }
-    public DateTime LoadTime { get; set; }
-    public string FileType { get; set; }
-    public bool UploadVisibility { get; set; }
-    public bool DownloadVisibility { get; set; }
-    public bool LoadProgressEnable { get; set; }
-    public bool HasPreview { get; set; }
+    public int Version
+    {
+        get => _version;
+        set
+        {
+            if (value == _version) return;
+            _version = value;
+            OnPropertyChanged(nameof(Version));
+        }
+    }
+
+    public DateTime LastChange
+    {
+        get => _lastChange;
+        set
+        {
+            if (value.Equals(_lastChange)) return;
+            _lastChange = value;
+            OnPropertyChanged(nameof(LastChange));
+        }
+    }
+
+    public long Size
+    {
+        get => _size;
+        set
+        {
+            if (value == _size) return;
+            _size = value;
+            OnPropertyChanged(nameof(Size));
+            OnPropertyChanged(nameof(SizeFormatted));
+        }
+    }
+
+    public DateTime LoadTime
+    {
+        get => _loadTime;
+        set
+        {
+            if (value.Equals(_loadTime)) return;
+            _loadTime = value;
+            OnPropertyChanged(nameof(LoadTime));
+        }
+    }
+
+    public string FileType
+    {
+        get => _fileType;
+        set
+        {
+            if (value == _fileType) return;
+            _fileType = value;
+            OnPropertyChanged(nameof(FileType));
+        }
+    }
+
+    public bool UploadVisibility
+    {
+        get => _uploadVisibility;
+        set
+        {
+            if (value == _uploadVisibility) return;
+            _uploadVisibility = value;
+            OnPropertyChanged(nameof(UploadVisibility));
+        }
+    }
+
+    public bool DownloadVisibility
+    {
+        get => _downloadVisibility;
+        set
+        {
+            if (value == _downloadVisibility) return;
+            _downloadVisibility = value;
+            OnPropertyChanged(nameof(DownloadVisibility));
+        }
+    }
+
+    public bool LoadProgressEnable
+    {
+        get => _loadProgressEnable;
+        set
+        {
+            if (value == _loadProgressEnable) return;
+            _loadProgressEnable = value;
+            OnPropertyChanged(nameof(LoadProgressEnable));
+        }
+    }
+
+    public bool HasPreview
+    {
+        get => _hasPreview;
+        set
+        {
+            if (value == _hasPreview) return;
+            _hasPreview = value;
+            OnPropertyChanged(nameof(HasPreview));
+        }
+    }
 
     public byte[]? PreviewData
     {
@@ -56,10 +173,21 @@ public class FileData : INotifyPropertyChanged, ITagContainer, ISearchable
             _previewData = value;
             OnPropertyChanged(nameof(PreviewData));
             OnPropertyChanged(nameof(Preview));
+            OnPropertyChanged(nameof(PreviewData));
+            OnPropertyChanged(nameof(Preview));
         }
     }
 
-    public IEffect PreviewEffect { get; set; }
+    public IEffect PreviewEffect
+    {
+        get => _previewEffect;
+        set
+        {
+            if (Equals(value, _previewEffect)) return;
+            _previewEffect = value;
+            OnPropertyChanged(nameof(PreviewEffect));
+        }
+    }
 
     public IImage Preview
     {
@@ -85,15 +213,49 @@ public class FileData : INotifyPropertyChanged, ITagContainer, ISearchable
             // OnPropertyChanged(nameof(Preview));
             return _preview;
         }
-        set => _preview = value;
+        set
+        {
+            if (Equals(value, _preview)) return;
+            _preview = value;
+            OnPropertyChanged(nameof(Preview));
+        }
     }
 
-    public byte[]? SuperPreview { get; set; }
+    public byte[]? SuperPreview
+    {
+        get => _superPreview;
+        set
+        {
+            if (Equals(value, _superPreview)) return;
+            _superPreview = value;
+            OnPropertyChanged(nameof(SuperPreview));
+            OnPropertyChanged(nameof(Preview));
+        }
+    }
 
 
-    [ForeignKey("User")] public int UserId { get; set; }
+    [ForeignKey("User")]
+    public int UserId
+    {
+        get => _userId;
+        set
+        {
+            if (value == _userId) return;
+            _userId = value;
+            OnPropertyChanged(nameof(UserId));
+        }
+    }
 
-    public int User { get; set; }
+    public int User
+    {
+        get => _user;
+        set
+        {
+            if (value == _user) return;
+            _user = value;
+            OnPropertyChanged(nameof(User));
+        }
+    }
 
     public string SizeFormatted
     {
@@ -117,8 +279,27 @@ public class FileData : INotifyPropertyChanged, ITagContainer, ISearchable
         return _name.Contains(template, StringComparison.CurrentCultureIgnoreCase);
     }
 
-    public int PointId { get; set; } = -1;
-    public WrapPanel? TagsPreviewPanel { get; set; }
+    public int PointId
+    {
+        get => _pointId;
+        set
+        {
+            if (value == _pointId) return;
+            _pointId = value;
+            OnPropertyChanged(nameof(PointId));
+        }
+    }
+
+    public WrapPanel? TagsPreviewPanel
+    {
+        get => _tagsPreviewPanel;
+        set
+        {
+            if (Equals(value, _tagsPreviewPanel)) return;
+            _tagsPreviewPanel = value;
+            OnPropertyChanged(nameof(TagsPreviewPanel));
+        }
+    }
 
     public void UpdateTagPanel()
     {
@@ -141,6 +322,8 @@ public class FileData : INotifyPropertyChanged, ITagContainer, ISearchable
         {
             if (Equals(value, _tags)) return;
             _tags = value;
+            OnPropertyChanged(nameof(Tags));
+            OnPropertyChanged(nameof(HasTags));
             UpdateTagPanel();
 
             OnPropertyChanged(nameof(Tags));

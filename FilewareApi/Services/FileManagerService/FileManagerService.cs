@@ -5,7 +5,7 @@ using SixLabors.ImageSharp.Processing;
 
 namespace FilewareApi.Services.FileManagerService;
 
-public class FileManagerService(FilewareDbContext dbContext) : IFileManagerService
+public class FileManagerService(FilewareDbContext dbContext, ChangesHub hub) : IFileManagerService
 {
     private const string FileStoragePath = "storage/";
 
@@ -41,7 +41,9 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
 
 
         dbContext.SaveChanges();
-
+        
+        // _ = hub.NotifyFileCreate(data.Id, fileSpace);
+        
         return data.Id;
     }
 
@@ -76,7 +78,10 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         dbContext.HistoryPoints.Add(new HistoryPoint
             { LinkedId = file.Id, Type = (int)HistoryPointType.File, Time = NowWithoutTimezone, FileSpaceKey = fileSpace});
         dbContext.SaveChanges();
+        
+        // _ = hub.NotifyFileCreate(file.Id, fileSpace);
 
+        
         return file.Id;
     }
 
@@ -106,6 +111,8 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
 
         dbContext.FileData.Update(file);
         dbContext.SaveChanges();
+        
+        // _ = hub.NotifyFileUpdate(file.Id);
     }
 
     public void UpdateBigFile(int id, byte[] data)
@@ -134,6 +141,8 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
 
         dbContext.FileData.Update(file);
         dbContext.SaveChanges();
+        // _ = hub.NotifyFileUpdate(file.Id);
+
     }
 
     public void DeleteFile(int id)
@@ -147,6 +156,8 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
         File.Delete(FileStoragePath + id);
         dbContext.HistoryPoints.Remove(dbContext.HistoryPoints.FirstOrDefault(i => i.LinkedId == file.Id));
         dbContext.SaveChanges();
+        // _ = hub.NotifyFileDelete(file.Id);
+
     }
 
     public FileData? GetFileById(int id)
@@ -173,6 +184,7 @@ public class FileManagerService(FilewareDbContext dbContext) : IFileManagerServi
 
         file.Name = name;
         dbContext.SaveChanges();
+        // _ = hub.NotifyFileUpdate(file.Id);
     }
 
     public byte[]? GetFilePreview(int id)

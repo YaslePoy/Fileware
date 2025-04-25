@@ -22,6 +22,7 @@ using Avalonia.Threading;
 using Fileware.Controls;
 using Fileware.Models;
 using Fileware.ViewModels;
+using Microsoft.AspNetCore.SignalR.Client;
 using ReactiveUI;
 
 namespace Fileware.Views;
@@ -31,7 +32,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
     private static FileChatPage Instance;
     private static List<HistoryPoint> History;
 
-
+    public HubConnection updateHub;
     private static FileData vm;
     private static Tag ColoringTag;
 
@@ -61,8 +62,21 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
                 {
                     Instance.Viewer.Effect = new ImmutableBlurEffect(15);
                     Instance.TagManagerPanel.IsVisible = true;
+                    var tags = Instance.PointsPanel.Children.Where(i => i.DataContext is ITagContainer)
+                        .Select(i => i.DataContext as ITagContainer).SelectMany(i => i.Tags.Select(j => j.Name))
+                        .ToList().Also(l => l.AddRange(["Избранное", "Секретное"])).Distinct().ToList();
                     Instance.TagManagerPanel.DataContext = new TagEditorViewModel
-                        { CurrentTagsOwner = s as ITagContainer, AllTags = ["Избранное", "Секретное"] };
+                        { CurrentTagsOwner = s as ITagContainer, AllTags = tags };
+                }
+            },
+            {
+                "MessageEdit", s =>
+                {
+                    Instance.Viewer.Effect = new ImmutableBlurEffect(15);
+                    Instance.MessageEditPanel.IsVisible = true;
+                    messageVm = s as Message;
+                    var wimVm = new RenameViewModel { AnyName = messageVm.Text };
+                    Instance.MessageEditPanel.DataContext = wimVm;
                 }
             }
         }.ToFrozenDictionary();
@@ -70,6 +84,7 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
     private IBrush _defaultBrush;
     private KeyEventArgs? _firstEnter;
     private Avalonia.Controls.Controls _historyBackup;
+    private static Message messageVm;
 
     public FileChatPage()
     {
@@ -457,6 +472,35 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
             History = JsonSerializer.Deserialize<List<HistoryPoint>>(history, Api.JsonOptions) ??
                       new List<HistoryPoint>();
 
+            updateHub = new HubConnectionBuilder().WithUrl($"{Api.ApiUrl}/ChangesHub").Build();
+            updateHub.InvokeAsync("AttachToFilespace", _currentFileSpace);
+            updateHub.On<int>("NotifyFileUpdate", async fileId =>
+            {
+                var file = PointsPanel.Children.Select(i => i.DataContext).Where(i => i is FileData).Cast<FileData>()
+                    .FirstOrDefault(i => i.Id == fileId);
+                if (file is null)
+                {
+                    return;
+                }
+
+                var upadte = await Api.Http.GetStringAsync($"api/File/{fileId}");
+                var ser = JsonSerializer.Deserialize<FileData>(upadte, Api.JsonOptions);
+                Utils.TransferData(file, ser, false);
+            });
+
+            updateHub.On<int>("NotifyMessageUpdate", async fileId =>
+            {
+                var file = PointsPanel.Children.Select(i => i.DataContext).Where(i => i is Message).Cast<FileData>()
+                    .FirstOrDefault(i => i.Id == fileId);
+                if (file is null)
+                {
+                    return;
+                }
+
+                var upadte = await Api.Http.GetStringAsync($"api/Message/{fileId}");
+                var ser = JsonSerializer.Deserialize<Message>(upadte, Api.JsonOptions);
+                Utils.TransferData(file, ser);
+            });
             Dispatcher.UIThread.Invoke(ShowHistory);
         });
     }
@@ -494,5 +538,23 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
 
         PointsPanel.Children.Clear();
         PointsPanel.Children.AddRange(finalQuery);
+    }
+
+    private void OnCancelMessage(object? sender, RoutedEventArgs e)
+    {
+        MessageEditPanel.IsVisible = false;
+        Viewer.Effect = null;
+    }
+
+    private void OnApplyMessage(object? sender, RoutedEventArgs e)
+    {
+        MessageEditPanel.IsVisible = false;
+        Viewer.Effect = null;
+        messageVm.Text = (Instance.MessageEditPanel.DataContext as RenameViewModel).AnyName;
+        messageVm.OnPropertyChanged("Text");
+
+        Api.Http.PatchAsync($"api/Messaging/{messageVm.Id}",
+            new StringContent("\"" + messageVm.Text + "\"",
+                MediaTypeWithQualityHeaderValue.Parse("application/json")));
     }
 }

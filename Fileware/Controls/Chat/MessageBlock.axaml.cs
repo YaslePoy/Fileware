@@ -17,23 +17,25 @@ public partial class MessageBlock : UserControl
 
     private void ChangeText(object? sender, RoutedEventArgs e)
     {
-        var changeWin = new MessageTextEditWindow
-        {
-            DataContext = DataContext
-        };
-        var task = changeWin.ShowDialog<bool>(AppContext.WindowInstance);
-        task.ContinueWith(t =>
-        {
-            if (t.Result)
-                Dispatcher.UIThread.Invoke(() =>
-                {
-                    var msg = DataContext as Message;
-                    msg.OnPropertyChanged("Text");
-                    Api.Http.PatchAsync($"api/Messaging/{msg.Id}",
-                        new StringContent("\"" + msg.Text + "\"",
-                            MediaTypeWithQualityHeaderValue.Parse("application/json")));
-                });
-        });
+        // var changeWin = new MessageTextEditWindow
+        // {
+        //     DataContext = DataContext
+        // };
+        // var task = changeWin.ShowDialog<bool>(AppContext.WindowInstance);
+        // task.ContinueWith(t =>
+        // {
+        //     if (t.Result)
+        //         Dispatcher.UIThread.Invoke(() =>
+        //         {
+        //             var msg = DataContext as Message;
+        //             msg.OnPropertyChanged("Text");
+        //             Api.Http.PatchAsync($"api/Messaging/{msg.Id}",
+        //                 new StringContent("\"" + msg.Text + "\"",
+        //                     MediaTypeWithQualityHeaderValue.Parse("application/json")));
+        //         });
+        // });
+        AppContext.CurrentMultiLevelView.MakeTopLevel("MessageEdit", DataContext);
+
     }
 
 

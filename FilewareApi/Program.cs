@@ -5,6 +5,7 @@ using FilewareApi.Services.UserService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 namespace FilewareApi;
 
@@ -20,10 +21,15 @@ public static class Program
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
-        builder.Services.AddScoped<IFileManagerService, FileManagerService>();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "Fileware API v1", Version = "v1" });
+            // some other configs
+            options.AddSignalRSwaggerGen();
+        });        builder.Services.AddScoped<IFileManagerService, FileManagerService>();
         builder.Services.AddScoped<IMessagingService, MessagingService>();
         builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<ChangesHub>();
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("CorsPolicy",
@@ -33,7 +39,7 @@ public static class Program
                     .SetIsOriginAllowed(_ => true)
                     .AllowAnyHeader());
         });
-        
+        builder.Services.AddSignalR();
         builder.Services.AddAuthorization();
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -76,7 +82,7 @@ public static class Program
         app.UseCors("CorsPolicy");
 
         app.MapControllers();
-
+        app.MapHub<ChangesHub>("/changesHub");
         app.Run();
     }
 

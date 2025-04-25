@@ -26,7 +26,7 @@ public partial class TilesPage : ReactiveUserControl<TilesViewModel>, IMultiLeve
     private static TilesPage Instance;
     private static List<HistoryPoint> History;
 
-
+    private static Message messageVm;
     private static FileData vm;
     private static Tag ColoringTag;
 
@@ -55,6 +55,16 @@ public partial class TilesPage : ReactiveUserControl<TilesViewModel>, IMultiLeve
                     Instance.TagManagerPanel.IsVisible = true;
                     Instance.TagManagerPanel.DataContext = new TagEditorViewModel
                         { CurrentTagsOwner = s as ITagContainer, AllTags = ["Избранное", "Секретное"] };
+                }
+            },
+            {
+                "MessageEdit", s =>
+                {
+                    Instance.Viewer.Effect = new ImmutableBlurEffect(15);
+                    Instance.MessageEditPanel.IsVisible = true;
+                    messageVm = s as Message;
+                    var wimVm = new RenameViewModel { AnyName = messageVm.Text };
+                    Instance.MessageEditPanel.DataContext = wimVm;
                 }
             }
         }.ToFrozenDictionary();
@@ -279,6 +289,24 @@ public partial class TilesPage : ReactiveUserControl<TilesViewModel>, IMultiLeve
 
         PointsPanel.Children.Clear();
         PointsPanel.Children.AddRange(finalQuery);
+    }
+    
+    private void OnCancelMessage(object? sender, RoutedEventArgs e)
+    {
+        MessageEditPanel.IsVisible = false;
+        Viewer.Effect = null;
+    }
+
+    private void OnApplyMessage(object? sender, RoutedEventArgs e)
+    {
+        MessageEditPanel.IsVisible = false;
+        Viewer.Effect = null;
+        messageVm.Text = (Instance.MessageEditPanel.DataContext as RenameViewModel).AnyName;
+        messageVm.OnPropertyChanged("Text");
+
+        Api.Http.PatchAsync($"api/Messaging/{messageVm.Id}",
+            new StringContent("\"" + messageVm.Text + "\"",
+                MediaTypeWithQualityHeaderValue.Parse("application/json")));
     }
 }
 
