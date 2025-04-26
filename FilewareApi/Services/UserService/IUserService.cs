@@ -20,8 +20,7 @@ public interface IUserService
 
 public class UserService(FilewareDbContext db) : IUserService
 {
-    private static Dictionary<string, byte[]> TotpKeys = new();
-
+    private static readonly Dictionary<string, byte[]> TotpKeys = new();
     public string GenerateTotpKey(string username)
     {
         var key = RandomNumberGenerator.GetBytes(32);
@@ -31,7 +30,6 @@ public class UserService(FilewareDbContext db) : IUserService
         var uriString = new OtpUri(OtpType.Totp, key, username, "Fileware").ToString();
         return uriString;
     }
-
     public async Task<int> Register(User user)
     {
         if (db.Users.Any(i => i.Username == user.Username))
@@ -56,12 +54,10 @@ public class UserService(FilewareDbContext db) : IUserService
 
         return user.Id;
     }
-
     public bool IsExists(string username)
     {
         return db.Users.Any(i => i.Username == username);
     }
-
     public User? Auth(string login, string security)
     {
         var user = db.Users.FirstOrDefault(i => i.Username == login);
@@ -73,12 +69,10 @@ public class UserService(FilewareDbContext db) : IUserService
 
         return null;
     }
-
     public User? Get(int id)
     {
         return db.Users.FirstOrDefault(i => i.Id == id);
     }
-
     public async Task SetupAvatar(int id, byte[] avatar, string type)
     {
         if (type != "image/webp")
@@ -96,13 +90,11 @@ public class UserService(FilewareDbContext db) : IUserService
         db.Users.Update(user);
         await db.SaveChangesAsync();
     }
-
     public int GetFileCount(int userId)
     {
         var startKey = $"user_{userId}:";
         return db.HistoryPoints.Count(i => i.FileSpaceKey.StartsWith(startKey));
     }
-
     public async Task Update(CommonUserData user)
     {
         var fromDb = Get(user.Id);
@@ -110,7 +102,6 @@ public class UserService(FilewareDbContext db) : IUserService
         db.Users.Update(fromDb);
         await db.SaveChangesAsync();
     }
-
     public bool VerifyTotp(string username, string totpKey)
     {
         if (TotpKeys.TryGetValue(username, out var key))
