@@ -24,6 +24,7 @@ public partial class ImageBlock : IFileBlock
     public ImageBlock()
     {
         InitializeComponent();
+        StartVersionCheckerTimer();
     }
 
     private void OnDelete(object? sender, RoutedEventArgs e)
@@ -41,6 +42,22 @@ public partial class ImageBlock : IFileBlock
         data.UpdateTagPanel();
     }
 
+    private void UploadNewer(object? sender, RoutedEventArgs e)
+    {
+        if (IsTransfering)
+            return;
+
+        UploadFile();
+    }
+
+    private void DownloadNewer(object? sender, RoutedEventArgs e)
+    {
+        if (IsTransfering)
+            return;
+
+        LoadFile(AppContext.LocalStoredFiles[(DataContext as FileData).Id].Path);
+    }
+    
     protected override void OnSizeChanged(SizeChangedEventArgs e)
     {
         base.OnSizeChanged(e);
@@ -183,7 +200,7 @@ public partial class ImageBlock : IFileBlock
             return;
         IsCheckUpdates = true;
         var timer = new DispatcherTimer();
-        timer.Interval = TimeSpan.FromSeconds(5);
+        timer.Interval = TimeSpan.FromSeconds(3);
         timer.Tick += (_, _) =>
         {
             if (!IsCheckUpdates)

@@ -103,13 +103,6 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
         AddHandler(DragDrop.DragEnterEvent, DragOver);
         AddHandler(DragDrop.DragLeaveEvent, DragLeave);
         AddHandler(DragDrop.DropEvent, DragDropEvent);
-        if (File.Exists("./Cache/testHistory.json"))
-        {
-            var history = File.ReadAllText("./Cache/testHistory.json");
-            History = JsonSerializer.Deserialize<List<HistoryPoint>>(history, Api.JsonOptions) ??
-                      new List<HistoryPoint>();
-            ShowHistory();
-        }
     }
 
     private string _currentFileSpace => (FileSpacesComboBox.SelectedItem as FileSpace).Id;
@@ -468,7 +461,6 @@ public partial class FileChatPage : ReactiveUserControl<FileChatPageViewModel>, 
         Api.Http.GetStringAsync($"api/History?id=-1&count=100&key={_currentFileSpace}").ContinueWith(t =>
         {
             var history = t.Result;
-            File.WriteAllText("./Cache/testHistory.json", t.Result);
             History = JsonSerializer.Deserialize<List<HistoryPoint>>(history, Api.JsonOptions) ??
                       new List<HistoryPoint>();
 

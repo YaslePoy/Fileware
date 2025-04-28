@@ -335,21 +335,17 @@ public class FileData : INotifyPropertyChanged, ITagContainer, ISearchable
 
     public void UpdateSyncState()
     {
-        if (AppContext.LocalStoredFiles.TryGetValue(Id, out var path))
+        if (!AppContext.LocalStoredFiles.TryGetValue(Id, out var path)) return;
+        var fileInfo = new FileInfo(path.Path);
+        if (fileInfo.LastWriteTime > path.LastChangeTime != UploadVisibility)
         {
-            var fileInfo = new FileInfo(path.Path);
-            if (fileInfo.LastWriteTime > path.LastChangeTime != UploadVisibility)
-            {
-                UploadVisibility = fileInfo.LastWriteTime > path.LastChangeTime;
-                OnPropertyChanged(nameof(UploadVisibility));
-            }
-
-            if (fileInfo.LastWriteTime < LoadTime != DownloadVisibility)
-            {
-                DownloadVisibility = Version > path.Version;
-                OnPropertyChanged(nameof(DownloadVisibility));
-            }
+            UploadVisibility = fileInfo.LastWriteTime > path.LastChangeTime;
+            OnPropertyChanged(nameof(UploadVisibility));
         }
+
+        if (fileInfo.LastWriteTime < LoadTime == DownloadVisibility) return;
+        DownloadVisibility = Version > path.Version;
+        OnPropertyChanged(nameof(DownloadVisibility));
     }
 
     public virtual void OnPropertyChanged(string propertyName)

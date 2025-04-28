@@ -31,11 +31,11 @@ public class LoginPageViewModel : ReactiveObject, IRoutableViewModel
         if (await Api.Auth(Login, Password) is { } loginResponse)
         {
             if (!Directory.Exists("./UserData")) Directory.CreateDirectory("./UserData");
+            AppContext.CurrentUser = loginResponse;
 
             var saving = JsonSerializer.Serialize(loginResponse, Api.JsonOptions);
             Api.Http.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse("Bearer " + AppContext.CurrentUser!.Token);
             File.WriteAllText("./UserData/user.json", saving);
-            AppContext.CurrentUser = loginResponse;
             HostScreen.Router.Navigate.Execute(new BasePageViewModel(HostScreen));
         }
         else

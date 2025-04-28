@@ -10,6 +10,10 @@
              DoubleTapped="OnDoubleTap" Tapped="InputElement_OnTapped">
     <UserControl.ContextMenu>
         <ContextMenu>
+            <MenuItem Header="{Binding Version, StringFormat='{}Версия {0}'}">
+                <MenuItem IsEnabled="{Binding DownloadVisibility}" Header="Загрузить с сервера" Click="DownloadNewer"></MenuItem>
+                <MenuItem IsEnabled="{Binding UploadVisibility}" Header="Обновить на сервере" Click="UploadNewer"></MenuItem>
+            </MenuItem>
             <MenuItem Header="Переименовать" Click="OnRename" />
             <MenuItem Header="Удалить">
                 <MenuItem Background="OrangeRed" Header="Точно?" Click="OnDelete" />

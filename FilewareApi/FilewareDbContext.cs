@@ -7,6 +7,7 @@ public class FilewareDbContext : DbContext
 {
     public FilewareDbContext(DbContextOptions<FilewareDbContext> options) : base(options)
     {
+        Database.EnsureCreated();
     }
 
     public DbSet<FileData> FileData { get; set; }

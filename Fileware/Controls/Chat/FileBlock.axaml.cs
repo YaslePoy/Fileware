@@ -24,6 +24,7 @@ public partial class FileBlock : IFileBlock
     public FileBlock()
     {
         InitializeComponent();
+        StartVersionCheckerTimer();
     }
 
     public FileBlock(FileStream stream, FileData data) : this()

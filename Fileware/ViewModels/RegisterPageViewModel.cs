@@ -199,7 +199,8 @@ public class RegisterPageViewModel : ReactiveObject, IRoutableViewModel
             ShowName,
             Password,
             TotpKey = _useTotpAuth ? Convert.ToBase64String(Encoding.Default.GetBytes(Password)) : null,
-            BirthDate = DateOnly.Parse(BirthDate).ToString("yyyy-MM-dd")
+            BirthDate = DateOnly.Parse(BirthDate).ToString("yyyy-MM-dd"),
+            Preferences = ""
         }, Api.JsonOptions);
         Api.Http.PostAsync("api/User/reg", new StringContent(req, Api.JsonMediaType)).ContinueWith(t =>
         {

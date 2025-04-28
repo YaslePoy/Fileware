@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fileware", "Fileware\Filewa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilewareApi", "FilewareApi\FilewareApi.csproj", "{66EB41B3-4F46-4F06-A9A4-DBDF10BF803D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TotpTest", "TotpTest\TotpTest.csproj", "{5CAB40D9-29F9-4E3F-A2BB-CCC2EA099B40}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,9 +18,5 @@ Global
 		{66EB41B3-4F46-4F06-A9A4-DBDF10BF803D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66EB41B3-4F46-4F06-A9A4-DBDF10BF803D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66EB41B3-4F46-4F06-A9A4-DBDF10BF803D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5CAB40D9-29F9-4E3F-A2BB-CCC2EA099B40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5CAB40D9-29F9-4E3F-A2BB-CCC2EA099B40}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5CAB40D9-29F9-4E3F-A2BB-CCC2EA099B40}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5CAB40D9-29F9-4E3F-A2BB-CCC2EA099B40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
